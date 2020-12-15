@@ -57,7 +57,7 @@
 				<!-- This configuration allows the JUnit test runner to find the unit tests -->
 				<configuration>
 					<argLine>
-						--add-opens=com.avereon.zevra/com.avereon.math=ALL-UNNAMED
+						--add-opens=com.avereon.curve/com.avereon.curve.math=ALL-UNNAMED
 					</argLine>
 				</configuration>
 			</plugin>
