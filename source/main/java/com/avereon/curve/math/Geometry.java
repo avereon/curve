@@ -21,22 +21,22 @@ public class Geometry {
 	 * @return The angle
 	 */
 	public static double getAngle( final double[] point ) {
-		return Math.atan2( point[1], point[0] );
+		return Math.atan2( point[ 1 ], point[ 0 ] );
 	}
 
 	public static double getAngle( final double[] o, final double[] n, final double[] a, final double[] b ) {
 		// TODO Continue reimplementing
 		//double[] r = Vector.normalize( Vector.cross( n, Vector.minus( a, o ) ) );
 
-//		Vector r = n.cross( a.minus( o ) ).normalize();
-//		Transform transform = new Orientation( o, n, r ).getTargetToLocalTransform();
-//
-//		Vector lb = transform.timesXY( b ).normalize();
-//		Vector lo = new Vector();
-//		Vector la = transform.timesXY( a ).normalize();
-//
-//		if( la.plus( lb ).magnitude() == 0.0 ) return Math.PI;
-//		return Math.acos( la.dot( lb ) ) * getSpin( lb, lo, la );
+		//		Vector r = n.cross( a.minus( o ) ).normalize();
+		//		Transform transform = new Orientation( o, n, r ).getTargetToLocalTransform();
+		//
+		//		Vector lb = transform.timesXY( b ).normalize();
+		//		Vector lo = new Vector();
+		//		Vector la = transform.timesXY( a ).normalize();
+		//
+		//		if( la.plus( lb ).magnitude() == 0.0 ) return Math.PI;
+		//		return Math.acos( la.dot( lb ) ) * getSpin( lb, lo, la );
 		return Double.NaN;
 	}
 
@@ -58,8 +58,7 @@ public class Geometry {
 
 	public static double[] cartesianToPolarDegrees( final double[] point ) {
 		double[] v = cartesianToPolar( point );
-		v[ 1 ] = Math.toDegrees( v[ 1 ] );
-		return v;
+		return Point.of( v[ 0 ], Math.toDegrees( v[ 1 ] ), v[ 2 ] );
 	}
 
 	public static double[] polarDegreesToCartesian( final double[] point ) {

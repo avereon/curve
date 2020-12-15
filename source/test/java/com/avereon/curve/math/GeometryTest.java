@@ -2,7 +2,7 @@ package com.avereon.curve.math;
 
 import org.junit.jupiter.api.Test;
 
-import static com.avereon.curve.match.Near.near;
+import static com.avereon.curve.match.Matchers.near;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
