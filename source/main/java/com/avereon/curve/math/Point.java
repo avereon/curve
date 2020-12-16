@@ -30,6 +30,10 @@ public class Point {
 		return v;
 	}
 
+	public static double[] of( double[] v ) {
+		return new double[]{ v[ 0 ], v[ 1 ], v[ 2 ] };
+	}
+
 	public static boolean isUndefined( double[] v ) {
 		return v[ 0 ] != v[ 0 ] || v[ 1 ] != v[ 1 ] || v[ 2 ] != v[ 2 ];
 	}
