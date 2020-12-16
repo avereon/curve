@@ -106,8 +106,8 @@ public class Orientation {
 	/**
 	 * Set the pose (normal and rotate) without changing the origin.
 	 *
-	 * @param normal The normal of the orientation.
-	 * @param rotate The rotate of the orientation.
+	 * @param normal The normal of the orientation
+	 * @param rotate The rotate of the orientation
 	 */
 	public final void setPose( double[] normal, double[] rotate ) {
 		set( getOrigin(), normal, rotate );
@@ -132,9 +132,9 @@ public class Orientation {
 	/**
 	 * Set the rotation angles.
 	 *
-	 * @param xrotation The rotation angle around the x axis in radians.
-	 * @param yrotation The rotation angle around the y axis in radians.
-	 * @param zrotation The rotation angle around the z axis in radians.
+	 * @param xrotation The rotation angle around the x axis in radians
+	 * @param yrotation The rotation angle around the y axis in radians
+	 * @param zrotation The rotation angle around the z axis in radians
 	 */
 	public final void setRotationAngles( double xrotation, double yrotation, double zrotation ) {
 		this.xrotation = xrotation;
@@ -178,7 +178,7 @@ public class Orientation {
 	 * Return a transform which will transform coordinates from the local
 	 * orientation to the target orientation.
 	 *
-	 * @return A transform to convert to the target orientation.
+	 * @return A transform to convert to the target orientation
 	 */
 	public final Transform getLocalToTargetTransform() {
 		if( toTarget == null ) toTarget = Transform.targetTransform( getOrigin(), getNormal(), getRotate() );
@@ -189,7 +189,7 @@ public class Orientation {
 	 * Return a transform which will transform coordinates from the target
 	 * orientation to the local orientation.
 	 *
-	 * @return A transform to convert to the local orientation.
+	 * @return A transform to convert to the local orientation
 	 */
 	public final Transform getTargetToLocalTransform() {
 		if( toLocal == null ) toLocal = Transform.localTransform( getOrigin(), getNormal(), getRotate() );

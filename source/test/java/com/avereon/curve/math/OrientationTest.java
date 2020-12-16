@@ -135,97 +135,6 @@ public class OrientationTest {
 		assertThat( orientation.getTargetToLocalTransform(), is( Transform.translation( -1, -2, -3 ) ) );
 	}
 
-	//	@Test void testIsModifiedByOrigin() throws Exception {
-	//		Orientation orientation = new Orientation();
-	//		assertFalse( orientation.isModified() );
-	//
-	//		orientation.setOrigin( Vector.of( 1, 1, 1 ) );
-	//		assertTrue( orientation.isModified() );
-	//
-	//		orientation.setOrigin( Vector.of( 0, 0, 0 ) );
-	//		assertFalse( orientation.isModified() );
-	//
-	//		orientation.setOrigin( Vector.of( 1, 1, 1 ) );
-	//		assertTrue( orientation.isModified() );
-	//
-	//		orientation.setModified( false );
-	//		assertFalse( orientation.isModified() );
-	//	}
-	//
-	//	@Test void testIsModifiedByNormal() throws Exception {
-	//		Orientation orientation = new Orientation();
-	//		assertFalse( orientation.isModified() );
-	//
-	//		orientation.setNormal( Vector.of( 1, 1, 1 ) );
-	//		assertTrue( orientation.isModified() );
-	//
-	//		orientation.setNormal( Vector.of( 0, 0, 1 ) );
-	//		assertFalse( orientation.isModified() );
-	//	}
-	//
-	//	@Test void testIsModifiedByRotate() throws Exception {
-	//		Orientation orientation = new Orientation();
-	//		assertFalse( orientation.isModified() );
-	//
-	//		orientation.setRotate( Vector.of( 1, 1, 1 ) );
-	//		assertTrue( orientation.isModified() );
-	//
-	//		orientation.setRotate( Vector.of( 0, 1, 0 ) );
-	//		assertFalse( orientation.isModified() );
-	//	}
-	//
-	//	@Test void testIsModifiedByOrientation() throws Exception {
-	//		Orientation orientation = new Orientation();
-	//		assertFalse( orientation.isModified() );
-	//
-	//		orientation.setPose( Vector.of( 1, 1, 1 ), Vector.of( -1, 1, 1 ) );
-	//		assertTrue( orientation.isModified() );
-	//
-	//		orientation.setPose( Vector.of( 0, 0, 1 ), Vector.of( 0, 1, 0 ) );
-	//		assertFalse( orientation.isModified() );
-	//	}
-	//
-	//	@Test void testIsModifiedByRotationAngles() throws Exception {
-	//		Orientation orientation = new Orientation();
-	//		assertFalse( orientation.isModified() );
-	//
-	//		orientation.setRotationAngles( 1, 2, 3 );
-	//		assertTrue( orientation.isModified() );
-	//
-	//		orientation.setRotationAngles( 0, 0, 0 );
-	//		assertFalse( orientation.isModified() );
-	//	}
-	//
-	//	@Test void testModifiedByTransform() throws Exception {
-	//		Orientation orientation = new Orientation();
-	//		assertFalse( orientation.isModified() );
-	//
-	//		orientation.getLocalToTargetTransform();
-	//		assertFalse( orientation.isModified() );
-	//	}
-	//
-	//	@Test void testDataChangedEventHandling() throws Exception {
-	//		Orientation orientation = new Orientation();
-	//
-	//		DataWatcher watcher = new DataWatcher();
-	//		orientation.addDataListener( watcher );
-	//		assertFalse( orientation.isModified() );
-	//		watcher.assertEventCounts( 0, 0, 0, 0, 0 );
-	//		watcher.reset();
-	//
-	//		orientation.set( new Orientation( Vector.of( 0, 1, 2 ), Vector.of( 3, 4, 5 ), Vector.of( 6, 7, 8 ) ) );
-	//		watcher.assertEventCounts( 1, 1, 3, 0, 0 );
-	//		watcher.reset();
-	//
-	//		orientation.set( new Orientation( Vector.of( 0, 1, 2 ), Vector.of( 3, 4, 5 ), Vector.of( 6, 7, 8 ) ) );
-	//		watcher.assertEventCounts( 0, 0, 0, 0, 0 );
-	//		watcher.reset();
-	//
-	//		orientation.set( new Orientation( Vector.of( 8, 7, 6 ), Vector.of( 5, 4, 3 ), Vector.of( 2, 1, 0 ) ) );
-	//		watcher.assertEventCounts( 1, 0, 3, 0, 0 );
-	//		watcher.reset();
-	//	}
-
 	@Test
 	void testClone() {
 		Orientation orientation = new Orientation( Vector.of( 1, 2, 3 ), Vector.of( 0, 1, 0 ), Vector.of( 0, 0, 1 ) );
@@ -248,18 +157,6 @@ public class OrientationTest {
 		assertNotEquals( orientation1, orientation3 );
 		assertNotEquals( orientation3, orientation1 );
 	}
-
-	//	@Test void testEqualsUsingAttributes() throws Exception {
-	//		Orientation orientation1 = new Orientation();
-	//		Orientation orientation2 = new Orientation();
-	//		assertTrue( orientation1.equalsUsingAttributes( orientation2 ) );
-	//		assertTrue( orientation2.equalsUsingAttributes( orientation1 ) );
-	//
-	//		Orientation orientation3 = new Orientation( Vector.of( 0, 1, 2 ), Vector.of( 3, 4, 5 ), Vector.of( 6, 7, 8 ) );
-	//		Orientation orientation4 = new Orientation( Vector.of( 0, 1, 2 ), Vector.of( 3, 4, 5 ), Vector.of( 6, 7, 8 ) );
-	//		assertTrue( orientation3.equalsUsingAttributes( orientation4 ) );
-	//		assertTrue( orientation4.equalsUsingAttributes( orientation3 ) );
-	//	}
 
 	@Test
 	void testHashCode() {
@@ -285,12 +182,6 @@ public class OrientationTest {
 			throw new AssertionError( "expected: " + expected + " was: " + actual );
 		}
 	}
-
-//	public static void assertGeometricallyEquals( Orientation expected, Orientation actual ) {
-//		Geometry.areSamePoint( expected.getOrigin(), actual.getOrigin() );
-//		Geometry.areSamePoint( expected.getNormal(), actual.getNormal() );
-//		Geometry.areSamePoint( expected.getRotate(), actual.getRotate() );
-//	}
 
 	public static void assertOrientationValues( Orientation orientation, double[] origin, double[] normal, double[] rotate ) {
 		assertOrientationValues( orientation, origin, normal, rotate, 0.0 );
