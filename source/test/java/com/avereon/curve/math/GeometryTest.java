@@ -3,13 +3,16 @@ package com.avereon.curve.math;
 import org.junit.jupiter.api.Test;
 
 import static com.avereon.curve.match.Matchers.near;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GeometryTest {
 
 	@Test
-	public void testGetSquare() {
+	public void testSquare() {
 		assertThat( Geometry.square( 0.5 ), is( 0.25 ) );
 		assertThat( Geometry.square( 5 ), is( 25.0 ) );
 		assertThat( Geometry.square( 2 ), is( 4.0 ) );
@@ -23,25 +26,25 @@ public class GeometryTest {
 	}
 
 	@Test
-	public void testGetDistanceWithOne2DCoordinate() {
+	public void testDistanceWithOne2DCoordinate() {
 		assertThat( Geometry.distance( Point.of( 0, 0 ) ), is( 0.0 ) );
 		assertThat( Geometry.distance( Point.of( 3, 4 ) ), is( 5.0 ) );
 	}
 
 	@Test
-	public void testGetDistanceWithOne3DCoordinate() {
+	public void testDistanceWithOne3DCoordinate() {
 		assertThat( Geometry.distance( Point.of( 0, 0, 0 ) ), is( 0.0 ) );
 		assertThat( Geometry.distance( Point.of( 3, 4, 12 ) ), is( 13.0 ) );
 	}
 
 	@Test
-	public void testGetDistanceWithTwo2DCoordinates() {
+	public void testDistanceWithTwo2DCoordinates() {
 		assertThat( Geometry.distance( Point.of( 0, 0 ), Point.of( 0, 0 ) ), is( 0.0 ) );
 		assertThat( Geometry.distance( Point.of( 1, 1 ), Point.of( 4, 5 ) ), is( 5.0 ) );
 	}
 
 	@Test
-	public void testGetDistanceWithTwo3DCoordinates() {
+	public void testDistanceWithTwo3DCoordinates() {
 		assertThat( Geometry.distance( Point.of( 0, 0, 0 ), Point.of( 0, 0, 0 ) ), is( 0.0 ) );
 		assertThat( Geometry.distance( Point.of( 0, 0, 0 ), Point.of( 3, 4, 12 ) ), is( 13.0 ) );
 	}
@@ -56,7 +59,201 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testPointPlaneDistance() {
+		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Z, Vector.of( 0, 0, 3 ) ), is( 3.0 ) );
+		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Z, Vector.of( 0, 0, 0 ) ), is( 0.0 ) );
+		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Z, Vector.of( 0, 0, -5 ) ), is( 5.0 ) );
+
+		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Y, Vector.of( 2, 7, -3 ) ), is( 7.0 ) );
+		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Y, Vector.of( 2, 0, 3 ) ), is( 0.0 ) );
+		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Y, Vector.of( -2, -6, 3 ) ), is( 6.0 ) );
+
+		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_X, Vector.of( 2, 4, -3 ) ), is( 2.0 ) );
+		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_X, Vector.of( 0, -3, 4 ) ), is( 0.0 ) );
+		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_X, Vector.of( -4, -2, -3 ) ), is( 4.0 ) );
+	}
+
+	@Test
+	void testPointLineBoundDistance() {
+		assertThat( Geometry.pointLineBoundDistance( Vector.of( 1, -1, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ), is( 1.0 ) );
+		assertThat( Geometry.pointLineBoundDistance( Vector.of( 1, 4, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ), is( Double.NaN ) );
+		assertThat( Geometry.pointLineBoundDistance( Vector.of( 2, 1, 3 ), Vector.of( 2, 3, 3 ), Vector.of( 1, 2, 3 ) ), is( 1.0 ) );
+		assertThat( Geometry.pointLineBoundDistance( Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ), Vector.ZERO ), closeTo( Math.sqrt( 2 ) / 2, 1E-15 ) );
+		assertThat( Geometry.pointLineBoundDistance( Vector.of( 0, 118 ), Vector.of( 526, 237 ), Vector.of( 51, 136 ) ), closeTo( 6.302695656181068, 1E-15 ) );
+	}
+
+	@Test
+	public void testVectorToLine() {
+		assertThat( Geometry.vectorToLine( Vector.of( 1, -1, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ), is( Vector.of( 1, 0, 0 ) ) );
+		assertThat( Geometry.vectorToLine( Vector.of( 1, 4, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ), is( Vector.of( 1, 0, 0 ) ) );
+		assertThat( Geometry.vectorToLine( Vector.of( 2, 1, 3 ), Vector.of( 2, 3, 3 ), Vector.of( 1, 2, 3 ) ), is( Vector.of( 1, 0, 0 ) ) );
+		assertThat( Geometry.vectorToLine( Vector.of( -1, -1, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ), near( Vector.ZERO, 1e-15 ) );
+
+		assertThat( Geometry.vectorToLine( Vector.of( -1, 0, 0 ), Vector.of( -2, 0, 0 ), Vector.ZERO ), near( Vector.ZERO, 1e-15 ) );
+		assertThat( Geometry.vectorToLine( Vector.of( 0, -1, 0 ), Vector.of( 0, -2, 0 ), Vector.ZERO ), near( Vector.ZERO, 1e-15 ) );
+		assertThat( Geometry.vectorToLine( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, -2 ), Vector.ZERO ), near( Vector.ZERO, 1e-15 ) );
+	}
+
+	@Test
+	public void getVectorToPlane() {
+		assertThat( Geometry.vectorToPlane( Vector.ZERO, Vector.of( 0, 0, 10 ), Vector.of( 1, 1, 1 ) ), is( Vector.of( 0, 0, -1 ) ) );
+		assertThat( Geometry.vectorToPlane( Vector.ZERO, Vector.of( 0, 0, 10 ), Vector.of( -1, -1, -1 ) ), is( Vector.of( 0, 0, 1 ) ) );
+
+		assertThat( Geometry.vectorToPlane( Vector.of( 2, 1, 5 ), Vector.of( 0, 0, 10 ), Vector.of( 3, -1, 8 ) ), is( Vector.of( 0, 0, -3 ) ) );
+		assertThat( Geometry.vectorToPlane( Vector.of( 2, 1, 5 ), Vector.of( 0, 0, 10 ), Vector.of( 3, -1, 0 ) ), is( Vector.of( 0, 0, 5 ) ) );
+	}
+
+	@Test
+	void testNearest() {
+		double[][] points = new double[][]{ Vector.of( 0, 0, 0 ), Vector.of( 1, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 0 ) };
+
+		assertThat( Geometry.nearest( points, Vector.of( 1, -1 ) ), is( Vector.of( 1, 0, 0 ) ) );
+		assertThat( Geometry.nearest( points, Vector.of( 2, -1 ) ), is( Vector.of( 1, 0, 0 ) ) );
+		assertThat( Geometry.nearest( points, Vector.of( 2, 0 ) ), is( Vector.of( 1, 0, 0 ) ) );
+
+		assertThat( Geometry.nearest( points, Vector.of( 2, 1 ) ), is( Vector.of( 1, 1, 0 ) ) );
+		assertThat( Geometry.nearest( points, Vector.of( 2, 2 ) ), is( Vector.of( 1, 1, 0 ) ) );
+		assertThat( Geometry.nearest( points, Vector.of( 1, 2 ) ), is( Vector.of( 1, 1, 0 ) ) );
+
+		assertThat( Geometry.nearest( points, Vector.of( 0, 2 ) ), is( Vector.of( 0, 1, 0 ) ) );
+		assertThat( Geometry.nearest( points, Vector.of( -1, 2 ) ), is( Vector.of( 0, 1, 0 ) ) );
+		assertThat( Geometry.nearest( points, Vector.of( -1, 1 ) ), is( Vector.of( 0, 1, 0 ) ) );
+
+		assertThat( Geometry.nearest( points, Vector.of( -1, 0 ) ), is( Vector.of( 0, 0, 0 ) ) );
+		assertThat( Geometry.nearest( points, Vector.of( -1, -1 ) ), is( Vector.of( 0, 0, 0 ) ) );
+		assertThat( Geometry.nearest( points, Vector.of( 0, -1 ) ), is( Vector.of( 0, 0, 0 ) ) );
+	}
+
+	@Test
+	void testNearestLinePoint() {
+		assertThat( Geometry.nearestLinePoint( Vector.of( 0, -1, 0 ), Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ), is( Vector.ZERO ) );
+		assertThat( Geometry.nearestLinePoint( Vector.of( -1, -1, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 1, -1, 0 ) ), near( Vector.ZERO, 1e-15 ) );
+		assertThat( Geometry.nearestLinePoint( Vector.of( -1, -1, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ), is( Vector.ZERO ) );
+	}
+
+	@Test
+	void testAreCollinear() {
+		double inside = Constants.RESOLUTION_LENGTH - Math.ulp( Constants.RESOLUTION_LENGTH );
+		assertFalse( Geometry.areCollinear( Vector.of( 0, 0 ), Vector.of( 2, 0 ), Vector.of( 1, -Constants.RESOLUTION_LENGTH ) ) );
+		assertTrue( Geometry.areCollinear( Vector.of( 0, 0 ), Vector.of( 2, 0 ), Vector.of( 1, -inside ) ) );
+		assertTrue( Geometry.areCollinear( Vector.of( 0, 0 ), Vector.of( 2, 0 ), Vector.of( 1, 0 ) ) );
+		assertTrue( Geometry.areCollinear( Vector.of( 0, 0 ), Vector.of( 2, 0 ), Vector.of( 1, inside ) ) );
+		assertFalse( Geometry.areCollinear( Vector.of( 0, 0 ), Vector.of( 2, 0 ), Vector.of( 1, Constants.RESOLUTION_LENGTH ) ) );
+	}
+
+	@Test
+	void testAreCoplanar() {
+		assertFalse( Geometry.areCoplanar( Vector.ZERO, Vector.UNIT_Z, Vector.of( 0, 0, 1 ) ) );
+		assertTrue( Geometry.areCoplanar( Vector.ZERO, Vector.UNIT_Z, Vector.of( 0, 0, 0 ) ) );
+		assertFalse( Geometry.areCoplanar( Vector.ZERO, Vector.UNIT_Z, Vector.of( 1, -1, 1 ) ) );
+		assertTrue( Geometry.areCoplanar( Vector.ZERO, Vector.UNIT_Z, Vector.of( 2, 17, 0 ) ) );
+	}
+
+	@Test
+	void testAreCoplanarWithTolerance() {
+		assertFalse( Geometry.areCoplanar( Vector.ZERO, Vector.of( 1, 1, 1 ), 0.1, Vector.of( 0.1, 0.1, 0.1 ) ) );
+		assertTrue( Geometry.areCoplanar( Vector.ZERO, Vector.of( 1, 1, 1 ), 0.2, Vector.of( 0.1, 0.1, 0.1 ) ) );
+	}
+
+	@Test
+	void testAreSamePoint() {
+		assertTrue( Geometry.areSamePoint( Vector.of(), Vector.of() ) );
+		assertFalse( Geometry.areSamePoint( Vector.of(), Vector.of( Constants.RESOLUTION_LENGTH, 0, 0 ) ) );
+		assertTrue( Geometry.areSamePoint( Vector.of(), Vector.of( Constants.RESOLUTION_LENGTH - Math.ulp( Constants.RESOLUTION_LENGTH ), 0, 0 ) ) );
+	}
+
+	@Test
+	void testAreSameAngle() {
+		assertTrue( Geometry.areSameAngle( 0, 0 ) );
+		assertFalse( Geometry.areSameAngle( 0, Constants.RESOLUTION_ANGLE ) );
+		assertTrue( Geometry.areSameAngle( 0, Constants.RESOLUTION_ANGLE - Math.ulp( Constants.RESOLUTION_ANGLE ) ) );
+	}
+
+	@Test
+	public void testAreParallel() {
+		// Test edge cases.
+		assertFalse( Geometry.areParallel( Vector.of(), Vector.of() ) );
+		assertFalse( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of() ) );
+		assertFalse( Geometry.areParallel( Vector.of(), Vector.of( 1, 0 ) ) );
+
+		// Test parallel and anti-parallel.
+		assertTrue( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 2, 0 ) ) );
+		assertFalse( Geometry.areParallel( Vector.of( -1, 0 ), Vector.of( 2, 0 ) ) );
+
+		// Test boundaries.
+		double inside = Constants.RESOLUTION_NORMAL - Math.ulp( Constants.RESOLUTION_NORMAL );
+		assertFalse( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, Constants.RESOLUTION_NORMAL ) ) );
+		assertTrue( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, inside ) ) );
+		assertTrue( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, 0 ) ) );
+		assertTrue( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, -inside ) ) );
+		assertFalse( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, -Constants.RESOLUTION_NORMAL ) ) );
+	}
+
+	@Test
+	public void testAreAntiParallel() {
+		// Test edge cases.
+		assertFalse( Geometry.areAntiParallel( Vector.of(), Vector.of() ) );
+		assertFalse( Geometry.areAntiParallel( Vector.of( 1, 0 ), Vector.of() ) );
+		assertFalse( Geometry.areAntiParallel( Vector.of(), Vector.of( 1, 0 ) ) );
+
+		// Test parallel and anti-parallel.
+		assertTrue( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 2, 0 ) ) );
+		assertFalse( Geometry.areAntiParallel( Vector.of( 1, 0 ), Vector.of( 2, 0 ) ) );
+
+		// Test boundaries.
+		double inside = Constants.RESOLUTION_NORMAL - Math.ulp( Constants.RESOLUTION_NORMAL );
+		assertFalse( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, Constants.RESOLUTION_NORMAL ) ) );
+		assertTrue( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, inside ) ) );
+		assertTrue( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, 0 ) ) );
+		assertTrue( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, -inside ) ) );
+		assertFalse( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, -Constants.RESOLUTION_NORMAL ) ) );
+	}
+
+	@Test
+	public void testGetSpin() {
+		assertThat( Geometry.getSpin( Vector.of( 1, 0 ), Vector.of( 0, 0 ), Vector.of( 1, 0 ) ), is( 0 ) );
+		assertThat( Geometry.getSpin( Vector.of( -1, 0 ), Vector.of( 0, 0 ), Vector.of( 1, 0 ) ), is( 0 ) );
+
+		assertThat( Geometry.getSpin( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, -1 ) ), is( -1 ) );
+		assertThat( Geometry.getSpin( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 1 ) ), is( 1 ) );
+
+		assertThat( Geometry.getSpin( Vector.of( -1, -1 ), Vector.of( -1, 1 ), Vector.of( 1, -1 ) ), is( -1 ) );
+		assertThat( Geometry.getSpin( Vector.of( 1, 1 ), Vector.of( -1, 1 ), Vector.of( 1, -1 ) ), is( 1 ) );
+
+		assertThat( Geometry.getSpin( Vector.of( -1, -1 ), Vector.of( 1, 1 ), Vector.of( 1, -1 ) ), is( -1 ) );
+		assertThat( Geometry.getSpin( Vector.of( -1, -1 ), Vector.of( 1, 1 ), Vector.of( -1, 1 ) ), is( 1 ) );
+	}
+
+	@Test
+	public void testAreIntersectingWithEndPoints() {
+		assertTrue( Geometry.areIntersecting( Vector.of( -1, -1 ), Vector.of( 1, 1 ), Vector.of( -1, 1 ), Vector.of( 1, -1 ) ) );
+		assertFalse( Geometry.areIntersecting( Vector.of( -1, -1 ), Vector.of( 1, -1 ), Vector.of( -1, 1 ), Vector.of( 1, 1 ) ) );
+		assertFalse( Geometry.areIntersecting( Vector.of( -2, 0 ), Vector.of( -1, 0 ), Vector.of( 0, 1 ), Vector.of( 0, -1 ) ) );
+		assertFalse( Geometry.areIntersecting( Vector.of( 342, 242 ), Vector.of( 328, 242 ), Vector.of( 446, 244 ), Vector.of( 441, 241 ) ) );
+	}
+
+	@Test
+	public void testGetNormalWithThreePoints() {
+		assertThat( Geometry.getNormal( Vector.of( 0, 1 ), Vector.of( 0, 0 ), Vector.of( 1, 0 ) ), is( Vector.of( 0, 0, 1 ) ) );
+		assertThat( Geometry.getNormal( Vector.of( 1, 0 ), Vector.of( 0, 0 ), Vector.of( 0, 1 ) ), is( Vector.of( 0, 0, -1 ) ) );
+		assertThat( Geometry.getNormal( Vector.of( 1, 1 ), Vector.of( 0, 0 ), Vector.of( 1, -1 ) ), is( Vector.of( 0, 0, 2 ) ) );
+	}
+
+	@Test
+	public void testDeterminantWithThreeVectors() {
+		assertThat( Geometry.determinant( Vector.of( 1, 2, 3 ), Vector.of( 4, 5, 6 ), Vector.of( 7, 8, 9 ) ), is( 0.0 ) );
+	}
+
+	@Test
 	void testCartesianToPolar() {
+		assertThat( Geometry.cartesianToPolar( Point.of( 1, 0, 0 ) ), near( Point.of( 1, 0, 0 ) ) );
+		assertThat( Geometry.cartesianToPolar( Point.of( 0, 1, 0 ) ), near( Point.of( 1, Constants.PI_OVER_2, 0 ) ) );
+		assertThat( Geometry.cartesianToPolar( Point.of( -1, 0, 0 ) ), near( Point.of( 1, Math.PI, 0 ) ) );
+		assertThat( Geometry.cartesianToPolar( Point.of( 0, -1, 0 ) ), near( Point.of( 1, -Constants.PI_OVER_2, 0 ) ) );
+	}
+
+	@Test
+	void testCartesianToPolarDegrees() {
 		assertThat( Geometry.cartesianToPolarDegrees( Point.of( 1, 0, 0 ) ), near( Point.of( 1, 0, 0 ) ) );
 		assertThat( Geometry.cartesianToPolarDegrees( Point.of( 0, 1, 0 ) ), near( Point.of( 1, 90, 0 ) ) );
 		assertThat( Geometry.cartesianToPolarDegrees( Point.of( -1, 0, 0 ) ), near( Point.of( 1, 180, 0 ) ) );
@@ -65,6 +262,25 @@ public class GeometryTest {
 
 	@Test
 	void testPolarToCartesian() {
+		assertThat( Geometry.polarToCartesian( Point.of( 1, 0, 0 ) ), near( Point.of( 1, 0, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( 1, 0.5 * Math.PI, 0 ) ), near( Point.of( 0, 1, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( 1, 1.0 * Math.PI, 0 ) ), near( Point.of( -1, 0, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( 1, 1.5 * Math.PI, 0 ) ), near( Point.of( 0, -1, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( 1, 2.0 * Math.PI, 0 ) ), near( Point.of( 1, 0, 0 ) ) );
+
+		assertThat( Geometry.polarToCartesian( Point.of( Constants.SQRT_TWO, 0.25 * Math.PI, 0 ) ), near( Point.of( 1, 1, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( Constants.SQRT_TWO, 0.75 * Math.PI, 0 ) ), near( Point.of( -1, 1, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( Constants.SQRT_TWO, 1.25 * Math.PI, 0 ) ), near( Point.of( -1, -1, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( Constants.SQRT_TWO, 1.75 * Math.PI, 0 ) ), near( Point.of( 1, -1, 0 ) ) );
+
+		assertThat( Geometry.polarToCartesian( Point.of( Constants.SQRT_TWO, -0.25 * Math.PI, 0 ) ), near( Point.of( 1, -1, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( Constants.SQRT_TWO, -0.75 * Math.PI, 0 ) ), near( Point.of( -1, -1, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( Constants.SQRT_TWO, -1.25 * Math.PI, 0 ) ), near( Point.of( -1, 1, 0 ) ) );
+		assertThat( Geometry.polarToCartesian( Point.of( Constants.SQRT_TWO, -1.75 * Math.PI, 0 ) ), near( Point.of( 1, 1, 0 ) ) );
+	}
+
+	@Test
+	void testPolarDegreesToCartesian() {
 		assertThat( Geometry.polarDegreesToCartesian( Point.of( 1, 0, 0 ) ), near( Point.of( 1, 0, 0 ) ) );
 		assertThat( Geometry.polarDegreesToCartesian( Point.of( 1, 90, 0 ) ), near( Point.of( 0, 1, 0 ) ) );
 		assertThat( Geometry.polarDegreesToCartesian( Point.of( 1, 180, 0 ) ), near( Point.of( -1, 0, 0 ) ) );
@@ -83,27 +299,45 @@ public class GeometryTest {
 	}
 
 	@Test
-	void testGetAngleInXYPlaneAndVector() {
+	public void testAngleWithTwoVectors() {
+		assertThat( Geometry.getAngle( Vector.ZERO, Vector.ZERO ), is( Double.NaN ) );
+
+		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), is( 0.0 ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 0, 1, 0 ) ), is( 0.0 ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, 0, 1 ) ), is( 0.0 ) );
+
+		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 1, 0, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, 1, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( -1, 0, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, -1, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 1, 1, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( -1, 1, 0 ) ), is( Math.PI / 2 ) );
+
+		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, 0, -1 ) ), is( Math.PI ) );
+	}
+
+	@Test
+	void testAngleInXYPlaneAndVector() {
 		//		double tolerance = 1e-12;
 		//		Vector normal = Vector.of( 0, 0, 1 );
-		//		assertEquals( 0.0, Geometry.getAngle( Vector.of(), normal, Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), tolerance );
+		//		assertThat( 0.0, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), tolerance );
 		//
 		//		try {
 		//			Log.setLevel( Log.DEBUG );
-		//			assertEquals( Math.PI * 0.25, Geometry.getAngle( Vector.of(), normal, Vector.of( 1, 0, 0 ), Vector.of( 1, 1, 0 ) ), tolerance );
+		//			assertThat( Math.PI * 0.25, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, 1, 0 ) ), tolerance );
 		//		} finally {
 		//			Log.setLevel( Log.NONE );
 		//		}
-		//		assertEquals( Math.PI * 0.5, Geometry.getAngle( Vector.of(), normal, Vector.of( 1, 0, 0 ), Vector.of( 0, 1, 0 ) ), tolerance );
-		//		assertEquals( Math.PI * 0.75, Geometry.getAngle( Vector.of(), normal, Vector.of( 1, 0, 0 ), Vector.of( -1, 1, 0 ) ), tolerance );
+		//		assertThat( Math.PI * 0.5, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 0, 1, 0 ) ), tolerance );
+		//		assertThat( Math.PI * 0.75, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( -1, 1, 0 ) ), tolerance );
 		//
-		//		assertEquals( Math.PI, Geometry.getAngle( Vector.of(), normal, Vector.of( 1, 0, 0 ), Vector.of( -1, 0, 0 ) ), tolerance );
+		//		assertThat( Math.PI, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( -1, 0, 0 ) ), tolerance );
 		//
-		//		assertEquals( -Math.PI * 0.75, Geometry.getAngle( Vector.of(), normal, Vector.of( 1, 0, 0 ), Vector.of( -1, -1, 0 ) ), tolerance );
-		//		assertEquals( -Math.PI * 0.5, Geometry.getAngle( Vector.of(), normal, Vector.of( 1, 0, 0 ), Vector.of( 0, -1, 0 ) ), tolerance );
-		//		assertEquals( -Math.PI * 0.25, Geometry.getAngle( Vector.of(), normal, Vector.of( 1, 0, 0 ), Vector.of( 1, -1, 0 ) ), tolerance );
+		//		assertThat( -Math.PI * 0.75, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( -1, -1, 0 ) ), tolerance );
+		//		assertThat( -Math.PI * 0.5, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 0, -1, 0 ) ), tolerance );
+		//		assertThat( -Math.PI * 0.25, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, -1, 0 ) ), tolerance );
 		//
-		//		assertEquals( -0.9272952180016123, Geometry.getAngle( Vector.of( -2, 3, 0 ), normal, Vector.of( -0.75, 3, 0 ), Vector.of( -1.625, 3 - 0.5, 0 ) ), tolerance );
+		//		assertThat( -0.9272952180016123, Geometry.getAngle( Vector.of( -2, 3, 0 ), normal, Vector.of( -0.75, 3, 0 ), Vector.of( -1.625, 3 - 0.5, 0 ) ), tolerance );
 	}
 
 }

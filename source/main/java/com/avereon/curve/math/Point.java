@@ -10,6 +10,10 @@ public class Point {
 
 	public static final double[] UNDEFINED = of( Double.NaN, Double.NaN, Double.NaN );
 
+	public static double[] of() {
+		return new double[]{ 0, 0, 0 };
+	}
+
 	public static double[] of( double x, double y ) {
 		return new double[]{ x, y, 0 };
 	}
