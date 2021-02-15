@@ -482,7 +482,7 @@ public class Transform {
 		return builder.toString();
 	}
 
-	final double[][] getMatrixArray() {
+	public final double[][] getMatrixArray() {
 		return m;
 	}
 
