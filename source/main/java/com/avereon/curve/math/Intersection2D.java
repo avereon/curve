@@ -2,7 +2,7 @@ package com.avereon.curve.math;
 
 import java.util.*;
 
-public class Intersection {
+public class Intersection2D {
 
 	public enum Type {
 		NONE,
@@ -16,7 +16,7 @@ public class Intersection {
 
 	private final double[][] points;
 
-	public Intersection( Type status, double[]... points ) {
+	public Intersection2D( Type status, double[]... points ) {
 		this.type = status;
 		this.points = points;
 	}
@@ -31,8 +31,8 @@ public class Intersection {
 
 	@Override
 	public boolean equals( Object object ) {
-		if( !(object instanceof Intersection) ) return false;
-		Intersection that = (Intersection)object;
+		if( !(object instanceof Intersection2D) ) return false;
+		Intersection2D that = (Intersection2D)object;
 
 		if( this.type != that.type ) return false;
 		if( this.points.length != that.points.length ) return false;
@@ -67,8 +67,8 @@ public class Intersection {
 	 * @param b2 Line B point 2
 	 * @return The intersection
 	 */
-	public static Intersection intersectLineLine( double[] a1, double[] a2, double[] b1, double[] b2 ) {
-		Intersection result;
+	public static Intersection2D intersectLineLine( double[] a1, double[] a2, double[] b1, double[] b2 ) {
+		Intersection2D result;
 
 		double ua_t = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
 		double ub_t = (a2[ 0 ] - a1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (a2[ 1 ] - a1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
@@ -79,15 +79,15 @@ public class Intersection {
 			double ub = ub_t / u_b;
 
 			if( 0 <= ua && ua <= 1 && 0 <= ub && ub <= 1 ) {
-				result = new Intersection( Type.INTERSECTION, Vector.of( a1[ 0 ] + ua * (a2[ 0 ] - a1[ 0 ]), a1[ 1 ] + ua * (a2[ 1 ] - a1[ 1 ]) ) );
+				result = new Intersection2D( Type.INTERSECTION, Vector.of( a1[ 0 ] + ua * (a2[ 0 ] - a1[ 0 ]), a1[ 1 ] + ua * (a2[ 1 ] - a1[ 1 ]) ) );
 			} else {
-				result = new Intersection( Type.NONE );
+				result = new Intersection2D( Type.NONE );
 			}
 		} else {
 			if( ua_t == 0 || ub_t == 0 ) {
-				result = new Intersection( Type.COINCIDENT );
+				result = new Intersection2D( Type.COINCIDENT );
 			} else {
-				result = new Intersection( Type.PARALLEL );
+				result = new Intersection2D( Type.PARALLEL );
 			}
 		}
 
@@ -114,8 +114,8 @@ public class Intersection {
 	 * @param ry2
 	 * @return
 	 */
-	public static Intersection intersectEllipseEllipse( double[] oc1, double rx1, double ry1, double[] oc2, double rx2, double ry2 ) {
-		if( Arrays.equals( oc1, oc2 ) && rx1 == rx2 && ry1 == ry2 ) return new Intersection( Type.SAME );
+	public static Intersection2D intersectEllipseEllipse( double[] oc1, double rx1, double ry1, double[] oc2, double rx2, double ry2 ) {
+		if( Arrays.equals( oc1, oc2 ) && rx1 == rx2 && ry1 == ry2 ) return new Intersection2D( Type.SAME );
 
 		double[] c1 = Vector.of( 0, 0 );
 		double[] c2 = Vector.of( oc2[ 0 ] - oc1[ 0 ], oc2[ 1 ] - oc1[ 1 ] );
@@ -144,13 +144,13 @@ public class Intersection {
 			}
 		}
 
-		return intersections.size() == 0 ? new Intersection( Type.NONE ) : new Intersection( Type.INTERSECTION, intersections.toArray( new double[ intersections.size() ][] ) );
+		return intersections.size() == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION, intersections.toArray( new double[ intersections.size() ][] ) );
 	}
 
-	public static Intersection intersectBezier3Bezier3( double[] a1, double[] a2, double[] a3, double[] a4, double[] b1, double[] b2, double[] b3, double[] b4 ) {
+	public static Intersection2D intersectBezier3Bezier3( double[] a1, double[] a2, double[] a3, double[] a4, double[] b1, double[] b2, double[] b3, double[] b4 ) {
 		boolean sameForward = Arrays.equals( a1, b1 ) && Arrays.equals( a2, b2 ) && Arrays.equals( a3, b3 ) && Arrays.equals( a4, b4 );
 		boolean sameBackward = Arrays.equals( a1, b4 ) && Arrays.equals( a2, b3 ) && Arrays.equals( a3, b2 ) && Arrays.equals( a4, b1 );
-		if( sameForward || sameBackward ) return new Intersection( Type.SAME );
+		if( sameForward || sameBackward ) return new Intersection2D( Type.SAME );
 
 		double[] a, b, c, d; // temporary variables
 		double[] c13, c12, c11, c10; // coefficients of cubic
@@ -251,7 +251,7 @@ public class Intersection {
 			}
 		}
 
-		return intersections.size() == 0 ? new Intersection( Type.NONE ) : new Intersection( Type.INTERSECTION, intersections.toArray( new double[ intersections.size() ][] ) );
+		return intersections.size() == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION, intersections.toArray( new double[ intersections.size() ][] ) );
 	}
 
 	boolean contains( double[] point ) {
