@@ -127,6 +127,37 @@ public class Geometry {
 	}
 
 	/**
+	 * Get the distance between two lines defined by the points a-b and c-d.
+	 *
+	 * @param a First point on first line
+	 * @param b Second point on first line
+	 * @param c First point on second line
+	 * @param d Second point on second line
+	 * @return The distance between the two lines
+	 */
+	public static double lineLineDistance( double[] a, double[] b, double[] c, double[] d ) {
+		double[] p = Vector.minus( b, a );
+		double[] q = Vector.minus( d, c );
+		double[] r = Vector.minus( c, a );
+		double[] n = Vector.cross( p, q );
+		return Math.abs( Vector.dot( n, r ) / Vector.magnitude( n ) );
+	}
+
+	/**
+	 * Get the angle in radians between two lines defined by the points a-b and
+	 * c-d. The result will be in the range 0-Math.PI (inclusive).
+	 *
+	 * @param a First point on first line
+	 * @param b Second point on first line
+	 * @param c First point on second line
+	 * @param d Second point on second line
+	 * @return The angle between the two lines
+	 */
+	public static double lineLineAngle( double[] a, double[] b, double[] c, double[] d ) {
+		return getAngle( Vector.minus( b, a ), Vector.minus( d, c ) );
+	}
+
+	/**
 	 * Get the vector from a point to the nearest point on a line.
 	 *
 	 * @param a The first point on the line

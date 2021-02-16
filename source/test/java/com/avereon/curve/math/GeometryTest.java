@@ -3,9 +3,8 @@ package com.avereon.curve.math;
 import org.junit.jupiter.api.Test;
 
 import static com.avereon.curve.match.Matchers.near;
-import static org.hamcrest.Matchers.closeTo;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -78,8 +77,37 @@ public class GeometryTest {
 		assertThat( Geometry.pointLineBoundDistance( Vector.of( 1, -1, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ), is( 1.0 ) );
 		assertThat( Geometry.pointLineBoundDistance( Vector.of( 1, 4, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ), is( Double.NaN ) );
 		assertThat( Geometry.pointLineBoundDistance( Vector.of( 2, 1, 3 ), Vector.of( 2, 3, 3 ), Vector.of( 1, 2, 3 ) ), is( 1.0 ) );
-		assertThat( Geometry.pointLineBoundDistance( Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ), Vector.ZERO ), closeTo( Math.sqrt( 2 ) / 2, 1E-15 ) );
-		assertThat( Geometry.pointLineBoundDistance( Vector.of( 0, 118 ), Vector.of( 526, 237 ), Vector.of( 51, 136 ) ), closeTo( 6.302695656181068, 1E-15 ) );
+		assertThat( Geometry.pointLineBoundDistance( Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ), Vector.ZERO ), near( Math.sqrt( 2 ) / 2, 1E-15 ) );
+		assertThat( Geometry.pointLineBoundDistance( Vector.of( 0, 118 ), Vector.of( 526, 237 ), Vector.of( 51, 136 ) ), near( 6.302695656181068, 1E-15 ) );
+	}
+
+	@Test
+	public void testLineLineDistance() {
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, -1 ), Vector.of( 1, 0, -1 ) ), is( 1.0 ) );
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ), is( 0.0 ) );
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 1 ), Vector.of( 1, 0, 1 ) ), is( 1.0 ) );
+
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( 2, 0, 0 ) ),
+			near( Math.sqrt( 2 ), 1E-15 )
+		);
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( -2, 0, 0 ) ),
+			near( Math.sqrt( 2 ), 1E-15 )
+		);
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( 2, 0, 0 ) ),
+			near( Math.sqrt( 2 ), 1E-15 )
+		);
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( -2, 0, 0 ) ),
+			near( Math.sqrt( 2 ), 1E-15 )
+		);
+	}
+
+	@Test
+	public void testLineLineAngle() {
+		assertThat( Geometry.lineLineAngle( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 0, 1 ), Vector.of( 1, 1 ) ), is( 0.0 ) );
+		assertThat( Geometry.lineLineAngle( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 1 ), Vector.of( 0, 1 ) ), is( Constants.HALF_CIRCLE ) );
+
+		assertThat( Geometry.lineLineAngle( Vector.of( 0, 0 ), Vector.of( 1, 1 ), Vector.of( 0, 1, -1 ), Vector.of( 1, 0, -1 ) ), is( Constants.QUARTER_CIRCLE ) );
+		assertThat( Geometry.lineLineAngle( Vector.of( 0, 0 ), Vector.of( 1, 1 ), Vector.of( 1, 0, -1 ), Vector.of( 0, 1, -1 ) ), is( Constants.QUARTER_CIRCLE ) );
 	}
 
 	@Test
