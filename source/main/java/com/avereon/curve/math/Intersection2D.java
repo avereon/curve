@@ -152,13 +152,13 @@ public class Intersection2D extends Intersection {
 	 * along with many other excellent examples are available at his site:
 	 * http://www.magic-software.com
 	 *
-	 * @param oc1
-	 * @param rx1
-	 * @param ry1
-	 * @param oc2
-	 * @param rx2
-	 * @param ry2
-	 * @return
+	 * @param oc1 Ellipse 1 center
+	 * @param rx1 Ellipse 1 X radius
+	 * @param ry1 Ellipse 1 Y radius
+	 * @param oc2 Ellipse 2 center
+	 * @param rx2 Ellipse 2 X radius
+	 * @param ry2 Ellipse 2 Y radius
+	 * @return The intersection
 	 */
 	public static Intersection2D intersectEllipseEllipse( double[] oc1, double rx1, double ry1, double[] oc2, double rx2, double ry2 ) {
 		if( Arrays.equals( oc1, oc2 ) && rx1 == rx2 && ry1 == ry2 ) return new Intersection2D( Type.SAME );
