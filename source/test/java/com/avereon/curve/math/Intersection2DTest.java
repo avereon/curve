@@ -25,7 +25,7 @@ public class Intersection2DTest {
 	@Test
 	void testIntersectLineLine() {
 		double[] a = Vector.of( 0, 0 );
-		double[] b = Vector.of( 2, 2 );
+		double[] b = Vector.of( -2, -2 );
 		double[] c = Vector.of( 0, 2 );
 		double[] d = Vector.of( 2, 0 );
 		Intersection2D intersection = Intersection2D.intersectLineLine( a, b, c, d );
@@ -34,34 +34,45 @@ public class Intersection2DTest {
 	}
 
 	@Test
-	void testIntersectLineLineNone() {
+	void testIntersectSegmentSegment() {
+		double[] a = Vector.of( 0, 0 );
+		double[] b = Vector.of( 2, 2 );
+		double[] c = Vector.of( 0, 2 );
+		double[] d = Vector.of( 2, 0 );
+		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
+
+		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.INTERSECTION, Vector.of( 1, 1 ) ) ) );
+	}
+
+	@Test
+	void testIntersectSegmentSegmentNone() {
 		double[] a = Vector.of( 0, 0 );
 		double[] b = Vector.of( 2, 2 );
 		double[] c = Vector.of( 2, 4 );
 		double[] d = Vector.of( 4, 2 );
-		Intersection2D intersection = Intersection2D.intersectLineLine( a, b, c, d );
+		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
 
 		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.NONE ) ) );
 	}
 
 	@Test
-	void testIntersectLineLineParallel() {
+	void testIntersectSegmentSegmentParallel() {
 		double[] a = Vector.of( 0, 1 );
 		double[] b = Vector.of( 2, 3 );
 		double[] c = Vector.of( 1, 0 );
 		double[] d = Vector.of( 3, 2 );
-		Intersection2D intersection = Intersection2D.intersectLineLine( a, b, c, d );
+		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
 
 		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.PARALLEL ) ) );
 	}
 
 	@Test
-	void testIntersectLineLineCoincident() {
+	void testIntersectSegmentSegmentCoincident() {
 		double[] a = Vector.of( 0, 0 );
 		double[] b = Vector.of( 2, 2 );
 		double[] c = Vector.of( 0, 0 );
 		double[] d = Vector.of( 2, 2 );
-		Intersection2D intersection = Intersection2D.intersectLineLine( a, b, c, d );
+		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
 
 		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.COINCIDENT ) ) );
 	}

@@ -1,6 +1,7 @@
 package com.avereon.curve.math;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Intersection2D {
 
@@ -52,10 +53,9 @@ public class Intersection2D {
 	}
 
 	/**
-	 * Find the intersection of two lines. An intersection object is returned with
-	 * the following values:
+	 * Find the intersection of two infinitely long lines. An intersection object
+	 * is returned with the following values:
 	 * <ul>
-	 * <li>None, no points: the lines do not intersect
 	 * <li>Coincident, no points: the lines overlap
 	 * <li>Parallel, no points: the lines are parallel, but do not overlap
 	 * <li>Intersection, 1 intersection point: the lines intersect
@@ -68,15 +68,38 @@ public class Intersection2D {
 	 * @return The intersection
 	 */
 	public static Intersection2D intersectLineLine( double[] a1, double[] a2, double[] b1, double[] b2 ) {
+		double distanceA2B = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
+		double angleA2B = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
+		double scale = distanceA2B / angleA2B;
+		return new Intersection2D( Type.INTERSECTION, Vector.of( a1[ 0 ] + scale * (a2[ 0 ] - a1[ 0 ]), a1[ 1 ] + scale * (a2[ 1 ] - a1[ 1 ]) ) );
+	}
+
+	/**
+	 * Find the intersection of two line segments. An intersection object is
+	 * returned with the following values:
+	 * <ul>
+	 * <li>None, no points: the segments do not intersect
+	 * <li>Coincident, no points: the segments overlap
+	 * <li>Parallel, no points: the segments are parallel, but do not overlap
+	 * <li>Intersection, 1 intersection point: the segments intersect
+	 * </ul>
+	 *
+	 * @param a1 Line A point 1
+	 * @param a2 Line A point 2
+	 * @param b1 Line B point 1
+	 * @param b2 Line B point 2
+	 * @return The intersection
+	 */
+	public static Intersection2D intersectSegmentSegment( double[] a1, double[] a2, double[] b1, double[] b2 ) {
 		Intersection2D result;
 
-		double ua_t = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
-		double ub_t = (a2[ 0 ] - a1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (a2[ 1 ] - a1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
-		double u_b = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
+		double distanceA2B = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
+		double distanceB2A = (a2[ 0 ] - a1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (a2[ 1 ] - a1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
+		double angleA2B = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
 
-		if( u_b != 0 ) {
-			double ua = ua_t / u_b;
-			double ub = ub_t / u_b;
+		if( angleA2B != 0 ) {
+			double ua = distanceA2B / angleA2B;
+			double ub = distanceB2A / angleA2B;
 
 			if( 0 <= ua && ua <= 1 && 0 <= ub && ub <= 1 ) {
 				result = new Intersection2D( Type.INTERSECTION, Vector.of( a1[ 0 ] + ua * (a2[ 0 ] - a1[ 0 ]), a1[ 1 ] + ua * (a2[ 1 ] - a1[ 1 ]) ) );
@@ -84,7 +107,7 @@ public class Intersection2D {
 				result = new Intersection2D( Type.NONE );
 			}
 		} else {
-			if( ua_t == 0 || ub_t == 0 ) {
+			if( distanceA2B == 0 || distanceB2A == 0 ) {
 				result = new Intersection2D( Type.COINCIDENT );
 			} else {
 				result = new Intersection2D( Type.PARALLEL );
@@ -120,7 +143,7 @@ public class Intersection2D {
 		double[] c1 = Vector.of( 0, 0 );
 		double[] c2 = Vector.of( oc2[ 0 ] - oc1[ 0 ], oc2[ 1 ] - oc1[ 1 ] );
 
-		// Each array has six values.
+		// Each array has six values
 		double[] a = new double[]{ ry1 * ry1, 0, rx1 * rx1, -2 * ry1 * ry1 * c1[ 0 ], -2 * rx1 * rx1 * c1[ 1 ], ry1 * ry1 * c1[ 0 ] * c1[ 0 ] + rx1 * rx1 * c1[ 1 ] * c1[ 1 ] - rx1 * rx1 * ry1 * ry1 };
 		double[] b = new double[]{ ry2 * ry2, 0, rx2 * rx2, -2 * ry2 * ry2 * c2[ 0 ], -2 * rx2 * rx2 * c2[ 1 ], ry2 * ry2 * c2[ 0 ] * c2[ 0 ] + rx2 * rx2 * c2[ 1 ] * c2[ 1 ] - rx2 * rx2 * ry2 * ry2 };
 
@@ -281,6 +304,11 @@ public class Intersection2D {
 		double BEmCD = BE - CD;
 
 		return new Polynomial( AB * BC - AC * AC, AB * BEmCD + AD * BC - 2 * AC * AE, AB * BFpDE + AD * BEmCD - AE * AE - 2 * AC * AF, AB * DF + AD * BFpDE - 2 * AE * AF, AD * DF - AF * AF );
+	}
+
+	@Override
+	public String toString() {
+		return type.name() + Arrays.stream( points ).map( p -> " " + Arrays.toString( p ) ).collect( Collectors.joining() );
 	}
 
 }
