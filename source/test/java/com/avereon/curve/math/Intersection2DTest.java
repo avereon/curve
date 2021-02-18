@@ -15,11 +15,11 @@ public class Intersection2DTest {
 		double[] c = Vector.of( 5, 6 );
 		double[] d = Vector.of( 7, 8 );
 
-		assertEquals( new Intersection2D( Intersection2D.Type.INTERSECTION, a, b, c, d ), new Intersection2D( Intersection2D.Type.INTERSECTION, a, b, c, d ) );
-		assertEquals( new Intersection2D( Intersection2D.Type.INTERSECTION, a, b, c, d ), new Intersection2D( Intersection2D.Type.INTERSECTION, c, d, a, b ) );
+		assertEquals( new Intersection2D( Intersection.Type.INTERSECTION, a, b, c, d ), new Intersection2D( Intersection.Type.INTERSECTION, a, b, c, d ) );
+		assertEquals( new Intersection2D( Intersection.Type.INTERSECTION, a, b, c, d ), new Intersection2D( Intersection.Type.INTERSECTION, c, d, a, b ) );
 
-		assertNotEquals( new Intersection2D( Intersection2D.Type.INTERSECTION, a, b, c ), new Intersection2D( Intersection2D.Type.INTERSECTION, a, d, b ) );
-		assertNotEquals( new Intersection2D( Intersection2D.Type.INTERSECTION, a, b, c ), new Intersection2D( Intersection2D.Type.INTERSECTION, d ) );
+		assertNotEquals( new Intersection2D( Intersection.Type.INTERSECTION, a, b, c ), new Intersection2D( Intersection.Type.INTERSECTION, a, d, b ) );
+		assertNotEquals( new Intersection2D( Intersection.Type.INTERSECTION, a, b, c ), new Intersection2D( Intersection.Type.INTERSECTION, d ) );
 	}
 
 	@Test
@@ -30,7 +30,7 @@ public class Intersection2DTest {
 		double[] d = Vector.of( 2, 0 );
 		Intersection2D intersection = Intersection2D.intersectLineLine( a, b, c, d );
 
-		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.INTERSECTION, Vector.of( 1, 1 ) ) ) );
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.INTERSECTION, Vector.of( 1, 1 ) ) ) );
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class Intersection2DTest {
 		double[] d = Vector.of( 2, 0 );
 		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
 
-		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.INTERSECTION, Vector.of( 1, 1 ) ) ) );
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.INTERSECTION, Vector.of( 1, 1 ) ) ) );
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class Intersection2DTest {
 		double[] d = Vector.of( 4, 2 );
 		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
 
-		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.NONE ) ) );
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.NONE ) ) );
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class Intersection2DTest {
 		double[] d = Vector.of( 3, 2 );
 		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
 
-		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.PARALLEL ) ) );
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.PARALLEL ) ) );
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class Intersection2DTest {
 		double[] d = Vector.of( 2, 2 );
 		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
 
-		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.COINCIDENT ) ) );
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.COINCIDENT ) ) );
 	}
 
 	@Test
@@ -91,7 +91,7 @@ public class Intersection2DTest {
 		double[] a = Vector.of( 3.074285714285714, 4.88977931506818 );
 		double[] b = Vector.of( -2.0, 1.9999999999999998 );
 		double[] c = Vector.of( 3.074285714285714, -0.8897793150681803 );
-		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.INTERSECTION, a, b, c ) ) );
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.INTERSECTION, a, b, c ) ) );
 		assertThat( intersection.getPoints().length, is( 3 ) );
 	}
 
@@ -109,7 +109,7 @@ public class Intersection2DTest {
 
 		double[] a = Vector.of( 3.984333052423718, 1.0000230113300996 );
 		double[] b = Vector.of( 3.984333052423718, 6.9999769886699 );
-		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.INTERSECTION, a, b ) ) );
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.INTERSECTION, a, b ) ) );
 		assertThat( intersection.getPoints().length, is( 2 ) );
 	}
 
@@ -129,7 +129,7 @@ public class Intersection2DTest {
 
 		double[] a = Vector.of( xOffset, 4 + yOffset );
 		double[] b = Vector.of( xOffset, -4 + yOffset );
-		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.INTERSECTION, a, b ) ) );
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.INTERSECTION, a, b ) ) );
 		assertThat( intersection.getPoints().length, is( 2 ) );
 	}
 
@@ -149,7 +149,7 @@ public class Intersection2DTest {
 
 		double[] a = Vector.of( 4 + xOffset, yOffset );
 		double[] b = Vector.of( -4 + xOffset, yOffset );
-		assertThat( intersection, is( new Intersection2D( Intersection2D.Type.INTERSECTION, a, b ) ) );
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.INTERSECTION, a, b ) ) );
 		assertThat( intersection.getPoints().length, is( 2 ) );
 	}
 
@@ -162,7 +162,7 @@ public class Intersection2DTest {
 		double rx2 = 3;
 		double ry2 = 4;
 
-		assertThat( Intersection2D.intersectEllipseEllipse( c1, rx1, ry1, c2, rx2, ry2 ), is( new Intersection2D( Intersection2D.Type.SAME ) ) );
+		assertThat( Intersection2D.intersectEllipseEllipse( c1, rx1, ry1, c2, rx2, ry2 ), is( new Intersection2D( Intersection.Type.SAME ) ) );
 	}
 
 	@Test
@@ -189,7 +189,7 @@ public class Intersection2DTest {
 		assertTrue( intersection.contains( Vector.of( -0.33234136914526147, 0.9397842561979921 ) ) );
 		assertTrue( intersection.contains( Vector.of( 0.9919501056295488, 0.9919501068768879 ) ) );
 
-		assertThat( intersection.getType(), is( Intersection2D.Type.INTERSECTION ) );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
 		assertThat( intersection.getPoints().length, is( 9 ) );
 	}
 
@@ -205,8 +205,8 @@ public class Intersection2DTest {
 		double[] b3 = Vector.of( 1, -8 );
 		double[] b4 = Vector.of( 1, 2 );
 
-		assertThat( Intersection2D.intersectBezier3Bezier3( a1, a2, a3, a4, b1, b2, b3, b4 ), is( new Intersection2D( Intersection2D.Type.SAME ) ) );
-		assertThat( Intersection2D.intersectBezier3Bezier3( a1, a2, a3, a4, b4, b3, b2, b1 ), is( new Intersection2D( Intersection2D.Type.SAME ) ) );
+		assertThat( Intersection2D.intersectBezier3Bezier3( a1, a2, a3, a4, b1, b2, b3, b4 ), is( new Intersection2D( Intersection.Type.SAME ) ) );
+		assertThat( Intersection2D.intersectBezier3Bezier3( a1, a2, a3, a4, b4, b3, b2, b1 ), is( new Intersection2D( Intersection.Type.SAME ) ) );
 	}
 
 }

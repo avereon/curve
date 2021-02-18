@@ -3,53 +3,10 @@ package com.avereon.curve.math;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Intersection2D {
-
-	public enum Type {
-		NONE,
-		PARALLEL,
-		COINCIDENT,
-		SAME,
-		INTERSECTION
-	}
-
-	private final Type type;
-
-	private final double[][] points;
+public class Intersection2D extends Intersection {
 
 	public Intersection2D( Type status, double[]... points ) {
-		this.type = status;
-		this.points = points;
-	}
-
-	public Type getType() {
-		return type;
-	}
-
-	public double[][] getPoints() {
-		return points;
-	}
-
-	@Override
-	public boolean equals( Object object ) {
-		if( !(object instanceof Intersection2D) ) return false;
-		Intersection2D that = (Intersection2D)object;
-
-		if( this.type != that.type ) return false;
-		if( this.points.length != that.points.length ) return false;
-
-		for( double[] point : this.points ) {
-			boolean found = false;
-			for( double[] check : that.points ) {
-				if( Arrays.equals( point, check ) ) {
-					found = true;
-					break;
-				}
-			}
-			if( !found ) return false;
-		}
-
-		return true;
+		super( status, points );
 	}
 
 	/**
@@ -115,6 +72,42 @@ public class Intersection2D {
 		}
 
 		return result;
+	}
+
+	public static Intersection2D intersectLineCircle( double[] a1, double[] a2, double[] o, double radius ) {
+		// Determine the separation from the origin of the circle
+		double[] offset = Geometry.vectorToLine( a1, a2, o );
+
+		// If within tolerance the line is tangent to the circle.
+		if( Geometry.areSamePoint( offset, Vector.scale( Vector.normalize( offset ), radius ) ) ) return new Intersection2D( Type.INTERSECTION, offset );
+
+		// If the offset is greater than the radius the line does not intersect.
+		if( Vector.magnitude( offset ) > radius ) return new Intersection2D( Type.NONE );
+
+		// At this point the line crosses the circle at two points.
+		double[] p1 = Vector.subtract( a1, o );
+		double[] p2 = Vector.subtract( a2, o );
+
+		double dx = p2[ 0 ] - p1[ 0 ];
+		double dy = p2[ 1 ] - p1[ 1 ];
+		double dr = Math.sqrt( dx * dx + dy * dy );
+
+		double determinant = p1[ 0 ] * p2[ 1 ] - p2[ 0 ] * p1[ 1 ];
+		double discriminant = radius * radius * dr * dr - determinant * determinant;
+		if( discriminant <= 0 ) return new Intersection2D( Type.NONE );
+
+		double dis = Math.sqrt( discriminant );
+		double dr2 = dr * dr;
+
+		double x1 = (determinant * dy + Arithmetic.sign( dy ) * dx * dis) / dr2;
+		double y1 = (-determinant * dx + Math.abs( dy ) * dis) / dr2;
+		double x2 = (determinant * dy - Arithmetic.sign( dy ) * dx * dis) / dr2;
+		double y2 = (-determinant * dx - Math.abs( dy ) * dis) / dr2;
+
+		double[] v1 = Vector.add( Point.of( x1, y1 ), o );
+		double[] v2 = Vector.add( Point.of( x2, y2 ), o );
+
+		return new Intersection2D( Type.INTERSECTION, v1, v2 );
 	}
 
 	/**
@@ -277,13 +270,6 @@ public class Intersection2D {
 		return intersections.size() == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION, intersections.toArray( new double[ intersections.size() ][] ) );
 	}
 
-	boolean contains( double[] point ) {
-		for( double[] check : points ) {
-			if( Arrays.equals( point, check ) ) return true;
-		}
-		return false;
-	}
-
 	private static Polynomial bezout( double[] e1, double[] e2 ) {
 		double AB = e1[ 0 ] * e2[ 1 ] - e2[ 0 ] * e1[ 1 ];
 		double AC = e1[ 0 ] * e2[ 2 ] - e2[ 0 ] * e1[ 2 ];
@@ -304,11 +290,6 @@ public class Intersection2D {
 		double BEmCD = BE - CD;
 
 		return new Polynomial( AB * BC - AC * AC, AB * BEmCD + AD * BC - 2 * AC * AE, AB * BFpDE + AD * BEmCD - AE * AE - 2 * AC * AF, AB * DF + AD * BFpDE - 2 * AE * AF, AD * DF - AF * AF );
-	}
-
-	@Override
-	public String toString() {
-		return type.name() + Arrays.stream( points ).map( p -> " " + Arrays.toString( p ) ).collect( Collectors.joining() );
 	}
 
 }
