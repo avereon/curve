@@ -73,40 +73,71 @@ public class Intersection2D extends Intersection {
 		return result;
 	}
 
+	/**
+	 * Find the intersection of a line and a circle. An intersection object is
+	 * returned with the following values:
+	 * <ul>
+	 * <li>None, no points: the line and circle do not intersect
+	 * <li>Intersection, 1 intersection point: the line is tangent to the circle
+	 * <li>Intersection, 2 intersection points: line and circle intersect
+	 * </ul>
+	 *
+	 * @param a1 The first line point
+	 * @param a2 The other line point
+	 * @param o The center of the circle
+	 * @param radius The radius of the circle
+	 * @return The intersection
+	 */
 	public static Intersection2D intersectLineCircle( double[] a1, double[] a2, double[] o, double radius ) {
+		// Transform the line points relative to the circle origin
+		double[] p1 = Vector.subtract( a1, o );
+		double[] p2 = Vector.subtract( a2, o );
+
+		Intersection2D x = intersectLineCircle( p1, p2, radius );
+
+		// Transform the intersection points relative to the circle origin
+		double[][] points = Arrays.stream( x.getPoints() ).map( p -> Vector.add( p, o)).toArray(double[][]::new);
+
+		return new Intersection2D( x.getType(), points );
+	}
+
+	/**
+	 * This implementation assumes that the circle is at the origin.
+	 *
+	 * @param p1 First line point
+	 * @param p2 Other line point
+	 * @param radius The circle radius
+	 * @return The intersection
+	 */
+	public static Intersection2D intersectLineCircle( double[] p1, double[] p2, double radius ) {
 		// Determine the separation from the origin of the circle
-		double[] offset = Geometry.vectorToLine( a1, a2, o );
+		double[] offset = Geometry.vectorToLine( p1, p2, Point.of( 0, 0 ) );
 
 		// If the offset is greater than the radius the line does not intersect
 		if( Vector.magnitude( offset ) > radius ) return new Intersection2D( Type.NONE );
 
 		// If within tolerance the line is tangent to the circle
-		if( Geometry.areSamePoint( offset, Vector.scale( Vector.normalize( offset ), radius ) ) ) return new Intersection2D( Type.INTERSECTION, Vector.add( offset, o ) );
+		double[] tangent = Vector.scale( Vector.normalize( offset ), radius );
+		if( Geometry.areSamePoint( offset, tangent ) ) return new Intersection2D( Type.INTERSECTION, offset );
 
 		// At this point the line crosses the circle at two points
-		double[] p1 = Vector.subtract( a1, o );
-		double[] p2 = Vector.subtract( a2, o );
-
 		double dx = p2[ 0 ] - p1[ 0 ];
 		double dy = p2[ 1 ] - p1[ 1 ];
 		double dr = Math.sqrt( dx * dx + dy * dy );
 
 		double dr2 = dr * dr;
 		double determinant = p1[ 0 ] * p2[ 1 ] - p2[ 0 ] * p1[ 1 ];
-		double discriminant = radius * radius * dr2 - determinant * determinant;
-		if( discriminant <= 0 ) return new Intersection2D( Type.NONE );
+		double dis2 = radius * radius * dr2 - determinant * determinant;
+		if( dis2 <= 0 ) return new Intersection2D( Type.NONE );
 
-		double dis = Math.sqrt( discriminant );
+		double discriminant = Math.sqrt( dis2 );
 
-		double x1 = (determinant * dy + Arithmetic.sign( dy ) * dx * dis) / dr2;
-		double y1 = (-determinant * dx + Math.abs( dy ) * dis) / dr2;
-		double x2 = (determinant * dy - Arithmetic.sign( dy ) * dx * dis) / dr2;
-		double y2 = (-determinant * dx - Math.abs( dy ) * dis) / dr2;
+		double x1 = (determinant * dy + Arithmetic.sign( dy ) * dx * discriminant) / dr2;
+		double y1 = (-determinant * dx + Math.abs( dy ) * discriminant) / dr2;
+		double x2 = (determinant * dy - Arithmetic.sign( dy ) * dx * discriminant) / dr2;
+		double y2 = (-determinant * dx - Math.abs( dy ) * discriminant) / dr2;
 
-		double[] v1 = Vector.add( Point.of( x1, y1 ), o );
-		double[] v2 = Vector.add( Point.of( x2, y2 ), o );
-
-		return new Intersection2D( Type.INTERSECTION, v1, v2 );
+		return new Intersection2D( Type.INTERSECTION, Point.of( x1, y1 ), Point.of( x2, y2 ) );
 	}
 
 	/**
