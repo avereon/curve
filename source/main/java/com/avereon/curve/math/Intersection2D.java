@@ -1,7 +1,6 @@
 package com.avereon.curve.math;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Intersection2D extends Intersection {
 
@@ -78,13 +77,13 @@ public class Intersection2D extends Intersection {
 		// Determine the separation from the origin of the circle
 		double[] offset = Geometry.vectorToLine( a1, a2, o );
 
-		// If within tolerance the line is tangent to the circle.
-		if( Geometry.areSamePoint( offset, Vector.scale( Vector.normalize( offset ), radius ) ) ) return new Intersection2D( Type.INTERSECTION, offset );
-
-		// If the offset is greater than the radius the line does not intersect.
+		// If the offset is greater than the radius the line does not intersect
 		if( Vector.magnitude( offset ) > radius ) return new Intersection2D( Type.NONE );
 
-		// At this point the line crosses the circle at two points.
+		// If within tolerance the line is tangent to the circle
+		if( Geometry.areSamePoint( offset, Vector.scale( Vector.normalize( offset ), radius ) ) ) return new Intersection2D( Type.INTERSECTION, Vector.add( offset, o ) );
+
+		// At this point the line crosses the circle at two points
 		double[] p1 = Vector.subtract( a1, o );
 		double[] p2 = Vector.subtract( a2, o );
 
@@ -92,12 +91,12 @@ public class Intersection2D extends Intersection {
 		double dy = p2[ 1 ] - p1[ 1 ];
 		double dr = Math.sqrt( dx * dx + dy * dy );
 
+		double dr2 = dr * dr;
 		double determinant = p1[ 0 ] * p2[ 1 ] - p2[ 0 ] * p1[ 1 ];
-		double discriminant = radius * radius * dr * dr - determinant * determinant;
+		double discriminant = radius * radius * dr2 - determinant * determinant;
 		if( discriminant <= 0 ) return new Intersection2D( Type.NONE );
 
 		double dis = Math.sqrt( discriminant );
-		double dr2 = dr * dr;
 
 		double x1 = (determinant * dy + Arithmetic.sign( dy ) * dx * dis) / dr2;
 		double y1 = (-determinant * dx + Math.abs( dy ) * dis) / dr2;

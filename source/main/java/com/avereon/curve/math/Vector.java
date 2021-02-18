@@ -153,6 +153,10 @@ public class Vector extends Point {
 		return (a[ 0 ] >= b[ 0 ] && a[ 1 ] >= b[ 1 ] && a[ 2 ] >= b[ 2 ]);
 	}
 
+	public static double[] rotate( double[] v, double a ) {
+		return Geometry.polarToCartesian( Point.of( Vector.magnitude( v ), Geometry.getAngle( v ) + a ) );
+	}
+
 	// NEXT Continue implementing vector functions
 
 	private static double magnitude( double x, double y, double z ) {

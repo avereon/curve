@@ -2,8 +2,10 @@ package com.avereon.curve.math;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Intersection2DTest {
@@ -75,6 +77,50 @@ public class Intersection2DTest {
 		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
 
 		assertThat( intersection, is( new Intersection2D( Intersection.Type.COINCIDENT ) ) );
+	}
+
+	@Test
+	void testIntersectLineCircle() {
+		Intersection2D intersection = Intersection2D.intersectLineCircle( Point.of( -1, 0 ), Point.of( 1, 0 ), Point.of( 0, 0 ), 5.0 );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), containsInAnyOrder( Point.of( -5, 0, 0 ), Point.of( 5, 0, 0 ) ) );
+
+		intersection = Intersection2D.intersectLineCircle( Point.of( -1, 3 ), Point.of( 1, 3 ), Point.of( 0, 0 ), 5.0 );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), containsInAnyOrder( Point.of( -4, 3, 0 ), Point.of( 4, 3, 0 ) ) );
+
+		intersection = Intersection2D.intersectLineCircle( Point.of( -1, 4 ), Point.of( 1, 4 ), Point.of( 1, 1 ), 5.0 );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), containsInAnyOrder( Point.of( -3, 4, 0 ), Point.of( 5, 4, 0 ) ) );
+	}
+
+	@Test
+	void testIntersectLineCircleTangent() {
+		double[] p1 = Point.of( 1, 6 );
+		double[] p2 = Point.of( 8, 6 );
+		double[] o = Point.of( 4, 1 );
+		double r = 5.0;
+		Intersection2D intersection = Intersection2D.intersectLineCircle( p1, p2, o, r );
+
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 1 ) );
+		assertThat( intersection.getPoints()[ 0 ], is( Point.of( 4, 6 ) ) );
+	}
+
+	@Test
+	void testIntersectLineCircleNoIntersection() {
+		double[] p1 = Point.of( 1, 1 );
+		double[] p2 = Point.of( 8, 1 );
+		double[] o = Point.of( 1, 14 );
+		double r = 5.0;
+
+		Intersection2D intersection = Intersection2D.intersectLineCircle( p1, p2, o, r );
+
+		assertThat( intersection.getType(), is( Intersection.Type.NONE ) );
+		assertThat( intersection.getPoints().length, is( 0 ) );
 	}
 
 	@Test

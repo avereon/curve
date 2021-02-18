@@ -2,6 +2,7 @@ package com.avereon.curve.math;
 
 import org.junit.jupiter.api.Test;
 
+import static com.avereon.curve.match.Matchers.near;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -209,6 +210,16 @@ public class VectorTest {
 		assertFalse( Vector.gte( Vector.of( 0, 2, 2 ), Vector.of( 1, 1, 1 ) ) );
 		assertFalse( Vector.gte( Vector.of( 2, 0, 2 ), Vector.of( 1, 1, 1 ) ) );
 		assertFalse( Vector.gte( Vector.of( 2, 2, 0 ), Vector.of( 1, 1, 1 ) ) );
+	}
+
+	@Test
+	void testRotate() {
+		assertThat( Vector.rotate( Vector.of( 0, 0, 0 ), 0 ), is( Vector.of( 0, 0, 0 ) ) );
+		assertThat( Vector.rotate( Vector.of( 1, 0, 0 ), 0 ), is( Vector.of( 1, 0, 0 ) ) );
+		assertThat( Vector.rotate( Vector.of( 1, 0, 0 ), Constants.QUARTER_CIRCLE ), near( Vector.of( 0, 1, 0 ) ) );
+		assertThat( Vector.rotate( Vector.of( 1, 0, 0 ), -Constants.QUARTER_CIRCLE ), near( Vector.of( 0, -1, 0 ) ) );
+		assertThat( Vector.rotate( Vector.of( 1, 0, 0 ), Constants.HALF_CIRCLE ), near( Vector.of( -1, 0, 0 ) ) );
+		assertThat( Vector.rotate( Vector.of( 1, 0, 0 ), -Constants.HALF_CIRCLE ), near( Vector.of( -1, 0, 0 ) ) );
 	}
 
 	@Test
