@@ -6,7 +6,6 @@ public class Intersection3D  extends Intersection {
 		super( status, points );
 	}
 
-	// FIXME Does not follow return type of Intersection2D
 	public static Intersection3D intersectionLinePlane( double[] a, double[] b, double[] o, double[] n ) {
 		double den = Vector.dot( Vector.subtract( b, a ), n );
 		if( den == 0 ) return new Intersection3D( Type.NONE );
