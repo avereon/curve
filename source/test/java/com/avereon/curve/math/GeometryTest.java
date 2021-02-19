@@ -18,10 +18,20 @@ public class GeometryTest {
 	}
 
 	@Test
-	void testMidpoint() {
+	void testMidpointWithLine() {
 		assertThat( Geometry.midpoint( Point.of( -1, -1, -1 ), Point.of( 1, 1, 1 ) ), near( Point.of( 0, 0, 0 ) ) );
 		assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), Point.of( 1, 1, 1 ) ), near( Point.of( 0.5, 0.5, 0.5 ) ) );
 		assertThat( Geometry.midpoint( Point.of( 1, 1, 0 ), Point.of( 3, 5, 0 ) ), near( Point.of( 2, 3, 0 ) ) );
+	}
+
+	@Test
+	void testMidpointWithArc() {
+		assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 1, 1, 0, 0, Constants.HALF_CIRCLE ), near( Point.of( 0, 1, 0 ) ) );
+		assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 1, 1, 0, 0, Constants.QUARTER_CIRCLE ), near( Point.of( Math.sqrt( 0.5 ), Math.sqrt( 0.5 ), 0 ) ) );
+		assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 5, 3, 0, 0, -Constants.HALF_CIRCLE ), near( Point.of( 0, -3, 0 ) ) );
+
+		double d = 0.5 + 0.5*Math.sqrt(0.5);
+		assertThat( Geometry.midpoint( Point.of( -0.5, -0.5, 0 ), 1, 0.5, -0.5 * Constants.QUARTER_CIRCLE, 0, -Constants.HALF_CIRCLE ), near( Point.of( -d, -d, 0 ) ) );
 	}
 
 	@Test
@@ -87,18 +97,10 @@ public class GeometryTest {
 		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ), is( 0.0 ) );
 		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 1 ), Vector.of( 1, 0, 1 ) ), is( 1.0 ) );
 
-		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( 2, 0, 0 ) ),
-			near( Math.sqrt( 2 ), 1E-15 )
-		);
-		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( -2, 0, 0 ) ),
-			near( Math.sqrt( 2 ), 1E-15 )
-		);
-		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( 2, 0, 0 ) ),
-			near( Math.sqrt( 2 ), 1E-15 )
-		);
-		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( -2, 0, 0 ) ),
-			near( Math.sqrt( 2 ), 1E-15 )
-		);
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( 2, 0, 0 ) ), near( Math.sqrt( 2 ), 1E-15 ) );
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( -2, 0, 0 ) ), near( Math.sqrt( 2 ), 1E-15 ) );
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( 2, 0, 0 ) ), near( Math.sqrt( 2 ), 1E-15 ) );
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( -2, 0, 0 ) ), near( Math.sqrt( 2 ), 1E-15 ) );
 	}
 
 	@Test

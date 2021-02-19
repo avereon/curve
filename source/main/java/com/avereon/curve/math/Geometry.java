@@ -24,6 +24,23 @@ public class Geometry {
 		return Point.of( 0.5 * (a[ 0 ] + b[ 0 ]), 0.5 * (a[ 1 ] + b[ 1 ]), 0.5 * (a[ 2 ] + b[ 2 ]) );
 	}
 
+	public static double[] midpoint( final double[] origin, final double xRadius, final double yRadius, final double rotate, final double start, final double extent ) {
+		// Find the bisecting angle
+		double a = start + 0.5 * extent;
+
+		// Find the unit point at that angle
+		double[] p = polarToCartesian( Point.of( 1, a ) );
+
+		// Scale the point to the x and y radius
+		p = Vector.scale( p, xRadius, yRadius, 1 );
+
+		// Apply the rotation
+		p = Vector.rotate( p, rotate );
+
+
+		return Vector.add( p, origin );
+	}
+
 	/**
 	 * Get the distance from the origin to a point.
 	 *
