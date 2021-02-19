@@ -75,8 +75,34 @@ public class Geometry {
 	public static double getAngle( final double[] v1, final double[] v2 ) {
 		double a = getAngle( v1 );
 		double b = getAngle( v2 );
-		return b - a;
-		//return Math.acos( Vector.dot( Vector.normalize( v1 ), Vector.normalize( v2 ) ) );
+		double c = b - a;
+
+		if( c < -Constants.HALF_CIRCLE ) c += Constants.FULL_CIRCLE;
+		if( c > Constants.HALF_CIRCLE ) c -= Constants.FULL_CIRCLE;
+		return c;
+	}
+
+	/**
+	 * Get the angle between a line and a plane. The angle is in the range 0 to PI
+	 * and is always positive.
+	 *
+	 * @param o The plane origin
+	 * @param n The plane normal
+	 * @param a The first point on the line
+	 * @param b The other point on the line
+	 * @return The angle between the plane and the line
+	 */
+	public static double getAngle( final double[] o, final double[] n, final double[] a, final double[] b ) {
+		double[] r = Vector.normalize( Vector.cross( n, Vector.minus( a, o ) ) );
+
+		Transform transform = new Orientation( o, n, r ).getTargetToLocalTransform();
+
+		double[] lb = Vector.normalize( transform.timesXY( b ) );
+		double[] lo = Vector.of();
+		double[] la = Vector.normalize( transform.timesXY( a ) );
+
+		if( Vector.magnitude( Vector.plus( la, lb ) ) == 0.0 ) return Math.PI;
+		return Math.acos( Vector.dot( la, lb ) ) * getSpin( lb, lo, la );
 	}
 
 	/**
@@ -91,23 +117,6 @@ public class Geometry {
 	 */
 	public static double getAbsAngle( final double[] v1, final double[] v2 ) {
 		return Math.acos( Vector.dot( Vector.normalize( v1 ), Vector.normalize( v2 ) ) );
-	}
-
-	public static double getAngle( final double[] o, final double[] n, final double[] a, final double[] b ) {
-		// TODO Finish reimplementing
-
-		//		double[] r = Vector.normalize( Vector.cross( n, Vector.minus( a, o ) ) );
-		//
-		//		Transform transform = new Orientation( o, n, r ).getTargetToLocalTransform();
-		//
-		//		double[] lb = transform.timesXY( b ).normalize();
-		//		double[] lo = Vector.of();
-		//		double[] la = transform.timesXY( a ).normalize();
-		//
-		//		if( Vector.magnitude( Vector.plus( la, lb ) ) == 0.0 ) return Math.PI;
-		//		return Math.acos( Vector.dot( la, lb ) ) * getSpin( lb, lo, la );
-
-		return Double.NaN;
 	}
 
 	/**

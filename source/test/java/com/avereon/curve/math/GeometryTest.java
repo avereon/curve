@@ -338,6 +338,24 @@ public class GeometryTest {
 
 	@Test
 	public void testAngleWithTwoVectors() {
+		assertThat( Geometry.getAngle( Vector.ZERO, Vector.ZERO ), is( 0.0 ) );
+
+		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), is( 0.0 ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 0, 1, 0 ) ), is( 0.0 ) );
+
+		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 0, 1, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
+		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 0, -1, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
+		assertThat( Geometry.getAngle( Vector.of( -1, 0, 0 ), Vector.of( 0, 1, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
+		assertThat( Geometry.getAngle( Vector.of( -1, 0, 0 ), Vector.of( 0, -1, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
+
+		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( -1, 0, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, -1, 0 ), Vector.of( 1, 0, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, -1, 0 ), Vector.of( -1, 0, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
+	}
+
+	@Test
+	public void testAbsAngleWithTwoVectors() {
 		assertThat( Geometry.getAbsAngle( Vector.ZERO, Vector.ZERO ), is( Double.NaN ) );
 
 		assertThat( Geometry.getAbsAngle( Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), is( 0.0 ) );
@@ -356,26 +374,20 @@ public class GeometryTest {
 
 	@Test
 	void testAngleInXYPlaneAndVector() {
-		//		double tolerance = 1e-12;
-		//		Vector normal = Vector.of( 0, 0, 1 );
-		//		assertThat( 0.0, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), tolerance );
-		//
-		//		try {
-		//			Log.setLevel( Log.DEBUG );
-		//			assertThat( Math.PI * 0.25, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, 1, 0 ) ), tolerance );
-		//		} finally {
-		//			Log.setLevel( Log.NONE );
-		//		}
-		//		assertThat( Math.PI * 0.5, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 0, 1, 0 ) ), tolerance );
-		//		assertThat( Math.PI * 0.75, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( -1, 1, 0 ) ), tolerance );
-		//
-		//		assertThat( Math.PI, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( -1, 0, 0 ) ), tolerance );
-		//
-		//		assertThat( -Math.PI * 0.75, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( -1, -1, 0 ) ), tolerance );
-		//		assertThat( -Math.PI * 0.5, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 0, -1, 0 ) ), tolerance );
-		//		assertThat( -Math.PI * 0.25, Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, -1, 0 ) ), tolerance );
-		//
-		//		assertThat( -0.9272952180016123, Geometry.getAngle( Vector.of( -2, 3, 0 ), normal, Vector.of( -0.75, 3, 0 ), Vector.of( -1.625, 3 - 0.5, 0 ) ), tolerance );
+		double[] normal = Vector.of( 0, 0, 1 );
+		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), near( 0.0 ) );
+
+		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, 1, 0 ) ), near( Math.PI * 0.25 ) );
+		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 0, 1, 0 ) ), near( Math.PI * 0.5 ) );
+		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( -1, 1, 0 ) ), near( Math.PI * 0.75 ) );
+
+		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( -1, 0, 0 ) ), near( Math.PI ) );
+
+		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( -1, -1, 0 ) ), near( -Math.PI * 0.75 ) );
+		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 0, -1, 0 ) ), near( -Math.PI * 0.5 ) );
+		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, -1, 0 ) ), near( -Math.PI * 0.25 ) );
+
+		assertThat( Geometry.getAngle( Vector.of( -2, 3, 0 ), normal, Vector.of( -0.75, 3, 0 ), Vector.of( -1.625, 3 - 0.5, 0 ) ), near( -0.9272952180016123 ) );
 	}
 
 }
