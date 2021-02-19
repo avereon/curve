@@ -30,7 +30,7 @@ public class GeometryTest {
 		assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 1, 1, 0, 0, Constants.QUARTER_CIRCLE ), near( Point.of( Math.sqrt( 0.5 ), Math.sqrt( 0.5 ), 0 ) ) );
 		assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 5, 3, 0, 0, -Constants.HALF_CIRCLE ), near( Point.of( 0, -3, 0 ) ) );
 
-		double d = 0.5 + 0.5*Math.sqrt(0.5);
+		double d = 0.5 + 0.5 * Math.sqrt( 0.5 );
 		assertThat( Geometry.midpoint( Point.of( -0.5, -0.5, 0 ), 1, 0.5, -0.5 * Constants.QUARTER_CIRCLE, 0, -Constants.HALF_CIRCLE ), near( Point.of( -d, -d, 0 ) ) );
 	}
 
@@ -186,6 +186,14 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testAreCoplanarWithOrientation() {
+		assertFalse( Geometry.areCoplanar( new Orientation( Vector.ZERO ), Vector.of( 0, 0, 1 ) ) );
+		assertTrue( Geometry.areCoplanar( new Orientation( Vector.ZERO ), Vector.of( 0, 0, 0 ) ) );
+		assertFalse( Geometry.areCoplanar( new Orientation( Vector.ZERO ), Vector.of( 1, -1, 1 ) ) );
+		assertTrue( Geometry.areCoplanar( new Orientation( Vector.ZERO ), Vector.of( 2, 17, 0 ) ) );
+	}
+
+	@Test
 	void testAreSamePoint() {
 		assertTrue( Geometry.areSamePoint( Vector.of(), Vector.of() ) );
 		assertFalse( Geometry.areSamePoint( Vector.of(), Vector.of( Constants.RESOLUTION_LENGTH, 0, 0 ) ) );
@@ -330,20 +338,20 @@ public class GeometryTest {
 
 	@Test
 	public void testAngleWithTwoVectors() {
-		assertThat( Geometry.getAngle( Vector.ZERO, Vector.ZERO ), is( Double.NaN ) );
+		assertThat( Geometry.getAbsAngle( Vector.ZERO, Vector.ZERO ), is( Double.NaN ) );
 
-		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), is( 0.0 ) );
-		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 0, 1, 0 ) ), is( 0.0 ) );
-		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, 0, 1 ) ), is( 0.0 ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), is( 0.0 ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 0, 1, 0 ), Vector.of( 0, 1, 0 ) ), is( 0.0 ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, 0, 1 ) ), is( 0.0 ) );
 
-		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 1, 0, 0 ) ), is( Math.PI / 2 ) );
-		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, 1, 0 ) ), is( Math.PI / 2 ) );
-		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( -1, 0, 0 ) ), is( Math.PI / 2 ) );
-		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, -1, 0 ) ), is( Math.PI / 2 ) );
-		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 1, 1, 0 ) ), is( Math.PI / 2 ) );
-		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( -1, 1, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 0, 0, 1 ), Vector.of( 1, 0, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, 1, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 0, 0, 1 ), Vector.of( -1, 0, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, -1, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 0, 0, 1 ), Vector.of( 1, 1, 0 ) ), is( Math.PI / 2 ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 0, 0, 1 ), Vector.of( -1, 1, 0 ) ), is( Math.PI / 2 ) );
 
-		assertThat( Geometry.getAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, 0, -1 ) ), is( Math.PI ) );
+		assertThat( Geometry.getAbsAngle( Vector.of( 0, 0, 1 ), Vector.of( 0, 0, -1 ) ), is( Math.PI ) );
 	}
 
 	@Test

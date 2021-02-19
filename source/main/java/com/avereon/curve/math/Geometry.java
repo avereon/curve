@@ -37,7 +37,6 @@ public class Geometry {
 		// Apply the rotation
 		p = Vector.rotate( p, rotate );
 
-
 		return Vector.add( p, origin );
 	}
 
@@ -63,6 +62,24 @@ public class Geometry {
 	}
 
 	/**
+	 * Get the angle between the x-axis and the point with the vertex at the
+	 * origin.
+	 *
+	 * @param point The point used to measure the angle
+	 * @return The angle
+	 */
+	public static double getAngle( final double[] point ) {
+		return Math.atan2( point[ 1 ], point[ 0 ] );
+	}
+
+	public static double getAngle( final double[] v1, final double[] v2 ) {
+		double a = getAngle( v1 );
+		double b = getAngle( v2 );
+		return b - a;
+		//return Math.acos( Vector.dot( Vector.normalize( v1 ), Vector.normalize( v2 ) ) );
+	}
+
+	/**
 	 * Get the angle between two vectors. This is geometrically equivalent to the
 	 * angle made by placing the second vector at the end of the first vector and
 	 * measuring the angle made between the two. The angle is in the range 0 to PI
@@ -72,7 +89,7 @@ public class Geometry {
 	 * @param v2 The second vector
 	 * @return The angle between the vectors
 	 */
-	public static double getAngle( final double[] v1, final double[] v2 ) {
+	public static double getAbsAngle( final double[] v1, final double[] v2 ) {
 		return Math.acos( Vector.dot( Vector.normalize( v1 ), Vector.normalize( v2 ) ) );
 	}
 
@@ -135,8 +152,8 @@ public class Geometry {
 		double[] pa = Vector.minus( p, a );
 		double[] ba = Vector.minus( b, a );
 		double[] ab = Vector.minus( a, b );
-		double anglea = Geometry.getAngle( ba, pa );
-		double angleb = Geometry.getAngle( ab, pb );
+		double anglea = Geometry.getAbsAngle( ba, pa );
+		double angleb = Geometry.getAbsAngle( ab, pb );
 		if( anglea > Constants.QUARTER_CIRCLE || angleb > Constants.QUARTER_CIRCLE ) return Double.NaN;
 
 		double[] u = Vector.cross( ba, Vector.minus( b, p ) );
@@ -171,7 +188,7 @@ public class Geometry {
 	 * @return The angle between the two lines
 	 */
 	public static double lineLineAngle( double[] a, double[] b, double[] c, double[] d ) {
-		return getAngle( Vector.minus( b, a ), Vector.minus( d, c ) );
+		return getAbsAngle( Vector.minus( b, a ), Vector.minus( d, c ) );
 	}
 
 	/**
@@ -253,17 +270,17 @@ public class Geometry {
 		return true;
 	}
 
-	//	/**
-	//	 * Determine if all the points are coplanar with the plane defined by the
-	//	 * orientation.
-	//	 *
-	//	 * @param orientation
-	//	 * @param points
-	//	 * @return
-	//	 */
-	//	public static final boolean areCoplanar( Orientation orientation, double[]... points ) {
-	//		return areCoplanar( orientation.getOrigin(), orientation.getNormal(), points );
-	//	}
+	/**
+	 * Determine if all the points are coplanar with the plane defined by the
+	 * orientation.
+	 *
+	 * @param orientation The orientation used to define the plane
+	 * @param points The points to check
+	 * @return True if all points are coplanar, false otherwise
+	 */
+	public static boolean areCoplanar( Orientation orientation, double[]... points ) {
+		return areCoplanar( orientation.getOrigin(), orientation.getNormal(), points );
+	}
 
 	/**
 	 * Determine if all the points are coplanar with the plane defined by the
@@ -388,7 +405,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Convert a point in cartesian coordinates [x,y] to polar coordinates [r,a].
+	 * Convert a point in cartesian coordinates [x,y,z] to polar coordinates [r,a,z].
 	 *
 	 * @param point The point to convert
 	 * @return The point in polar coordinates
@@ -396,11 +413,11 @@ public class Geometry {
 	public static double[] cartesianToPolar( final double[] point ) {
 		double r = distance( point );
 		double a = Math.atan2( point[ 1 ], point[ 0 ] );
-		return Point.of( r, a, 0 );
+		return Point.of( r, a, point[ 2 ] );
 	}
 
 	/**
-	 * Convert a point in polar coordinates [r,a] to cartesian coordinates [x,y].
+	 * Convert a point in polar coordinates [r,a,z] to cartesian coordinates [x,y,z].
 	 *
 	 * @param point The point to convert
 	 * @return The point in cartesian coordinates
@@ -408,11 +425,11 @@ public class Geometry {
 	public static double[] polarToCartesian( final double[] point ) {
 		double x = point[ 0 ] * Math.cos( point[ 1 ] );
 		double y = point[ 0 ] * Math.sin( point[ 1 ] );
-		return new double[]{ x, y, 0 };
+		return new double[]{ x, y, point[ 2 ] };
 	}
 
 	/**
-	 * Convert a point in cartesian coordinates [x,y] to polar coordinates [r,a]
+	 * Convert a point in cartesian coordinates [x,y,z] to polar coordinates [r,a,z]
 	 * with the angle in degrees instead of radians.
 	 *
 	 * @param point The point to convert
@@ -424,7 +441,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Convert a point in polar coordinates [r,a] to cartesian coordinates [x,y]
+	 * Convert a point in polar coordinates [r,a,z] to cartesian coordinates [x,y,z]
 	 * with the angle in degrees instead of radians.
 	 *
 	 * @param point The point to convert
@@ -432,17 +449,6 @@ public class Geometry {
 	 */
 	public static double[] polarDegreesToCartesian( final double[] point ) {
 		return polarToCartesian( Point.of( point[ 0 ], Math.toRadians( point[ 1 ] ), point[ 2 ] ) );
-	}
-
-	/**
-	 * Get the angle between the x-axis and the point with the vertex at the
-	 * origin.
-	 *
-	 * @param point The point used to measure the angle
-	 * @return The angle
-	 */
-	public static double getAngle( final double[] point ) {
-		return Math.atan2( point[ 1 ], point[ 0 ] );
 	}
 
 }

@@ -30,7 +30,7 @@ public class Orientation {
 
 	public Orientation( double[] origin, double[] normal ) {
 		double[] axis = Vector.cross( Vector.UNIT_Z, normal );
-		double angle = Geometry.getAngle( Vector.UNIT_Z, normal );
+		double angle = Geometry.getAbsAngle( Vector.UNIT_Z, normal );
 		double[] rotate = Transform.rotation( axis, angle ).times( Vector.UNIT_Y );
 		set( origin, normal, rotate );
 	}
@@ -73,7 +73,7 @@ public class Orientation {
 
 		double[] oldNormal = getNormal();
 		double[] axis = Vector.cross( oldNormal, normal );
-		double angle = Geometry.getAngle( oldNormal, normal );
+		double angle = Geometry.getAbsAngle( oldNormal, normal );
 
 		Transform transform = Transform.rotation( axis, angle );
 		double[] rotate = transform.timesDirection( getRotate() );
@@ -226,9 +226,9 @@ public class Orientation {
 		StringBuilder builder = new StringBuilder();
 
 		builder.append( "[\n" );
-		builder.append( "  origin:").append( Vector.toString( getOrigin() ) ).append( ",\n" );
-		builder.append( "  normal:").append( Vector.toString( getNormal() ) ).append( ",\n" );
-		builder.append( "  rotate:").append( Vector.toString( getRotate() ) ).append( "\n" );
+		builder.append( "  origin:" ).append( Vector.toString( getOrigin() ) ).append( ",\n" );
+		builder.append( "  normal:" ).append( Vector.toString( getNormal() ) ).append( ",\n" );
+		builder.append( "  rotate:" ).append( Vector.toString( getRotate() ) ).append( "\n" );
 		builder.append( "]\n" );
 
 		return builder.toString();
