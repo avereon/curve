@@ -18,6 +18,8 @@ public interface Constants {
 
 	double QUARTER_CIRCLE = PI_OVER_2;
 
+	double THREE_QUARTER_CIRCLE = HALF_CIRCLE + QUARTER_CIRCLE;
+
 	double RESOLUTION_LENGTH = 1e-6;
 
 	double RESOLUTION_NORMAL = 1e-10;

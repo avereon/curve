@@ -24,7 +24,14 @@ public class Geometry {
 		return Point.of( 0.5 * (a[ 0 ] + b[ 0 ]), 0.5 * (a[ 1 ] + b[ 1 ]), 0.5 * (a[ 2 ] + b[ 2 ]) );
 	}
 
-	public static double[] midpoint( final double[] origin, final double xRadius, final double yRadius, final double rotate, final double start, final double extent ) {
+	public static double[] midpoint(
+		final double[] origin,
+		final double xRadius,
+		final double yRadius,
+		final double rotate,
+		final double start,
+		final double extent
+	) {
 		// Find the bisecting angle
 		double a = start + 0.5 * extent;
 
@@ -226,6 +233,13 @@ public class Geometry {
 	public static double[] vectorToPlane( double[] origin, double[] normal, double[] point ) {
 		double z = Vector.dot( normal, Vector.minus( point, origin ) ) / Vector.magnitude( normal );
 		return Vector.scale( Vector.normalize( Vector.reverse( normal ) ), z );
+	}
+
+	public static double[] ellipsePoint( double[] origin, double xRadius, double yRadius, double rotate, double angle ) {
+		double[] p = polarToCartesian( Vector.of( 1, angle ) );
+		p = Vector.scale( p, xRadius, yRadius );
+		p = Vector.rotate( p, rotate );
+		return Point.of( p[ 0 ] + origin[ 0 ], p[ 1 ] + origin[ 1 ], p[ 2 ] + origin[ 2 ] );
 	}
 
 	/**
