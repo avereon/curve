@@ -284,17 +284,17 @@ public class GeometryTest {
 
 	@Test
 	void testGetSpin() {
-		assertThat( Geometry.getSpin( Vector.of( 1, 0 ), Vector.of( 0, 0 ), Vector.of( 1, 0 ) ), is( 0 ) );
-		assertThat( Geometry.getSpin( Vector.of( -1, 0 ), Vector.of( 0, 0 ), Vector.of( 1, 0 ) ), is( 0 ) );
+		assertThat( Geometry.getSpin( Vector.of( 1, 0 ), Vector.of( 0, 0 ), Vector.of( 1, 0 ) ), is( 0.0 ) );
+		assertThat( Geometry.getSpin( Vector.of( -1, 0 ), Vector.of( 0, 0 ), Vector.of( 1, 0 ) ), is( 0.0 ) );
 
-		assertThat( Geometry.getSpin( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, -1 ) ), is( -1 ) );
-		assertThat( Geometry.getSpin( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 1 ) ), is( 1 ) );
+		assertThat( Geometry.getSpin( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, -1 ) ), is( -1.0 ) );
+		assertThat( Geometry.getSpin( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 1 ) ), is( 1.0 ) );
 
-		assertThat( Geometry.getSpin( Vector.of( -1, -1 ), Vector.of( -1, 1 ), Vector.of( 1, -1 ) ), is( -1 ) );
-		assertThat( Geometry.getSpin( Vector.of( 1, 1 ), Vector.of( -1, 1 ), Vector.of( 1, -1 ) ), is( 1 ) );
+		assertThat( Geometry.getSpin( Vector.of( -1, -1 ), Vector.of( -1, 1 ), Vector.of( 1, -1 ) ), is( -1.0 ) );
+		assertThat( Geometry.getSpin( Vector.of( 1, 1 ), Vector.of( -1, 1 ), Vector.of( 1, -1 ) ), is( 1.0 ) );
 
-		assertThat( Geometry.getSpin( Vector.of( -1, -1 ), Vector.of( 1, 1 ), Vector.of( 1, -1 ) ), is( -1 ) );
-		assertThat( Geometry.getSpin( Vector.of( -1, -1 ), Vector.of( 1, 1 ), Vector.of( -1, 1 ) ), is( 1 ) );
+		assertThat( Geometry.getSpin( Vector.of( -1, -1 ), Vector.of( 1, 1 ), Vector.of( 1, -1 ) ), is( -1.0 ) );
+		assertThat( Geometry.getSpin( Vector.of( -1, -1 ), Vector.of( 1, 1 ), Vector.of( -1, 1 ) ), is( 1.0 ) );
 	}
 
 	@Test

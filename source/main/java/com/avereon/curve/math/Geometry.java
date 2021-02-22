@@ -394,15 +394,12 @@ public class Geometry {
 	 * @param a First point
 	 * @param b Second point
 	 * @param c Third point
-	 * @return Minus one if CCW, zero if straight, and one if CW.
+	 * @return One if CCW, zero if straight, and minus one if CW.
 	 */
-	public static int getSpin( double[] a, double[] b, double[] c ) {
+	public static double getSpin( double[] a, double[] b, double[] c ) {
 		double[] ab = Vector.minus( a, b );
 		double[] cb = Vector.minus( c, b );
-		double ccw = Vector.cross( cb, ab )[ 2 ];
-
-		if( ccw == 0.0 || ccw == -0.0 ) return 0;
-		return ccw < 0 ? -1 : 1;
+		return Math.signum( Vector.cross( cb, ab )[ 2 ] );
 	}
 
 	/**
@@ -473,5 +470,24 @@ public class Geometry {
 	public static double[] polarDegreesToCartesian( final double[] point ) {
 		return polarToCartesian( Point.of( point[ 0 ], Math.toRadians( point[ 1 ] ), point[ 2 ] ) );
 	}
+
+//	/**
+//	 * Determine if the three points are in counter-clockwise(1), straight(0),
+//	 * or clockwise(-1) order.
+//	 *
+//	 * @param a The anchor point/Point2D to test
+//	 * @param b The direction point/Point2D to test
+//	 * @param c The point/Point2D to compare
+//	 * @return Minus one if CCW, zero if straight, and one if CW.
+//	 */
+//	public static int getSpin( double[] a, double[] b, double[] c ) {
+//		double[] ab = Vector.subtract( a, b);
+//		double[] cb = Vector.subtract( c, b);
+//
+//		double ccw = cb[0] * ab[1] - cb[1] * ab[0];
+//
+//		if( ccw == 0.0 || ccw == -0.0 ) return 0;
+//		return ccw > 0 ? -1 : 1;
+//	}
 
 }
