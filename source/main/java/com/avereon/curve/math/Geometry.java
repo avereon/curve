@@ -80,8 +80,8 @@ public class Geometry {
 	}
 
 	public static double getAngle( final double[] v1, final double[] v2 ) {
-		double a = getAngle( v1 );
-		double b = getAngle( v2 );
+		double a = getAngle( v2 );
+		double b = getAngle( v1 );
 		double c = b - a;
 
 		if( c < -Constants.HALF_CIRCLE ) c += Constants.FULL_CIRCLE;
