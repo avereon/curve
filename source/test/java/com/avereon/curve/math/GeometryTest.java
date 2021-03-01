@@ -31,10 +31,7 @@ public class GeometryTest {
 		assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 5, 3, 0, 0, -Constants.HALF_CIRCLE ), near( Point.of( 0, -3, 0 ) ) );
 
 		double d = 0.5 + 0.5 * Math.sqrt( 0.5 );
-		assertThat(
-			Geometry.midpoint( Point.of( -0.5, -0.5, 0 ), 1, 0.5, -0.5 * Constants.QUARTER_CIRCLE, 0, -Constants.HALF_CIRCLE ),
-			near( Point.of( -d, -d, 0 ) )
-		);
+		assertThat( Geometry.midpoint( Point.of( -0.5, -0.5, 0 ), 1, 0.5, -0.5 * Constants.QUARTER_CIRCLE, 0, -Constants.HALF_CIRCLE ), near( Point.of( -d, -d, 0 ) ) );
 	}
 
 	@Test
@@ -100,22 +97,10 @@ public class GeometryTest {
 		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ), is( 0.0 ) );
 		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 1 ), Vector.of( 1, 0, 1 ) ), is( 1.0 ) );
 
-		assertThat(
-			Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( 2, 0, 0 ) ),
-			near( Math.sqrt( 2 ), 1E-15 )
-		);
-		assertThat(
-			Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( -2, 0, 0 ) ),
-			near( Math.sqrt( 2 ), 1E-15 )
-		);
-		assertThat(
-			Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( 2, 0, 0 ) ),
-			near( Math.sqrt( 2 ), 1E-15 )
-		);
-		assertThat(
-			Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( -2, 0, 0 ) ),
-			near( Math.sqrt( 2 ), 1E-15 )
-		);
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( 2, 0, 0 ) ), near( Math.sqrt( 2 ), 1E-15 ) );
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 2, 0 ), Vector.of( -2, 0, 0 ) ), near( Math.sqrt( 2 ), 1E-15 ) );
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( 2, 0, 0 ) ), near( Math.sqrt( 2 ), 1E-15 ) );
+		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, -1 ), Vector.of( 0, 0, 1 ), Vector.of( 0, -2, 0 ), Vector.of( -2, 0, 0 ) ), near( Math.sqrt( 2 ), 1E-15 ) );
 	}
 
 	@Test
@@ -133,18 +118,31 @@ public class GeometryTest {
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.QUARTER_CIRCLE ), near( Vector.of( 0, 1 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.HALF_CIRCLE ), near( Vector.of( -2, 0 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.THREE_QUARTER_CIRCLE ), near( Vector.of( 0, -1 ) ) );
-		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.FULL_CIRCLE ), near( Vector.of( 2,0 ) ) );
+		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.FULL_CIRCLE ), near( Vector.of( 2, 0 ) ) );
 
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.QUARTER_CIRCLE ), near( Vector.of( 0, -1 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.HALF_CIRCLE ), near( Vector.of( -2, 0 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.THREE_QUARTER_CIRCLE ), near( Vector.of( 0, 1 ) ) );
-		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.FULL_CIRCLE ), near( Vector.of( 2,0 ) ) );
+		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.FULL_CIRCLE ), near( Vector.of( 2, 0 ) ) );
+	}
 
+	@Test
+	void testEllipsePointWithScale() {
 		assertThat( Geometry.ellipsePoint( Vector.of( 2, 5 ), 2, 1, 0, 0 ), near( Vector.of( 4, 5 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, 0, 0 ), near( Vector.of( -3, 2 ) ) );
+	}
 
+	@Test
+	void testEllipsePointWithScaleAndRotate() {
 		assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.QUARTER_CIRCLE, 0 ), near( Vector.of( -5, 4 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, 0 ), near( Vector.of( -7, 2 ) ) );
+	}
+
+	@Test
+	void testEllipsePointWithScaleRotateAndStart() {
+		double n = Math.sqrt( 0.5 );
+		assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, Math.toRadians( 45 ) ), near( Vector.of( -3 - n, 3 + 2 * n ) ) );
+		assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, -Math.toRadians( 45 ) ), near( Vector.of( -3 + n, 3 + 2 * n ) ) );
 	}
 
 	@Test
@@ -376,21 +374,20 @@ public class GeometryTest {
 		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 1, 1, 0 ) ), is( 0.5 * Constants.QUARTER_CIRCLE ) );
 		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 1, 1, 0 ) ), is( 0.5 * Constants.QUARTER_CIRCLE ) );
 
-
 		assertThat( Geometry.getAngle( Vector.ZERO, Vector.ZERO ), is( 0.0 ) );
 
 		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ), is( 0.0 ) );
 		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 0, 1, 0 ) ), is( 0.0 ) );
 
-//		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 0, 1, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
-//		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 0, -1, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
-//		assertThat( Geometry.getAngle( Vector.of( -1, 0, 0 ), Vector.of( 0, 1, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
-//		assertThat( Geometry.getAngle( Vector.of( -1, 0, 0 ), Vector.of( 0, -1, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
-//
-//		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
-//		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( -1, 0, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
-//		assertThat( Geometry.getAngle( Vector.of( 0, -1, 0 ), Vector.of( 1, 0, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
-//		assertThat( Geometry.getAngle( Vector.of( 0, -1, 0 ), Vector.of( -1, 0, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
+		//		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 0, 1, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
+		//		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 0, -1, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
+		//		assertThat( Geometry.getAngle( Vector.of( -1, 0, 0 ), Vector.of( 0, 1, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
+		//		assertThat( Geometry.getAngle( Vector.of( -1, 0, 0 ), Vector.of( 0, -1, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
+		//
+		//		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
+		//		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( -1, 0, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
+		//		assertThat( Geometry.getAngle( Vector.of( 0, -1, 0 ), Vector.of( 1, 0, 0 ) ), is( Constants.QUARTER_CIRCLE ) );
+		//		assertThat( Geometry.getAngle( Vector.of( 0, -1, 0 ), Vector.of( -1, 0, 0 ) ), is( -Constants.QUARTER_CIRCLE ) );
 	}
 
 	@Test
