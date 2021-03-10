@@ -391,6 +391,17 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testNormalizeAngle() {
+		assertThat( Geometry.normalizeAngle( 0 ), is( 0.0 ) );
+
+		assertThat( Geometry.normalizeAngle( Math.PI + 1 ), is( -Math.PI + 1 ) );
+		assertThat( Geometry.normalizeAngle( -Math.PI - 1 ), is( Math.PI - 1 ) );
+
+		assertThat( Geometry.normalizeAngle( 13 * Math.PI + 1 ), near( -Math.PI + 1 ) );
+		assertThat( Geometry.normalizeAngle( 13 * -Math.PI - 1 ), near( Math.PI - 1 ) );
+	}
+
+	@Test
 	void testAbsAngleWithTwoVectors() {
 		assertThat( Geometry.getAbsAngle( Vector.ZERO, Vector.ZERO ), is( Double.NaN ) );
 
