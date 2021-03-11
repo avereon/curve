@@ -1,26 +1,22 @@
 package com.avereon.curve.math;
 
 /**
- * NOTE: All methods in this class assume three dimensional vectors. If a
- * smaller array is used then an {@link ArrayIndexOutOfBoundsException} will
- * likely be thrown. If a larger array is used the excess values are ignored.
+ * NOTE: All methods in this class assume three dimensional vectors. If a smaller array is used then an {@link ArrayIndexOutOfBoundsException} will likely be thrown. If a larger array is used the excess values are ignored.
  */
 public class Vector extends Point {
 
-	public static double[] UNIT_X = of( 1, 0, 0 );
+	public static final double[] UNIT_X = of( 1, 0, 0 );
 
-	public static double[] UNIT_Y = of( 0, 1, 0 );
+	public static final double[] UNIT_Y = of( 0, 1, 0 );
 
-	public static double[] UNIT_Z = of( 0, 0, 1 );
+	public static final double[] UNIT_Z = of( 0, 0, 1 );
 
 	public static double distance( double[] a, double[] b ) {
 		return magnitude( b[ 0 ] - a[ 0 ], b[ 1 ] - a[ 1 ], b[ 2 ] - a[ 2 ] );
 	}
 
 	/**
-	 * Calculate the magnitude of the vector. If the vector is invalid then
-	 * Double.NaN is returned. If the vector is infinite then
-	 * Double.POSITIVE_INFINITY is returned.
+	 * Calculate the magnitude of the vector. If the vector is invalid then Double.NaN is returned. If the vector is infinite then Double.POSITIVE_INFINITY is returned.
 	 *
 	 * @return The vector magnitude
 	 */
@@ -42,9 +38,7 @@ public class Vector extends Point {
 	}
 
 	/**
-	 * Calculate the dot product of one vector with another. If either vector is
-	 * invalid then Double.NaN is returned. If either vector is infinite then
-	 * Double.POSITIVE_INFINITY is returned.
+	 * Calculate the dot product of one vector with another. If either vector is invalid then Double.NaN is returned. If either vector is infinite then Double.POSITIVE_INFINITY is returned.
 	 *
 	 * @param a The first vector
 	 * @param b The second vector
@@ -55,9 +49,7 @@ public class Vector extends Point {
 	}
 
 	/**
-	 * Calculate the cross product of one vector with another. If either vector
-	 * is invalid then Double.NaN is returned. If either vector is infinite then
-	 * Double.NaN is returned.
+	 * Calculate the cross product of one vector with another. If either vector is invalid then Double.NaN is returned. If either vector is infinite then Double.NaN is returned.
 	 *
 	 * @param a The first vector
 	 * @param b The second vector
@@ -100,7 +92,7 @@ public class Vector extends Point {
 	/**
 	 * Multiply a vector with a scalar.
 	 *
-	 * @param v The vector to scale
+	 * @param v     The vector to scale
 	 * @param scale The scalar value
 	 * @return A new vector that is multiplied by the scalar
 	 */
@@ -111,7 +103,7 @@ public class Vector extends Point {
 	/**
 	 * Multiply a vector with scalars for the X and Y coordinates.
 	 *
-	 * @param v The vector to scale
+	 * @param v      The vector to scale
 	 * @param scaleX The X scalar value
 	 * @param scaleY The Y scalar value
 	 * @return A new vector that is multiplied by the scalars
@@ -123,7 +115,7 @@ public class Vector extends Point {
 	/**
 	 * Multiply a vector with scalars for each coordinate.
 	 *
-	 * @param v The vector to scale
+	 * @param v      The vector to scale
 	 * @param scaleX The x coordinate scalar
 	 * @param scaleY The y coordinate scalar
 	 * @param scaleZ The z coordinate scalar
@@ -168,8 +160,6 @@ public class Vector extends Point {
 	public static double[] rotate( double[] v, double a ) {
 		return Geometry.polarToCartesian( Point.of( Vector.magnitude( v ), Geometry.getAngle( v ) + a ) );
 	}
-
-	// NEXT Continue implementing vector functions
 
 	private static double magnitude( double x, double y, double z ) {
 		return Math.sqrt( x * x + y * y + z * z );
