@@ -232,8 +232,28 @@ public class Geometry {
 	public static double ellipseAngle( double[] origin, double xRadius, double yRadius, double rotate, double[] point ) {
 		double[] p = Point.of( point[ 0 ] - origin[ 0 ], point[ 1 ] - origin[ 1 ] );
 		p = Vector.rotate( p, -rotate );
-		p = Vector.scale( p, 1/xRadius, 1/yRadius );
+		p = Vector.scale( p, 1 / xRadius, 1 / yRadius );
 		return normalizeAngle( Math.atan2( p[ 1 ], p[ 0 ] ) );
+	}
+
+	/**
+	 * Subdivide a cubic bezier curve. The parameters t is expected to be in the range 0.0 to 1.0 but in not range checked for performance reasons.
+	 *
+	 * @param p1 Control point a
+	 * @param p2 Control point b
+	 * @param p3 Control point c
+	 * @param p4 Control point d
+	 * @param t  The parametric location to divide the curve
+	 * @return Two cubic bezier curves (an array of two arrays of four points each)
+	 */
+	public static double[][][] curveSubdivide( double[] p1, double[] p2, double[] p3, double[] p4, double t ) {
+		double[] p5 = Vector.lirp( p1, p2, t );
+		double[] p6 = Vector.lirp( p2, p3, t );
+		double[] p7 = Vector.lirp( p3, p4, t );
+		double[] p8 = Vector.lirp( p5, p6, t );
+		double[] p9 = Vector.lirp( p6, p7, t );
+		double[] p10 = Vector.lirp( p8, p9, t );
+		return new double[][][]{ new double[][]{p1,p5,p8,p10}, new double[][]{p10,p9,p7,p4}};
 	}
 
 	/**

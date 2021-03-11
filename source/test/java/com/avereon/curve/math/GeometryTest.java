@@ -176,6 +176,21 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testCurveSubdivide() {
+		double[] a = Point.of( 0, 0 );
+		double[] b = Point.of( 0, 1 );
+		double[] c = Point.of( 1, 1 );
+		double[] d = Point.of( 1, 0 );
+
+		double[][][] curves = Geometry.curveSubdivide( a, b, c, d, 0.5 );
+		double[][] curveA = curves[ 0 ];
+		double[][] curveB = curves[ 1 ];
+
+		assertThat( curveA, is( new double[][]{ Point.of( 0, 0 ), Point.of( 0, 0.5 ), Point.of( 0.25, 0.75 ), Point.of( 0.5, 0.75 ) } ) );
+		assertThat( curveB, is( new double[][]{ Point.of( 0.5, 0.75 ), Point.of( 0.75, 0.75 ), Point.of( 1, 0.5 ), Point.of( 1, 0 ) } ) );
+	}
+
+	@Test
 	void testNearest() {
 		double[][] points = new double[][]{ Vector.of( 0, 0, 0 ), Vector.of( 1, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 0 ) };
 
