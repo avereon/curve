@@ -236,6 +236,52 @@ public class Geometry {
 		return normalizeAngle( Math.atan2( p[ 1 ], p[ 0 ] ) );
 	}
 
+	public static double[] ellipseCoefficients( double[] c, double rx, double ry ) {
+		return new double[]{ ry * ry, 0, rx * rx, -2 * ry * ry * c[ 0 ], -2 * rx * rx * c[ 1 ], ry * ry * c[ 0 ] * c[ 0 ] + rx * rx * c[ 1 ] * c[ 1 ] - rx * rx * ry * ry };
+	}
+
+	/**
+	 * Compute the parametric value of a point near a curve. It is assumed that
+	 * all points are coplanar and no bounds checks are done for performance.
+	 *
+	 * @param a The curve point a
+	 * @param b The curve point b
+	 * @param c The curve point c
+	 * @param d The curve point d
+	 * @param r The reference point
+	 *
+	 * @return The parametric value for the reference point
+	 */
+	public static double curveParametricValue( double[] a, double[] b, double[] c, double[] d, double[] r ) {
+		Orientation orientation = Orientation.fromThreePoints( a, d, b );
+
+		Transform toLocal = orientation.getTargetToLocalTransform();
+		double[] p1 = toLocal.times( a );
+		double[] p2 = toLocal.times( b );
+		double[] p3 = toLocal.times( c );
+		double[] p4 = toLocal.times( d );
+		double[] a1 = toLocal.times( r );
+		double[] a2 = Vector.add( toLocal.times( r ), Vector.of( 0, 1 ) );
+
+		double[][] coefficients = curveCoefficients( p1, p2, p3, p4 );
+		double[] c3 = coefficients[ 3 ];
+		double[] c2 = coefficients[ 2 ];
+		double[] c1 = coefficients[ 1 ];
+		double[] c0 = coefficients[ 0 ];
+
+		double[] n = Vector.of( a1[ 1 ] - a2[ 1 ], a2[ 0 ] - a1[ 0 ] );
+		double cl = a1[ 0 ] * a2[ 1 ] - a2[ 0 ] * a1[ 1 ];
+
+		double[] roots = new Polynomial( Vector.dot( n, c3 ), Vector.dot( n, c2 ), Vector.dot( n, c1 ), Vector.dot( n, c0 ) + cl ).getRoots();
+
+		for( double root : roots ) {
+			if( root < 0 || root > 1 ) continue;
+			return root;
+		}
+
+		return Double.NaN;
+	}
+
 	/**
 	 * Subdivide a cubic bezier curve. The parameters t is expected to be in the range 0.0 to 1.0 but in not range checked for performance reasons.
 	 *
@@ -253,7 +299,33 @@ public class Geometry {
 		double[] p8 = Vector.lirp( p5, p6, t );
 		double[] p9 = Vector.lirp( p6, p7, t );
 		double[] p10 = Vector.lirp( p8, p9, t );
-		return new double[][][]{ new double[][]{p1,p5,p8,p10}, new double[][]{p10,p9,p7,p4}};
+		return new double[][][]{ new double[][]{ p1, p5, p8, p10 }, new double[][]{ p10, p9, p7, p4 } };
+	}
+
+	public static double[][] curveCoefficients( double[] a, double[] b, double[] c, double[] d ) {
+		double[] e, f, g, h; // temporary variables
+		double[] c3, c2, c1, c0; // coefficients
+
+		e = Vector.scale( a, -1 );
+		f = Vector.scale( b, 3 );
+		g = Vector.scale( c, -3 );
+		h = Vector.add( e, Vector.add( f, Vector.add( g, d ) ) );
+		c3 = Vector.of( h[ 0 ], h[ 1 ] );
+
+		e = Vector.scale( a, 3 );
+		f = Vector.scale( b, -6 );
+		g = Vector.scale( c, 3 );
+		h = Vector.add( e, Vector.add( f, g ) );
+		c2 = Vector.of( h[ 0 ], h[ 1 ] );
+
+		e = Vector.scale( a, -3 );
+		f = Vector.scale( b, 3 );
+		g = Vector.add( e, f );
+		c1 = Vector.of( g[ 0 ], g[ 1 ] );
+
+		c0 = Vector.of( a[ 0 ], a[ 1 ] );
+
+		return new double[][]{ c0, c1, c2, c3 };
 	}
 
 	/**

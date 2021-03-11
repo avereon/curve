@@ -176,6 +176,12 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testCurveParametricValue() {
+		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ), is( 0.5 ) );
+		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 0 ), Vector.of( 1, 2 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ), is( 0.5 ) );
+	}
+
+	@Test
 	void testCurveSubdivide() {
 		double[] a = Point.of( 0, 0 );
 		double[] b = Point.of( 0, 1 );

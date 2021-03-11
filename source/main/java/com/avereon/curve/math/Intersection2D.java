@@ -167,8 +167,8 @@ public class Intersection2D extends Intersection {
 		double[] c2 = Vector.of( oc2[ 0 ] - oc1[ 0 ], oc2[ 1 ] - oc1[ 1 ] );
 
 		// Each array has six values
-		double[] a = new double[]{ ry1 * ry1, 0, rx1 * rx1, -2 * ry1 * ry1 * c1[ 0 ], -2 * rx1 * rx1 * c1[ 1 ], ry1 * ry1 * c1[ 0 ] * c1[ 0 ] + rx1 * rx1 * c1[ 1 ] * c1[ 1 ] - rx1 * rx1 * ry1 * ry1 };
-		double[] b = new double[]{ ry2 * ry2, 0, rx2 * rx2, -2 * ry2 * ry2 * c2[ 0 ], -2 * rx2 * rx2 * c2[ 1 ], ry2 * ry2 * c2[ 0 ] * c2[ 0 ] + rx2 * rx2 * c2[ 1 ] * c2[ 1 ] - rx2 * rx2 * ry2 * ry2 };
+		double[] a = Geometry.ellipseCoefficients( c1, rx1, ry1 );
+		double[] b = Geometry.ellipseCoefficients( c2, rx2, ry2 );
 
 		Polynomial yPoly = bezout( a, b );
 		double[] yRoots = yPoly.getRoots();
@@ -198,48 +198,17 @@ public class Intersection2D extends Intersection {
 		boolean sameBackward = Arrays.equals( a1, b4 ) && Arrays.equals( a2, b3 ) && Arrays.equals( a3, b2 ) && Arrays.equals( a4, b1 );
 		if( sameForward || sameBackward ) return new Intersection2D( Type.SAME );
 
-		double[] a, b, c, d; // temporary variables
-		double[] c13, c12, c11, c10; // coefficients of cubic
-		double[] c23, c22, c21, c20; // coefficients of cubic
+		double[][] coefficientsA = Geometry.curveCoefficients( a1,a2,a3,a4 );
+		double[] c13 = coefficientsA[3];
+		double[] c12 = coefficientsA[2];
+		double[] c11 = coefficientsA[1];
+		double[] c10 = coefficientsA[0];
 
-		// Calculate the coefficients of cubic polynomial
-		a = Vector.scale( a1, -1 );
-		b = Vector.scale( a2, 3 );
-		c = Vector.scale( a3, -3 );
-		d = Vector.add( a, Vector.add( b, Vector.add( c, a4 ) ) );
-		c13 = Vector.of( d[ 0 ], d[ 1 ] );
-
-		a = Vector.scale( a1, 3 );
-		b = Vector.scale( a2, -6 );
-		c = Vector.scale( a3, 3 );
-		d = Vector.add( a, Vector.add( b, c ) );
-		c12 = Vector.of( d[ 0 ], d[ 1 ] );
-
-		a = Vector.scale( a1, -3 );
-		b = Vector.scale( a2, 3 );
-		c = Vector.add( a, b );
-		c11 = Vector.of( c[ 0 ], c[ 1 ] );
-
-		c10 = Vector.of( a1[ 0 ], a1[ 1 ] );
-
-		a = Vector.scale( b1, -1 );
-		b = Vector.scale( b2, 3 );
-		c = Vector.scale( b3, -3 );
-		d = Vector.add( a, Vector.add( b, Vector.add( c, b4 ) ) );
-		c23 = Vector.of( d[ 0 ], d[ 1 ] );
-
-		a = Vector.scale( b1, 3 );
-		b = Vector.scale( b2, -6 );
-		c = Vector.scale( b3, 3 );
-		d = Vector.add( a, Vector.add( b, c ) );
-		c22 = Vector.of( d[ 0 ], d[ 1 ] );
-
-		a = Vector.scale( b1, -3 );
-		b = Vector.scale( b2, 3 );
-		c = Vector.add( a, b );
-		c21 = Vector.of( c[ 0 ], c[ 1 ] );
-
-		c20 = Vector.of( b1[ 0 ], b1[ 1 ] );
+		double[][] coefficientsB = Geometry.curveCoefficients( b1,b2,b3,b4 );
+		double[] c23 = coefficientsB[3];
+		double[] c22 = coefficientsB[2];
+		double[] c21 = coefficientsB[1];
+		double[] c20 = coefficientsB[0];
 
 		double c10x2 = c10[ 0 ] * c10[ 0 ];
 		double c10x3 = c10[ 0 ] * c10[ 0 ] * c10[ 0 ];
