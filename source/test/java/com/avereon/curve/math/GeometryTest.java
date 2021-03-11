@@ -115,6 +115,7 @@ public class GeometryTest {
 	@Test
 	void testEllipsePoint() {
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, 0 ), near( Vector.of( 2, 0 ) ) );
+
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.QUARTER_CIRCLE ), near( Vector.of( 0, 1 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.HALF_CIRCLE ), near( Vector.of( -2, 0 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.THREE_QUARTER_CIRCLE ), near( Vector.of( 0, -1 ) ) );
@@ -124,6 +125,14 @@ public class GeometryTest {
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.HALF_CIRCLE ), near( Vector.of( -2, 0 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.THREE_QUARTER_CIRCLE ), near( Vector.of( 0, 1 ) ) );
 		assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.FULL_CIRCLE ), near( Vector.of( 2, 0 ) ) );
+	}
+
+	@Test
+	void testEllipseAngle() {
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( 2, 0 ) ), near( 0.0 ) );
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( 0, 1 ) ), near( Constants.QUARTER_CIRCLE ) );
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( -2, 0 ) ), near( Constants.HALF_CIRCLE ) );
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( 0, -1 ) ), near( -Constants.QUARTER_CIRCLE ) );
 	}
 
 	@Test

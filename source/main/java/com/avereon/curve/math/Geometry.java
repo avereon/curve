@@ -229,6 +229,13 @@ public class Geometry {
 		return Point.of( p[ 0 ] + origin[ 0 ], p[ 1 ] + origin[ 1 ], p[ 2 ] + origin[ 2 ] );
 	}
 
+	public static double ellipseAngle( double[] origin, double xRadius, double yRadius, double rotate, double[] point ) {
+		double[] p = Point.of( point[ 0 ] - origin[ 0 ], point[ 1 ] - origin[ 1 ] );
+		p = Vector.rotate( p, -rotate );
+		p = Vector.scale( p, 1/xRadius, 1/yRadius );
+		return normalizeAngle( Math.atan2( p[ 1 ], p[ 0 ] ) );
+	}
+
 	/**
 	 * Get the nearest point in a set of points to the specified point.
 	 *
