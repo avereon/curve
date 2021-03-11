@@ -179,13 +179,13 @@ public class VectorTest {
 
 	@Test
 	void testLirp() {
-		assertThat( Vector.lirp( Vector.of( 1, 1 ), Vector.of( 3, 2 ), 0.5 ), is( new double[]{ 2, 1.5, 0 } ) );
-		assertThat( Vector.lirp( Vector.of( Double.NaN, 0, 0 ), Vector.of( 1, 1, 1 ), 0.5 ), is( Vector.UNDEFINED ) );
-		assertThat( Vector.lirp( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, Double.NaN ), 0.5 ), is( Vector.UNDEFINED ) );
-		assertThat( Vector.lirp( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 1 ), Double.NaN ), is( Vector.UNDEFINED ) );
-		assertThat( Vector.lirp( Vector.of( Double.POSITIVE_INFINITY, 0, 0 ), Vector.of( 1, 1, 1 ), 0.5 ), is( Vector.INFINITY ) );
-		assertThat( Vector.lirp( Vector.of( 0, 0, 0 ), Vector.of( Double.POSITIVE_INFINITY, 1, 1 ), 0.5 ), is( Vector.INFINITY ) );
-		assertThat( Vector.lirp( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 1 ), Double.POSITIVE_INFINITY ), is( Vector.INFINITY ) );
+		assertThat( Vector.lerp( Vector.of( 1, 1 ), Vector.of( 3, 2 ), 0.5 ), is( new double[]{ 2, 1.5, 0 } ) );
+		assertThat( Vector.lerp( Vector.of( Double.NaN, 0, 0 ), Vector.of( 1, 1, 1 ), 0.5 ), is( Vector.UNDEFINED ) );
+		assertThat( Vector.lerp( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, Double.NaN ), 0.5 ), is( Vector.UNDEFINED ) );
+		assertThat( Vector.lerp( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 1 ), Double.NaN ), is( Vector.UNDEFINED ) );
+		assertThat( Vector.lerp( Vector.of( Double.POSITIVE_INFINITY, 0, 0 ), Vector.of( 1, 1, 1 ), 0.5 ), is( Vector.INFINITY ) );
+		assertThat( Vector.lerp( Vector.of( 0, 0, 0 ), Vector.of( Double.POSITIVE_INFINITY, 1, 1 ), 0.5 ), is( Vector.INFINITY ) );
+		assertThat( Vector.lerp( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 1 ), Double.POSITIVE_INFINITY ), is( Vector.INFINITY ) );
 	}
 
 	@Test

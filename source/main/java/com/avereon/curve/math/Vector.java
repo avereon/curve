@@ -144,7 +144,7 @@ public class Vector extends Point {
 	 * @param t The interpolation ratio
 	 * @return A new point that is the interpolation along the vector a to b
 	 */
-	public static double[] lirp( double[] a, double[] b, double t ) {
+	public static double[] lerp( double[] a, double[] b, double t ) {
 		if( isInfinite( a ) || isInfinite( b ) ) return INFINITY;
 		return of( a[ 0 ] + t * (b[ 0 ] - a[ 0 ]), a[ 1 ] + t * (b[ 1 ] - a[ 1 ]), a[ 2 ] + t * (b[ 2 ] - a[ 2 ]) );
 	}

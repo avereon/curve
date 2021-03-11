@@ -240,6 +240,42 @@ public class Geometry {
 		return new double[]{ ry * ry, 0, rx * rx, -2 * ry * ry * c[ 0 ], -2 * rx * rx * c[ 1 ], ry * ry * c[ 0 ] * c[ 0 ] + rx * rx * c[ 1 ] * c[ 1 ] - rx * rx * ry * ry };
 	}
 
+	public static double[] curveLineRoots( double[] a, double[] b, double[] c, double[] d, double[] r ) {
+		return curveLineRoots( a, b, c, d, r, null );
+	}
+
+	public static double[] curveLineRoots( double[] a, double[] b, double[] c, double[] d, double[] l1, double[] l2 ) {
+		Orientation orientation = Orientation.fromThreePoints( a, d, b );
+
+		Transform toLocal = orientation.getTargetToLocalTransform();
+		double[] p1 = toLocal.times( a );
+		double[] p2 = toLocal.times( b );
+		double[] p3 = toLocal.times( c );
+		double[] p4 = toLocal.times( d );
+		double[] a1 = toLocal.times( l1 );
+		double[] a2 = l2 != null ? toLocal.times( l2 ) : Vector.add( a1, Vector.of( 0, 1 ) );
+
+		double[][] coefficients = Geometry.curveCoefficients( p1, p2, p3, p4 );
+		double[] c3 = coefficients[ 3 ];
+		double[] c2 = coefficients[ 2 ];
+		double[] c1 = coefficients[ 1 ];
+		double[] c0 = coefficients[ 0 ];
+
+		double[] n = Vector.of( a1[ 1 ] - a2[ 1 ], a2[ 0 ] - a1[ 0 ] );
+		double cl = a1[ 0 ] * a2[ 1 ] - a2[ 0 ] * a1[ 1 ];
+
+		return new Polynomial( Vector.dot( n, c3 ), Vector.dot( n, c2 ), Vector.dot( n, c1 ), Vector.dot( n, c0 ) + cl ).getRoots();
+	}
+
+	public static double[] curvePoint( double[] a, double[] b, double[] c, double[] d, double t ) {
+		double[] e = Vector.lerp( a, b, t );
+		double[] f = Vector.lerp( b, c, t );
+		double[] g = Vector.lerp( c, d, t );
+		double[] h = Vector.lerp( e, f, t );
+		double[] i = Vector.lerp( f, g, t );
+		return Vector.lerp( h, i, t );
+	}
+
 	/**
 	 * Compute the parametric value of a point near a curve. It is assumed that
 	 * all points are coplanar and no bounds checks are done for performance.
@@ -253,32 +289,12 @@ public class Geometry {
 	 * @return The parametric value for the reference point
 	 */
 	public static double curveParametricValue( double[] a, double[] b, double[] c, double[] d, double[] r ) {
-		Orientation orientation = Orientation.fromThreePoints( a, d, b );
-
-		Transform toLocal = orientation.getTargetToLocalTransform();
-		double[] p1 = toLocal.times( a );
-		double[] p2 = toLocal.times( b );
-		double[] p3 = toLocal.times( c );
-		double[] p4 = toLocal.times( d );
-		double[] a1 = toLocal.times( r );
-		double[] a2 = Vector.add( toLocal.times( r ), Vector.of( 0, 1 ) );
-
-		double[][] coefficients = curveCoefficients( p1, p2, p3, p4 );
-		double[] c3 = coefficients[ 3 ];
-		double[] c2 = coefficients[ 2 ];
-		double[] c1 = coefficients[ 1 ];
-		double[] c0 = coefficients[ 0 ];
-
-		double[] n = Vector.of( a1[ 1 ] - a2[ 1 ], a2[ 0 ] - a1[ 0 ] );
-		double cl = a1[ 0 ] * a2[ 1 ] - a2[ 0 ] * a1[ 1 ];
-
-		double[] roots = new Polynomial( Vector.dot( n, c3 ), Vector.dot( n, c2 ), Vector.dot( n, c1 ), Vector.dot( n, c0 ) + cl ).getRoots();
-
+		double[] roots = curveLineRoots( a, b, c, d, r );
 		for( double root : roots ) {
-			if( root < 0 || root > 1 ) continue;
+			if( root < -1 || root > 1 ) continue;
+			if( root < 0 ) root += 1;
 			return root;
 		}
-
 		return Double.NaN;
 	}
 
@@ -293,12 +309,12 @@ public class Geometry {
 	 * @return Two cubic bezier curves (an array of two arrays of four points each)
 	 */
 	public static double[][][] curveSubdivide( double[] p1, double[] p2, double[] p3, double[] p4, double t ) {
-		double[] p5 = Vector.lirp( p1, p2, t );
-		double[] p6 = Vector.lirp( p2, p3, t );
-		double[] p7 = Vector.lirp( p3, p4, t );
-		double[] p8 = Vector.lirp( p5, p6, t );
-		double[] p9 = Vector.lirp( p6, p7, t );
-		double[] p10 = Vector.lirp( p8, p9, t );
+		double[] p5 = Vector.lerp( p1, p2, t );
+		double[] p6 = Vector.lerp( p2, p3, t );
+		double[] p7 = Vector.lerp( p3, p4, t );
+		double[] p8 = Vector.lerp( p5, p6, t );
+		double[] p9 = Vector.lerp( p6, p7, t );
+		double[] p10 = Vector.lerp( p8, p9, t );
 		return new double[][][]{ new double[][]{ p1, p5, p8, p10 }, new double[][]{ p10, p9, p7, p4 } };
 	}
 

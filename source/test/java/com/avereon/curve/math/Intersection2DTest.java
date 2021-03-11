@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
+import static com.avereon.curve.match.Matchers.near;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Intersection2DTest {
@@ -139,6 +141,56 @@ public class Intersection2DTest {
 
 		assertThat( intersection.getType(), is( Intersection.Type.NONE ) );
 		assertThat( intersection.getPoints().length, is( 0 ) );
+	}
+
+	@Test
+	void testIntersectLineCurveWithZeroIntersections() {
+		double[] l1 = Point.of( 0, 0.8 );
+		double[] l2 = Point.of( 1, 0.8 );
+		double[] a = Point.of( 0, 0 );
+		double[] b = Point.of( 0, 1 );
+		double[] c = Point.of( 1, 1 );
+		double[] d = Point.of( 1, 0 );
+
+		Intersection2D intersection = Intersection2D.intersectLineCurve( l1, l2, a, b, c, d );
+		assertThat( intersection.getPoints().length, is( 0 ) );
+		assertThat( intersection.getType(), is( Intersection.Type.NONE ) );
+	}
+
+	@Test
+	void testIntersectLineCurveWithOneIntersection() {
+		double[] l1 = Point.of( 0.25, 0 );
+		double[] l2 = Point.of( 0.75, 1.5 );
+		double[] a = Point.of( 0, 0 );
+		double[] b = Point.of( 0, 1 );
+		double[] c = Point.of( 1, 1 );
+		double[] d = Point.of( 1, 0 );
+
+		Intersection2D intersection = Intersection2D.intersectLineCurve( l1, l2, a, b, c, d );
+
+		double[] e = Point.of( 0.5, 0.75 );
+		assertThat( intersection.getPoints()[ 0 ], near( e ) );
+		assertThat( intersection.getPoints().length, is( 1 ) );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+	}
+		@Test
+	void testIntersectLineCurveWithTwoIntersections() {
+		double[] l1 = Point.of( 0, 0.5 );
+		double[] l2 = Point.of( 1, 0.5 );
+		double[] a = Point.of( 0, 0 );
+		double[] b = Point.of( 0, 1 );
+		double[] c = Point.of( 1, 1 );
+		double[] d = Point.of( 1, 0 );
+
+		Intersection2D intersection = Intersection2D.intersectLineCurve( l1, l2, a, b, c, d );
+
+		double offset = 0.11509982054024945;
+		double[] e = Point.of( offset, 0.5 );
+		double[] f = Point.of( 1 - offset, 0.5 );
+		assertThat( intersection.getPoints()[ 0 ], near( e ) );
+		assertThat( intersection.getPoints()[ 1 ], near( f ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
 	}
 
 	@Test

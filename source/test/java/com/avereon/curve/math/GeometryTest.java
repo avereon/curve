@@ -197,6 +197,34 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testCurveLineRoots() {
+		double[] a = Point.of( 0, 0 );
+		double[] b = Point.of( 0, 1 );
+		double[] c = Point.of( 1, 1 );
+		double[] d = Point.of( 1, 0 );
+
+		double[] roots = Geometry.curveLineRoots( a, b, c, d, Point.of( 1.0, 0 ) );
+
+		// TODO I was trying to understand the values for the roots coming back
+		// For now I'm just going to leave this test commented out until I can get back to it
+
+//		for( double v = 0.0; v <= 1.0; v+=0.1 ) {
+//			System.out.println( Arrays.toString( Geometry.curveLineRoots( a, b, c, d, Point.of( v, 0 ) ) ) );
+//		}
+//
+//		for( double v = 0.0; v <= 1.0; v+=0.1 ) {
+//			System.out.println( Arrays.toString( Geometry.curveLineRoots( a, b, c, d, Point.of( 0, v ), Point.of( 1,v ) ) ) );
+//		}
+//
+//		for( double v = 0.0; v <= 1.0; v+=0.1 ) {
+//			System.out.println( Arrays.toString( Geometry.curveLineRoots( a, b, c, d, Point.of( 0, v ), Point.of( v,0 ) ) ) );
+//		}
+
+		//assertThat( roots[ 0 ], is( 0.5 ) );
+		//assertThat( roots.length, is( 1 ) );
+	}
+
+	@Test
 	void testNearest() {
 		double[][] points = new double[][]{ Vector.of( 0, 0, 0 ), Vector.of( 1, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 0 ) };
 

@@ -96,7 +96,7 @@ public class Intersection2D extends Intersection {
 		Intersection2D x = intersectLineCircle( p1, p2, radius );
 
 		// Transform the intersection points relative to the circle origin
-		double[][] points = Arrays.stream( x.getPoints() ).map( p -> Vector.add( p, o)).toArray(double[][]::new);
+		double[][] points = Arrays.stream( x.getPoints() ).map( p -> Vector.add( p, o ) ).toArray( double[][]::new );
 
 		return new Intersection2D( x.getType(), points );
 	}
@@ -138,6 +138,20 @@ public class Intersection2D extends Intersection {
 		double y2 = (-determinant * dx - Math.abs( dy ) * discriminant) / dr2;
 
 		return new Intersection2D( Type.INTERSECTION, Point.of( x1, y1 ), Point.of( x2, y2 ) );
+	}
+
+	public static Intersection2D intersectLineCurve( double[] l1, double[] l2, double[] a, double[] b, double[] c, double[] d ) {
+		double[] roots = Geometry.curveLineRoots( a, b, c, d, l1, l2 );
+
+		List<double[]> intersections = new ArrayList<>( 3 );
+		for( double t : roots ) {
+			if( t < -1 || t > 1 ) continue;
+			if( t < 0 ) t += 1;
+			intersections.add( Geometry.curvePoint( a, b, c, d, t ) );
+		}
+		double[][] result = intersections.toArray(new double[0][0]);
+
+		return new Intersection2D( (result.length == 0 ? Type.NONE : Type.INTERSECTION), result );
 	}
 
 	/**
@@ -198,17 +212,17 @@ public class Intersection2D extends Intersection {
 		boolean sameBackward = Arrays.equals( a1, b4 ) && Arrays.equals( a2, b3 ) && Arrays.equals( a3, b2 ) && Arrays.equals( a4, b1 );
 		if( sameForward || sameBackward ) return new Intersection2D( Type.SAME );
 
-		double[][] coefficientsA = Geometry.curveCoefficients( a1,a2,a3,a4 );
-		double[] c13 = coefficientsA[3];
-		double[] c12 = coefficientsA[2];
-		double[] c11 = coefficientsA[1];
-		double[] c10 = coefficientsA[0];
+		double[][] coefficientsA = Geometry.curveCoefficients( a1, a2, a3, a4 );
+		double[] c13 = coefficientsA[ 3 ];
+		double[] c12 = coefficientsA[ 2 ];
+		double[] c11 = coefficientsA[ 1 ];
+		double[] c10 = coefficientsA[ 0 ];
 
-		double[][] coefficientsB = Geometry.curveCoefficients( b1,b2,b3,b4 );
-		double[] c23 = coefficientsB[3];
-		double[] c22 = coefficientsB[2];
-		double[] c21 = coefficientsB[1];
-		double[] c20 = coefficientsB[0];
+		double[][] coefficientsB = Geometry.curveCoefficients( b1, b2, b3, b4 );
+		double[] c23 = coefficientsB[ 3 ];
+		double[] c22 = coefficientsB[ 2 ];
+		double[] c21 = coefficientsB[ 1 ];
+		double[] c20 = coefficientsB[ 0 ];
 
 		double c10x2 = c10[ 0 ] * c10[ 0 ];
 		double c10x3 = c10[ 0 ] * c10[ 0 ] * c10[ 0 ];
