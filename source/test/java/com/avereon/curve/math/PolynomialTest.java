@@ -210,11 +210,11 @@ public class PolynomialTest {
 		assertThat( roots.length, is( 1 ) );
 
 		roots = new Polynomial( 1, -3, 3, -1 ).getRoots();
-		assertThat( roots[ 0 ], near( -1.0 ) );
+		assertThat( roots[ 0 ], near( 1.0 ) );
 		assertThat( roots.length, is( 1 ) );
 
 		roots = new Polynomial( 1, -9, +27, -27 ).getRoots();
-		assertThat( roots[ 0 ], near( -3.0 ) );
+		assertThat( roots[ 0 ], near( 3.0 ) );
 		assertThat( roots.length, is( 1 ) );
 	}
 

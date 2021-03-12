@@ -405,7 +405,6 @@ public class Polynomial {
 			if( isSmallEnough( q ) ) {
 				// One triple solution
 				result = new double[]{ 0 };
-				a *= -1;
 			} else {
 				// One single and one double solution
 				double u = Math.cbrt( -q );
