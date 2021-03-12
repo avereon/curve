@@ -186,6 +186,11 @@ public class PolynomialTest {
 		assertThat( roots[ 0 ], is( -1.0 ) );
 		assertThat( roots[ 1 ], is( 1.0 ) );
 		assertThat( roots.length, is( 2 ) );
+
+		roots = new Polynomial( 1, -1, 0.09 ).getRoots();
+		assertThat( roots[ 0 ], near( 0.1 ) );
+		assertThat( roots[ 1 ], near( 0.9 ) );
+		assertThat( roots.length, is( 2 ) );
 	}
 
 	@Test

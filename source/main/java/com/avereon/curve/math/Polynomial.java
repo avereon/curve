@@ -366,13 +366,16 @@ public class Polynomial {
 		double d = p * p - q;
 
 		double[] result = new double[ 0 ];
-		if( isSmallEnough( d ) ) {
+		if( closeToZero( d ) ) {
+			// Single solution
 			result = new double[]{ -p };
 		} else if( d < 0 ) {
+			// No solution
 			result = new double[ 0 ];
 		} else if( d > 0 ) {
+			// Two solutions
 			double sqrtD = Math.sqrt( d );
-			result = new double[]{ -sqrtD - p, sqrtD + p };
+			result = new double[]{ -p - sqrtD, -p + sqrtD };
 		}
 
 		return fixit( result );
@@ -401,8 +404,8 @@ public class Polynomial {
 
 		double[] result;
 
-		if( isSmallEnough( d ) ) {
-			if( isSmallEnough( q ) ) {
+		if( closeToZero( d ) ) {
+			if( closeToZero( q ) ) {
 				// One triple solution
 				result = new double[]{ 0 };
 			} else {
@@ -455,7 +458,7 @@ public class Polynomial {
 
 		double[] result = new double[ 0 ];
 
-		if( isSmallEnough( r ) ) {
+		if( closeToZero( r ) ) {
 			// No absolute term: y(y^3 + py + q) = 0
 			result = new Polynomial( 1, 0, p, q ).getCubicRoots();
 		} else {
@@ -469,7 +472,7 @@ public class Polynomial {
 			double u = z * z - r;
 			double v = 2 * z - p;
 
-			if( isSmallEnough( u ) ) {
+			if( closeToZero( u ) ) {
 				u = 0;
 			} else if( u > 0 ) {
 				u = Math.sqrt( u );
@@ -477,7 +480,7 @@ public class Polynomial {
 				return fixit( result );
 			}
 
-			if( isSmallEnough( v ) ) {
+			if( closeToZero( v ) ) {
 				v = 0;
 			} else if( v > 0 ) {
 				v = Math.sqrt( v );
@@ -502,7 +505,7 @@ public class Polynomial {
 		return fixit( result );
 	}
 
-	private boolean isSmallEnough( double value ) {
+	private boolean closeToZero( double value ) {
 		return Math.abs( value ) < TOLERANCE;
 	}
 
