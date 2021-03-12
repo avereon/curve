@@ -403,19 +403,24 @@ public class Polynomial {
 
 		if( isSmallEnough( d ) ) {
 			if( isSmallEnough( q ) ) {
+				System.out.println( "triple" );
 				// One triple solution
 				result = new double[]{ 0 };
+				a *= -1;
 			} else {
+				System.out.println( "single/double" );
 				// One single and one double solution
 				double u = Math.cbrt( -q );
 				result = new double[]{ 2 * u, -u };
 			}
 		} else if( d < 0 ) {
+			System.out.println( "3 real" );
 			// Three real solutions
 			double phi = ONE_THIRD * Math.acos( -q / Math.sqrt( -ppp ) );
 			double t = 2 * Math.sqrt( -p );
 			result = new double[]{ -t * Math.cos( phi - PI_OVER_THREE ), -t * Math.cos( phi + PI_OVER_THREE ), t * Math.cos( phi ) };
 		} else {
+			System.out.println( "1 real" );
 			// One real solution
 			double sqrt_D = Math.sqrt( d );
 			double u = Math.cbrt( sqrt_D - q );
@@ -424,6 +429,7 @@ public class Polynomial {
 		}
 
 		// Resubstitute
+		System.out.println( "a=" + a );
 		double sub = ONE_THIRD * a;
 		for( int i = 0; i < result.length; ++i ) {
 			result[ i ] -= sub;

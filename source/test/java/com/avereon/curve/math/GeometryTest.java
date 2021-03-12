@@ -197,28 +197,37 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testCurveCoefficients() {
+		double[][] c = Geometry.curveCoefficients( Point.of( 0, 0 ), Point.of( 1, 1 ), Point.of( 2, -1 ), Point.of( 3, 0 ) );
+		assertThat( c[ 0 ], is( Vector.of( 0, 6 ) ) );
+		assertThat( c[ 1 ], is( Vector.of( 0, -9 ) ) );
+		assertThat( c[ 2 ], is( Vector.of( 3, 3 ) ) );
+		assertThat( c[ 3 ], is( Vector.of( 0, 0 ) ) );
+	}
+
+	@Test
 	void testCurveLineRoots() {
 		double[] a = Point.of( 0, 0 );
 		double[] b = Point.of( 0, 1 );
 		double[] c = Point.of( 1, 1 );
 		double[] d = Point.of( 1, 0 );
 
-		double[] roots = Geometry.curveLineRoots( a, b, c, d, Point.of( 1.0, 0 ) );
+		//		double[] roots = Geometry.curveLineRoots( a, b, c, d, Point.of( 1.0, 0 ) );
 
 		// TODO I was trying to understand the values for the roots coming back
 		// For now I'm just going to leave this test commented out until I can get back to it
 
-//		for( double v = 0.0; v <= 1.0; v+=0.1 ) {
-//			System.out.println( Arrays.toString( Geometry.curveLineRoots( a, b, c, d, Point.of( v, 0 ) ) ) );
-//		}
-//
-//		for( double v = 0.0; v <= 1.0; v+=0.1 ) {
-//			System.out.println( Arrays.toString( Geometry.curveLineRoots( a, b, c, d, Point.of( 0, v ), Point.of( 1,v ) ) ) );
-//		}
-//
-//		for( double v = 0.0; v <= 1.0; v+=0.1 ) {
-//			System.out.println( Arrays.toString( Geometry.curveLineRoots( a, b, c, d, Point.of( 0, v ), Point.of( v,0 ) ) ) );
-//		}
+		//		for( double v = 0.0; v <= 1.0; v+=0.1 ) {
+		//			System.out.println( Arrays.toString( Geometry.curveLineRoots( a, b, c, d, Point.of( v, 0 ) ) ) );
+		//		}
+		//
+		//		for( double v = 0.0; v <= 1.0; v+=0.1 ) {
+		//			System.out.println( Arrays.toString( Geometry.curveLineRoots( a, b, c, d, Point.of( 0, v ), Point.of( 1,v ) ) ) );
+		//		}
+		//
+		//		for( double v = 0.0; v <= 1.0; v+=0.1 ) {
+		//			System.out.println( Arrays.toString( Geometry.curveLineRoots( a, b, c, d, Point.of( 0, v ), Point.of( v,0 ) ) ) );
+		//		}
 
 		//assertThat( roots[ 0 ], is( 0.5 ) );
 		//assertThat( roots.length, is( 1 ) );

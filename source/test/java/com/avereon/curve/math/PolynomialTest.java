@@ -2,8 +2,8 @@ package com.avereon.curve.math;
 
 import org.junit.jupiter.api.Test;
 
+import static com.avereon.curve.match.Matchers.near;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -206,7 +206,15 @@ public class PolynomialTest {
 		assertThat( roots.length, is( 1 ) );
 
 		roots = new Polynomial( 1, 0, 1, -2 ).getRoots();
-		assertThat( roots[ 0 ], closeTo( 1.0, Polynomial.TOLERANCE ) );
+		assertThat( roots[ 0 ], near( 1.0 ) );
+		assertThat( roots.length, is( 1 ) );
+
+		roots = new Polynomial( 1, -3, 3, -1 ).getRoots();
+		assertThat( roots[ 0 ], near( -1.0 ) );
+		assertThat( roots.length, is( 1 ) );
+
+		roots = new Polynomial( 1, -9, +27, -27 ).getRoots();
+		assertThat( roots[ 0 ], near( -3.0 ) );
 		assertThat( roots.length, is( 1 ) );
 	}
 
@@ -227,7 +235,7 @@ public class PolynomialTest {
 	void testGetRootsCubicWith3Roots() {
 		double[] roots = new Polynomial( 1, 0, -1, 0 ).getRoots();
 		assertThat( roots[ 0 ], is( -1.0 ) );
-		assertThat( roots[ 1 ], closeTo( 0.0, Polynomial.TOLERANCE ) );
+		assertThat( roots[ 1 ], near( 0.0 ) );
 		assertThat( roots[ 2 ], is( 1.0 ) );
 		assertThat( roots.length, is( 3 ) );
 	}
@@ -257,7 +265,7 @@ public class PolynomialTest {
 	void testGetRootsQuarticWith3Roots() {
 		double[] roots = new Polynomial( 1, 0, -4, 0, 0 ).getRoots();
 		assertThat( roots[ 0 ], is( -2.0 ) );
-		assertThat( roots[ 1 ], closeTo( 0.0, Polynomial.TOLERANCE ) );
+		assertThat( roots[ 1 ], near( 0.0 ) );
 		assertThat( roots[ 2 ], is( 2.0 ) );
 		assertThat( roots.length, is( 3 ) );
 	}
@@ -265,10 +273,10 @@ public class PolynomialTest {
 	@Test
 	void testGetRootsQuarticWith4Roots() {
 		double[] roots = new Polynomial( 3, 6, -123, -126, 1080 ).getRoots();
-		assertThat( roots[ 0 ], closeTo( -6.0, Polynomial.TOLERANCE ) );
-		assertThat( roots[ 1 ], closeTo( 5.0, Polynomial.TOLERANCE ) );
-		assertThat( roots[ 2 ], closeTo( -4.0, Polynomial.TOLERANCE ) );
-		assertThat( roots[ 3 ], closeTo( 3.0, Polynomial.TOLERANCE ) );
+		assertThat( roots[ 0 ], near( -6.0 ) );
+		assertThat( roots[ 1 ], near( 5.0 ) );
+		assertThat( roots[ 2 ], near( -4.0 ) );
+		assertThat( roots[ 3 ], near( 3.0 ) );
 		assertThat( roots.length, is( 4 ) );
 	}
 

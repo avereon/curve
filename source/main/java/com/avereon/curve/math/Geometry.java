@@ -23,7 +23,9 @@ public class Geometry {
 		return Point.of( 0.5 * (a[ 0 ] + b[ 0 ]), 0.5 * (a[ 1 ] + b[ 1 ]), 0.5 * (a[ 2 ] + b[ 2 ]) );
 	}
 
-	public static double[] midpoint( final double[] origin, final double xRadius, final double yRadius, final double rotate, final double start, final double extent ) {
+	public static double[] midpoint(
+		final double[] origin, final double xRadius, final double yRadius, final double rotate, final double start, final double extent
+	) {
 		// Find the bisecting angle
 		double a = start + 0.5 * extent;
 
@@ -106,7 +108,8 @@ public class Geometry {
 	}
 
 	/**
-	 * Get the angle between two vectors. This is geometrically equivalent to the angle made by placing the second vector at the end of the first vector and measuring the angle made between the two. The angle is in the range 0 to PI and is
+	 * Get the angle between two vectors. This is geometrically equivalent to the angle made by placing the second vector at the end of the first vector and
+	 * measuring the angle made between the two. The angle is in the range 0 to PI and is
 	 * always positive.
 	 *
 	 * @param v1 The first vector
@@ -136,7 +139,7 @@ public class Geometry {
 	 *
 	 * @param origin The origin of the plane
 	 * @param normal The normal of the plane
-	 * @param p      The point to which to determine the distance
+	 * @param p The point to which to determine the distance
 	 * @return The distance between the plane and the point
 	 */
 	public static double pointPlaneDistance( double[] origin, double[] normal, double[] p ) {
@@ -144,7 +147,8 @@ public class Geometry {
 	}
 
 	/**
-	 * Get the distance between a line defined by parameter a and parameter b and the point p. If the point is outside of the line segment then Double.NaN is returned.
+	 * Get the distance between a line defined by parameter a and parameter b and the point p. If the point is outside of the line segment then Double.NaN is
+	 * returned.
 	 *
 	 * @param a The first point on the line
 	 * @param b The second point on the line
@@ -214,7 +218,7 @@ public class Geometry {
 	 *
 	 * @param origin The origin of the plane
 	 * @param normal The normal vector of the plane
-	 * @param point  The point from which to get the vector
+	 * @param point The point from which to get the vector
 	 * @return The vector from the point to the plane
 	 */
 	public static double[] vectorToPlane( double[] origin, double[] normal, double[] point ) {
@@ -241,31 +245,62 @@ public class Geometry {
 	}
 
 	public static double[] curveLineRoots( double[] a, double[] b, double[] c, double[] d, double[] r ) {
-		return curveLineRoots( a, b, c, d, r, null );
+		double[] n = Vector.add( r, Point.of( a[ 1 ] - d[ 1 ], d[ 0 ] - a[ 0 ] ) );
+		return curveLineRoots( a, b, c, d, r, n );
 	}
 
+	// MVS This implementation is verified 11-Mar-2021
+	/**
+	 * Get the root (the parametric values) for given curve and line.
+	 *
+	 * @param a The curve point a
+	 * @param b The curve point b
+	 * @param c The curve point c
+	 * @param d The curve point d
+	 * @param l1 The first line point
+	 * @param l2 The other line point
+	 * @return The parametric values corresponding to the curve line intersections
+	 */
 	public static double[] curveLineRoots( double[] a, double[] b, double[] c, double[] d, double[] l1, double[] l2 ) {
-		Orientation orientation = Orientation.fromThreePoints( a, d, b );
+		//la=y2-y1
+		double la = l2[ 1 ] - l1[ 1 ];
+		//lb=x1-x2
+		double lb = l1[ 0 ] - l2[ 0 ];
+		//lc=x1*(y1-y2)+y1*(x2-x1)
+		double lc = l1[ 0 ] * (l1[ 1 ] - l2[ 1 ]) + l1[ 1 ] * (l2[ 0 ] - l1[ 0 ]);
 
-		Transform toLocal = orientation.getTargetToLocalTransform();
-		double[] p1 = toLocal.times( a );
-		double[] p2 = toLocal.times( b );
-		double[] p3 = toLocal.times( c );
-		double[] p4 = toLocal.times( d );
-		double[] a1 = toLocal.times( l1 );
-		double[] a2 = l2 != null ? toLocal.times( l2 ) : Vector.add( a1, Vector.of( 0, 1 ) );
+		double[][] coefficients = Geometry.curveCoefficients( a, b, c, d );
+		double c3 = la * coefficients[ 0 ][ 0 ] + lb * coefficients[ 0 ][ 1 ];
+		double c2 = la * coefficients[ 1 ][ 0 ] + lb * coefficients[ 1 ][ 1 ];
+		double c1 = la * coefficients[ 2 ][ 0 ] + lb * coefficients[ 2 ][ 1 ];
+		double c0 = la * coefficients[ 3 ][ 0 ] + lb * coefficients[ 3 ][ 1 ] + lc;
 
-		double[][] coefficients = Geometry.curveCoefficients( p1, p2, p3, p4 );
-		double[] c3 = coefficients[ 3 ];
-		double[] c2 = coefficients[ 2 ];
-		double[] c1 = coefficients[ 1 ];
-		double[] c0 = coefficients[ 0 ];
-
-		double[] n = Vector.of( a1[ 1 ] - a2[ 1 ], a2[ 0 ] - a1[ 0 ] );
-		double cl = a1[ 0 ] * a2[ 1 ] - a2[ 0 ] * a1[ 1 ];
-
-		return new Polynomial( Vector.dot( n, c3 ), Vector.dot( n, c2 ), Vector.dot( n, c1 ), Vector.dot( n, c0 ) + cl ).getRoots();
+		return new Polynomial( c3, c2, c1, c0 ).getRoots();
 	}
+
+	//	@Deprecated
+	//	public static double[] curveLineRoots( double[] a, double[] b, double[] c, double[] d, double[] l1, double[] l2 ) {
+	//		Orientation orientation = Orientation.fromThreePoints( a, d, b );
+	//
+	//		Transform toLocal = orientation.getTargetToLocalTransform();
+	//		double[] p1 = toLocal.times( a );
+	//		double[] p2 = toLocal.times( b );
+	//		double[] p3 = toLocal.times( c );
+	//		double[] p4 = toLocal.times( d );
+	//		double[] a1 = toLocal.times( l1 );
+	//		double[] a2 = l2 != null ? toLocal.times( l2 ) : Vector.add( a1, Vector.of( 0, 1 ) );
+	//
+	//		double[][] coefficients = Geometry.curveCoefficients( a, p2, p3, p4 );
+	//		double[] c3 = coefficients[ 3 ];
+	//		double[] c2 = coefficients[ 2 ];
+	//		double[] c1 = coefficients[ 1 ];
+	//		double[] c0 = coefficients[ 0 ];
+	//
+	//		double[] n = Vector.of( a1[ 1 ] - a2[ 1 ], a2[ 0 ] - a1[ 0 ] );
+	//		double cl = a1[ 0 ] * a2[ 1 ] - a2[ 0 ] * a1[ 1 ];
+	//
+	//		return new Polynomial( Vector.dot( n, c3 ), Vector.dot( n, c2 ), Vector.dot( n, c1 ), Vector.dot( n, c0 ) + cl ).getRoots();
+	//	}
 
 	public static double[] curvePoint( double[] a, double[] b, double[] c, double[] d, double t ) {
 		double[] e = Vector.lerp( a, b, t );
@@ -285,14 +320,12 @@ public class Geometry {
 	 * @param c The curve point c
 	 * @param d The curve point d
 	 * @param r The reference point
-	 *
 	 * @return The parametric value for the reference point
 	 */
 	public static double curveParametricValue( double[] a, double[] b, double[] c, double[] d, double[] r ) {
 		double[] roots = curveLineRoots( a, b, c, d, r );
 		for( double root : roots ) {
-			if( root < -1 || root > 1 ) continue;
-			if( root < 0 ) root += 1;
+			if( root < 0 || root > 1 ) continue;
 			return root;
 		}
 		return Double.NaN;
@@ -305,7 +338,7 @@ public class Geometry {
 	 * @param p2 Control point b
 	 * @param p3 Control point c
 	 * @param p4 Control point d
-	 * @param t  The parametric location to divide the curve
+	 * @param t The parametric location to divide the curve
 	 * @return Two cubic bezier curves (an array of two arrays of four points each)
 	 */
 	public static double[][][] curveSubdivide( double[] p1, double[] p2, double[] p3, double[] p4, double t ) {
@@ -318,6 +351,16 @@ public class Geometry {
 		return new double[][][]{ new double[][]{ p1, p5, p8, p10 }, new double[][]{ p10, p9, p7, p4 } };
 	}
 
+	// MVS This implementation is verified 11-Mar-2021
+	/**
+	 * Compute the x/y coefficients of a cubic bezier curve.
+	 *
+	 * @param a The curve point a
+	 * @param b The curve point b
+	 * @param c The curve point c
+	 * @param d The curve point d
+	 * @return An array of coefficient pairs corresponding to the x and y axes
+	 */
 	public static double[][] curveCoefficients( double[] a, double[] b, double[] c, double[] d ) {
 		double[] e, f, g, h; // temporary variables
 		double[] c3, c2, c1, c0; // coefficients
@@ -341,14 +384,14 @@ public class Geometry {
 
 		c0 = Vector.of( a[ 0 ], a[ 1 ] );
 
-		return new double[][]{ c0, c1, c2, c3 };
+		return new double[][]{ c3, c2, c1, c0 };
 	}
 
 	/**
 	 * Get the nearest point in a set of points to the specified point.
 	 *
 	 * @param points The set of points to check
-	 * @param point  The point from which to check
+	 * @param point The point from which to check
 	 * @return The point nearest to the specified point
 	 */
 	public static double[] nearest( double[][] points, double[] point ) {
@@ -378,11 +421,12 @@ public class Geometry {
 	}
 
 	/**
-	 * Determine if all the points are collinear with a line defined by point a and point b. It is important to note that this method is only accurate if all the points are in between points a and b. All the points must lie within
+	 * Determine if all the points are collinear with a line defined by point a and point b. It is important to note that this method is only accurate if all the
+	 * points are in between points a and b. All the points must lie within
 	 * POINT_TOLERANCE.
 	 *
-	 * @param a      The first point on the line
-	 * @param b      The second point on the line
+	 * @param a The first point on the line
+	 * @param b The second point on the line
 	 * @param points The points to check
 	 * @return True if all the points are collinear, false otherwise
 	 */
@@ -397,7 +441,7 @@ public class Geometry {
 	 * Determine if all the points are coplanar with the plane defined by the orientation.
 	 *
 	 * @param orientation The orientation used to define the plane
-	 * @param points      The points to check
+	 * @param points The points to check
 	 * @return True if all points are coplanar, false otherwise
 	 */
 	public static boolean areCoplanar( Orientation orientation, double[]... points ) {
@@ -417,13 +461,14 @@ public class Geometry {
 	}
 
 	/**
-	 * Determine if all the points are coplanar with the plane defined by the origin and normal. All the points must line within the tolerance from the plane. It is generally recommended that
+	 * Determine if all the points are coplanar with the plane defined by the origin and normal. All the points must line within the tolerance from the plane. It
+	 * is generally recommended that
 	 * <code>areCoplanar( Vector, Vector, Vector...)</code> be used instead.
 	 *
-	 * @param origin    The plane origin
-	 * @param normal    The plane normal vector
+	 * @param origin The plane origin
+	 * @param normal The plane normal vector
 	 * @param tolerance The allowed distance-from-plane tolerance
-	 * @param points    The points to check
+	 * @param points The points to check
 	 * @return True if all the points are within tolerance of the plane, false otherwise
 	 */
 	public static boolean areCoplanar( double[] origin, double[] normal, double tolerance, double[]... points ) {
@@ -468,7 +513,8 @@ public class Geometry {
 	}
 
 	/**
-	 * Determine if two vectors can be considered anti-parallel by checking if the angle between the two vectors, with one reversed, is smaller than ANGLE_TOLERANCE.
+	 * Determine if two vectors can be considered anti-parallel by checking if the angle between the two vectors, with one reversed, is smaller than
+	 * ANGLE_TOLERANCE.
 	 *
 	 * @param vector1 The first vector
 	 * @param vector2 The second vector
