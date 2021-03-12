@@ -32,7 +32,7 @@ public class PointCloseTo extends TypeSafeMatcher<double[]> {
 
 	@Override
 	public void describeTo( Description description ) {
-		description.appendText( "a numeric value within " ).appendValue( this.delta ).appendText( " of " ).appendValue( this.expected );
+		description.appendText( "a point within " ).appendValue( this.delta ).appendText( " of " ).appendValue( this.expected );
 	}
 
 	private double actualDelta( double[] item ) {

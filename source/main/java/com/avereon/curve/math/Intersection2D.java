@@ -145,7 +145,6 @@ public class Intersection2D extends Intersection {
 
 		List<double[]> intersections = new ArrayList<>( 3 );
 		for( double t : roots ) {
-			System.out.println( "root=" + t );
 			if( t < 0.0 || t > 1.0 ) continue;
 			intersections.add( Geometry.curvePoint( a, b, c, d, t ) );
 		}

@@ -173,22 +173,24 @@ public class Intersection2DTest {
 		assertThat( intersection.getPoints().length, is( 1 ) );
 		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
 	}
-		@Test
+
+	@Test
 	void testIntersectLineCurveWithTwoIntersections() {
-		double[] l1 = Point.of( 0, 0.5 );
-		double[] l2 = Point.of( 1, 0.5 );
 		double[] a = Point.of( 0, 0 );
 		double[] b = Point.of( 0, 1 );
 		double[] c = Point.of( 1, 1 );
 		double[] d = Point.of( 1, 0 );
 
-		Intersection2D intersection = Intersection2D.intersectLineCurve( l1, l2, a, b, c, d );
-
+		Intersection2D intersection = Intersection2D.intersectLineCurve( Point.of( 0, 0.5 ), Point.of( 1, 0.5 ), a, b, c, d );
 		double offset = 0.11509982054024945;
-		double[] e = Point.of( offset, 0.5 );
-		double[] f = Point.of( 1 - offset, 0.5 );
-		assertThat( intersection.getPoints()[ 0 ], near( e ) );
-		assertThat( intersection.getPoints()[ 1 ], near( f ) );
+		assertThat( intersection.getPoints()[ 0 ], near( Point.of( offset, 0.5 ) ) );
+		assertThat( intersection.getPoints()[ 1 ], near( Point.of( 1 - offset, 0.5 ) ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+
+		intersection = Intersection2D.intersectLineCurve( Point.of( -0.25, 0 ), Point.of( 0.75, 1 ), a, b, c, d );
+		assertThat( intersection.getPoints()[ 0 ], near( Point.of( 0.030397656825319842, 0.2803976568253193 ) ) );
+		assertThat( intersection.getPoints()[ 1 ], near( Point.of( 0.5, 0.75 ) ) );
 		assertThat( intersection.getPoints().length, is( 2 ) );
 		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
 	}

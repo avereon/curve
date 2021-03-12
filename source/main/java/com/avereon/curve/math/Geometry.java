@@ -247,8 +247,6 @@ public class Geometry {
 		return curveLineRoots( a, b, c, d, r, n );
 	}
 
-	// MVS This implementation is verified 11-Mar-2021
-
 	/**
 	 * Get the root (the parametric values) for given curve and line.
 	 *
@@ -260,6 +258,7 @@ public class Geometry {
 	 * @param l2 The other line point
 	 * @return The parametric values corresponding to the curve line intersections
 	 */
+	// MVS This implementation is verified 11-Mar-2021
 	public static double[] curveLineRoots( double[] a, double[] b, double[] c, double[] d, double[] l1, double[] l2 ) {
 		//la=y2-y1
 		double la = l2[ 1 ] - l1[ 1 ];
@@ -336,8 +335,6 @@ public class Geometry {
 		return new double[][][]{ new double[][]{ p1, p5, p8, p10 }, new double[][]{ p10, p9, p7, p4 } };
 	}
 
-	// MVS This implementation is verified 11-Mar-2021
-
 	/**
 	 * Compute the x/y coefficients of a cubic bezier curve.
 	 *
@@ -347,6 +344,7 @@ public class Geometry {
 	 * @param d The curve point d
 	 * @return An array of coefficient pairs corresponding to the x and y axes
 	 */
+	// MVS This implementation is verified 11-Mar-2021
 	public static double[][] curveCoefficients( double[] a, double[] b, double[] c, double[] d ) {
 		double[] e, f, g, h; // temporary variables
 		double[] c3, c2, c1, c0; // coefficients
