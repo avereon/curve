@@ -23,9 +23,7 @@ public class Geometry {
 		return Point.of( 0.5 * (a[ 0 ] + b[ 0 ]), 0.5 * (a[ 1 ] + b[ 1 ]), 0.5 * (a[ 2 ] + b[ 2 ]) );
 	}
 
-	public static double[] midpoint(
-		final double[] origin, final double xRadius, final double yRadius, final double rotate, final double start, final double extent
-	) {
+	public static double[] midpoint( final double[] origin, final double xRadius, final double yRadius, final double rotate, final double start, final double extent ) {
 		// Find the bisecting angle
 		double a = start + 0.5 * extent;
 
@@ -250,6 +248,7 @@ public class Geometry {
 	}
 
 	// MVS This implementation is verified 11-Mar-2021
+
 	/**
 	 * Get the root (the parametric values) for given curve and line.
 	 *
@@ -278,30 +277,6 @@ public class Geometry {
 		return new Polynomial( c3, c2, c1, c0 ).getRoots();
 	}
 
-	//	@Deprecated
-	//	public static double[] curveLineRoots( double[] a, double[] b, double[] c, double[] d, double[] l1, double[] l2 ) {
-	//		Orientation orientation = Orientation.fromThreePoints( a, d, b );
-	//
-	//		Transform toLocal = orientation.getTargetToLocalTransform();
-	//		double[] p1 = toLocal.times( a );
-	//		double[] p2 = toLocal.times( b );
-	//		double[] p3 = toLocal.times( c );
-	//		double[] p4 = toLocal.times( d );
-	//		double[] a1 = toLocal.times( l1 );
-	//		double[] a2 = l2 != null ? toLocal.times( l2 ) : Vector.add( a1, Vector.of( 0, 1 ) );
-	//
-	//		double[][] coefficients = Geometry.curveCoefficients( a, p2, p3, p4 );
-	//		double[] c3 = coefficients[ 3 ];
-	//		double[] c2 = coefficients[ 2 ];
-	//		double[] c1 = coefficients[ 1 ];
-	//		double[] c0 = coefficients[ 0 ];
-	//
-	//		double[] n = Vector.of( a1[ 1 ] - a2[ 1 ], a2[ 0 ] - a1[ 0 ] );
-	//		double cl = a1[ 0 ] * a2[ 1 ] - a2[ 0 ] * a1[ 1 ];
-	//
-	//		return new Polynomial( Vector.dot( n, c3 ), Vector.dot( n, c2 ), Vector.dot( n, c1 ), Vector.dot( n, c0 ) + cl ).getRoots();
-	//	}
-
 	public static double[] curvePoint( double[] a, double[] b, double[] c, double[] d, double t ) {
 		double[] e = Vector.lerp( a, b, t );
 		double[] f = Vector.lerp( b, c, t );
@@ -309,6 +284,16 @@ public class Geometry {
 		double[] h = Vector.lerp( e, f, t );
 		double[] i = Vector.lerp( f, g, t );
 		return Vector.lerp( h, i, t );
+	}
+
+	public static double[] curvePointHeavy( double[] a, double[] b, double[] c, double[] d, double t ) {
+		// This gives the same result as using Geometry.curvePoint() but it requires
+		// calculating the coefficients first and therefore takes more compute time
+		// for a single point.
+		double[][] cfs = Geometry.curveCoefficients( a, b, c, d );
+		double x = cfs[ 0 ][ 0 ] * t * t * t + cfs[ 1 ][ 0 ] * t * t + cfs[ 2 ][ 0 ] * t + cfs[ 3 ][ 0 ];
+		double y = cfs[ 0 ][ 1 ] * t * t * t + cfs[ 1 ][ 1 ] * t * t + cfs[ 2 ][ 1 ] * t + cfs[ 3 ][ 1 ];
+		return new double[]{ x, y };
 	}
 
 	/**
@@ -352,6 +337,7 @@ public class Geometry {
 	}
 
 	// MVS This implementation is verified 11-Mar-2021
+
 	/**
 	 * Compute the x/y coefficients of a cubic bezier curve.
 	 *

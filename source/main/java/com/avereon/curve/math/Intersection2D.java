@@ -141,21 +141,13 @@ public class Intersection2D extends Intersection {
 	}
 
 	public static Intersection2D intersectLineCurve( double[] l1, double[] l2, double[] a, double[] b, double[] c, double[] d ) {
-		double[][] cfs = Geometry.curveCoefficients( a, b, c, d );
 		double[] roots = Geometry.curveLineRoots( a, b, c, d, l1, l2 );
 
 		List<double[]> intersections = new ArrayList<>( 3 );
 		for( double t : roots ) {
 			System.out.println( "root=" + t );
 			if( t < 0.0 || t > 1.0 ) continue;
-
-			// This worked just the same as using Geometry.curvePoint()
-//			double x = cfs[0][0] * t * t * t + cfs[1][0] * t*t + cfs[2][0] * t + cfs[3][0];
-//			double y = cfs[0][1] * t * t * t + cfs[1][1] * t*t + cfs[2][1] * t + cfs[3][1];
-//			intersections.add( Point.of( x,y));
-
-			// This worked just the same as computing x and y from the cubic polynomial
-						intersections.add( Geometry.curvePoint( a, b, c, d, t ) );
+			intersections.add( Geometry.curvePoint( a, b, c, d, t ) );
 		}
 		double[][] result = intersections.toArray( new double[ 0 ][ 0 ] );
 
