@@ -42,6 +42,10 @@ public class Point {
 		return v[ 0 ] == Double.POSITIVE_INFINITY || v[ 0 ] == Double.NEGATIVE_INFINITY || v[ 1 ] == Double.POSITIVE_INFINITY || v[ 1 ] == Double.NEGATIVE_INFINITY || v[ 2 ] == Double.POSITIVE_INFINITY || v[ 2 ] == Double.NEGATIVE_INFINITY;
 	}
 
+	public static double[] rotate( double[] c, double[] p, double a ) {
+		return Vector.add( Vector.rotate( Vector.subtract( p, c ), a ), c );
+	}
+
 	public static int hash( double[] v ) {
 		long bits;
 		if( isUndefined( v ) ) {

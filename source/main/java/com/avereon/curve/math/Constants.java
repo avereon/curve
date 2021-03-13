@@ -10,8 +10,6 @@ public interface Constants {
 
 	double PI_OVER_4 = 0.25 * Math.PI;
 
-	double DISTANCE_TOLERANCE = 1e-12;
-
 	double FULL_CIRCLE = 2.0 * Math.PI;
 
 	double HALF_CIRCLE = Math.PI;
@@ -20,11 +18,21 @@ public interface Constants {
 
 	double THREE_QUARTER_CIRCLE = HALF_CIRCLE + QUARTER_CIRCLE;
 
-	double RESOLUTION_LENGTH = 1e-6;
+	/**
+	 * The value used to determine if two points in space are distinct. This needs
+	 * to be small enough to be useful for the application but large enough to
+	 * stay away from round off errors. A value between 1e-10 to 1e-15 is common.
+	 * <p/>
+	 * This is also the same as DISTANCE_TOLERANCE and RESOLUTION_NORMAL.
+	 */
+	double RESOLUTION_LENGTH = 1e-10;
 
-	double RESOLUTION_NORMAL = 1e-10;
-
-	double RESOLUTION_ANGLE = Math.atan( RESOLUTION_NORMAL );
+	/**
+	 * The angle value that corresponds to RESOLUTION_LENGTH that is used to
+	 * determine if to angle in space are distinct. The value is the arctan of
+	 * the RESOLUTION_LENGTH along the unit circle.
+	 */
+	double RESOLUTION_ANGLE = Math.atan2( RESOLUTION_LENGTH, 1 );
 
 	double RESOLUTION_SMOOTH = 1e-3;
 

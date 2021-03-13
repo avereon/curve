@@ -2,10 +2,29 @@ package com.avereon.curve.math;
 
 import java.util.*;
 
+/**
+ * A reference on 2D intersections: http://www.kevlindev.com/geometry/2D/intersections/index.htm
+ */
 public class Intersection2D extends Intersection {
 
 	public Intersection2D( Type status, double[]... points ) {
 		super( status, points );
+	}
+
+	private static boolean near( double a ) {
+		return Math.abs( a ) <= Constants.RESOLUTION_LENGTH;
+	}
+
+	private static boolean near( double a, double b ) {
+		return Math.abs( b - a ) <= Constants.RESOLUTION_LENGTH;
+	}
+
+	private static boolean near( double[] a, double[] b ) {
+		return Geometry.areSamePoint( a, b );
+	}
+
+	private static boolean nearAngle( double a, double b ) {
+		return Geometry.areSameAngle( a, b );
 	}
 
 	/**
@@ -24,9 +43,11 @@ public class Intersection2D extends Intersection {
 	 * @return The intersection
 	 */
 	public static Intersection2D intersectLineLine( double[] a1, double[] a2, double[] b1, double[] b2 ) {
-		double distanceA2B = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
-		double angleA2B = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
-		double scale = distanceA2B / angleA2B;
+		double distance = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
+		double angle = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
+		double scale = distance / angle;
+
+		if( near( distance ) ) return new Intersection2D( Type.SAME );
 		return new Intersection2D( Type.INTERSECTION, Vector.of( a1[ 0 ] + scale * (a2[ 0 ] - a1[ 0 ]), a1[ 1 ] + scale * (a2[ 1 ] - a1[ 1 ]) ) );
 	}
 
@@ -63,7 +84,7 @@ public class Intersection2D extends Intersection {
 				result = new Intersection2D( Type.NONE );
 			}
 		} else {
-			if( distanceA2B == 0 || distanceB2A == 0 ) {
+			if( near( distanceA2B ) || near( distanceB2A ) ) {
 				result = new Intersection2D( Type.COINCIDENT );
 			} else {
 				result = new Intersection2D( Type.PARALLEL );
@@ -203,9 +224,38 @@ public class Intersection2D extends Intersection {
 			}
 		}
 
-		return intersections.size() == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION,
-			intersections.toArray( new double[ intersections.size() ][] )
-		);
+		return intersections.size() == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION, intersections.toArray( new double[ intersections.size() ][] ) );
+	}
+
+	public static Intersection2D intersectEllipseEllipse( double[] oc1, double rx1, double ry1, double r1, double[] oc2, double rx2, double ry2, double r2 ) {
+		if( near( oc1, oc2 ) && near( rx1, rx2 ) && near( ry1, ry2 ) && nearAngle( r1, r2 ) ) return new Intersection2D( Type.SAME );
+
+		// Move everything so that the center of ellipse 1 is at the origin
+		{ oc2 = Vector.subtract( oc2, oc1 ); }
+
+		// Rotate everything so that the axes of ellipse 1 are parallel with the X and Y axes
+		oc2 = Vector.rotate( oc2, -r1 );
+		r2 = r2 - r1;
+
+		// Scale everything so that ellipse 1 is a circle
+		double e = rx1 / ry1;
+		oc2 = Vector.scale( oc2, 1, e );
+		ry2 = e * ry2;
+		r2 = Geometry.cartesianToPolar( Vector.scale( Geometry.polarToCartesian( Vector.of( 1, r2 ) ), 1, e ) )[ 1 ];
+
+		// Rotate everything so that the axes of ellipse 2 are parallel with the X and Y axes
+		oc2 = Vector.rotate( oc2, -r2 );
+
+		// Call intersectEllipseEllipse() without rotations
+		Intersection2D xn = intersectEllipseEllipse( Point.of( 0, 0, 0 ), rx1, rx1, oc2, rx2, ry2 );
+
+		// For any intersection points, undo rotate, scale, rotate and move
+		double[][] intersections = xn.getPoints();
+		for( int index = 0; index < intersections.length; index++ ) {
+			intersections[ index ] = Vector.add( Vector.rotate( Vector.scale( Vector.rotate( intersections[ index ], r2 ), 1, 1 / e ), r1 ), oc1 );
+		}
+
+		return intersections.length == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION, intersections );
 	}
 
 	public static Intersection2D intersectBezier3Bezier3(
@@ -257,7 +307,8 @@ public class Intersection2D extends Intersection {
 		double c23x3 = c23[ 0 ] * c23[ 0 ] * c23[ 0 ];
 		double c23y2 = c23[ 1 ] * c23[ 1 ];
 		double c23y3 = c23[ 1 ] * c23[ 1 ] * c23[ 1 ];
-		Polynomial poly = new Polynomial( -c13x3 * c23y3 + c13y3 * c23x3 - 3 * c13[ 0 ] * c13y2 * c23x2 * c23[ 1 ] + 3 * c13x2 * c13[ 1 ] * c23[ 0 ] * c23y2,
+		Polynomial poly = new Polynomial(
+			-c13x3 * c23y3 + c13y3 * c23x3 - 3 * c13[ 0 ] * c13y2 * c23x2 * c23[ 1 ] + 3 * c13x2 * c13[ 1 ] * c23[ 0 ] * c23y2,
 			-6 * c13[ 0 ] * c22[ 0 ] * c13y2 * c23[ 0 ] * c23[ 1 ] + 6 * c13x2 * c13[ 1 ] * c22[ 1 ] * c23[ 0 ] * c23[ 1 ] + 3 * c22[ 0 ] * c13y3 * c23x2 - 3 * c13x3 * c22[ 1 ] * c23y2 - 3 * c13[ 0 ] * c13y2 * c22[ 1 ] * c23x2 + 3 * c13x2 * c22[ 0 ] * c13[ 1 ] * c23y2,
 			-6 * c21[ 0 ] * c13[ 0 ] * c13y2 * c23[ 0 ] * c23[ 1 ] - 6 * c13[ 0 ] * c22[ 0 ] * c13y2 * c22[ 1 ] * c23[ 0 ] + 6 * c13x2 * c22[ 0 ] * c13[ 1 ] * c22[ 1 ] * c23[ 1 ] + 3 * c21[ 0 ] * c13y3 * c23x2 + 3 * c22x2 * c13y3 * c23[ 0 ] + 3 * c21[ 0 ] * c13x2 * c13[ 1 ] * c23y2 - 3 * c13[ 0 ] * c21[ 1 ] * c13y2 * c23x2 - 3 * c13[ 0 ] * c22x2 * c13y2 * c23[ 1 ] + c13x2 * c13[ 1 ] * c23[ 0 ] * (6 * c21[ 1 ] * c23[ 1 ] + 3 * c22y2) + c13x3 * (-c21[ 1 ] * c23y2 - 2 * c22y2 * c23[ 1 ] - c23[ 1 ] * (2 * c21[ 1 ] * c23[ 1 ] + c22y2)),
 			c11[ 0 ] * c12[ 1 ] * c13[ 0 ] * c13[ 1 ] * c23[ 0 ] * c23[ 1 ] - c11[ 1 ] * c12[ 0 ] * c13[ 0 ] * c13[ 1 ] * c23[ 0 ] * c23[ 1 ] + 6 * c21[ 0 ] * c22[ 0 ] * c13y3 * c23[ 0 ] + 3 * c11[ 0 ] * c12[ 0 ] * c13[ 0 ] * c13[ 1 ] * c23y2 + 6 * c10[ 0 ] * c13[ 0 ] * c13y2 * c23[ 0 ] * c23[ 1 ] - 3 * c11[ 0 ] * c12[ 0 ] * c13y2 * c23[ 0 ] * c23[ 1 ] - 3 * c11[ 1 ] * c12[ 1 ] * c13[ 0 ] * c13[ 1 ] * c23x2 - 6 * c10[ 1 ] * c13x2 * c13[ 1 ] * c23[ 0 ] * c23[ 1 ] - 6 * c20[ 0 ] * c13[ 0 ] * c13y2 * c23[ 0 ] * c23[ 1 ] + 3 * c11[ 1 ] * c12[ 1 ] * c13x2 * c23[ 0 ] * c23[ 1 ] - 2 * c12[ 0 ] * c12y2 * c13[ 0 ] * c23[ 0 ] * c23[ 1 ] - 6 * c21[ 0 ] * c13[ 0 ] * c22[ 0 ] * c13y2 * c23[ 1 ] - 6 * c21[ 0 ] * c13[ 0 ] * c13y2 * c22[ 1 ] * c23[ 0 ] - 6 * c13[ 0 ] * c21[ 1 ] * c22[ 0 ] * c13y2 * c23[ 0 ] + 6 * c21[ 0 ] * c13x2 * c13[ 1 ] * c22[ 1 ] * c23[ 1 ] + 2 * c12x2 * c12[ 1 ] * c13[ 1 ] * c23[ 0 ] * c23[ 1 ] + c22x3 * c13y3 - 3 * c10[ 0 ] * c13y3 * c23x2 + 3 * c10[ 1 ] * c13x3 * c23y2 + 3 * c20[ 0 ] * c13y3 * c23x2 + c12y3 * c13[ 0 ] * c23x2 - c12x3 * c13[ 1 ] * c23y2 - 3 * c10[ 0 ] * c13x2 * c13[ 1 ] * c23y2 + 3 * c10[ 1 ] * c13[ 0 ] * c13y2 * c23x2 - 2 * c11[ 0 ] * c12[ 1 ] * c13x2 * c23y2 + c11[ 0 ] * c12[ 1 ] * c13y2 * c23x2 - c11[ 1 ] * c12[ 0 ] * c13x2 * c23y2 + 2 * c11[ 1 ] * c12[ 0 ] * c13y2 * c23x2 + 3 * c20[ 0 ] * c13x2 * c13[ 1 ] * c23y2 - c12[ 0 ] * c12y2 * c13[ 1 ] * c23x2 - 3 * c20[ 1 ] * c13[ 0 ] * c13y2 * c23x2 + c12x2 * c12[ 1 ] * c13[ 0 ] * c23y2 - 3 * c13[ 0 ] * c22x2 * c13y2 * c22[ 1 ] + c13x2 * c13[ 1 ] * c23[ 0 ] * (6 * c20[ 1 ] * c23[ 1 ] + 6 * c21[ 1 ] * c22[ 1 ]) + c13x2 * c22[ 0 ] * c13[ 1 ] * (6 * c21[ 1 ] * c23[ 1 ] + 3 * c22y2) + c13x3 * (-2 * c21[ 1 ] * c22[ 1 ] * c23[ 1 ] - c20[ 1 ] * c23y2 - c22[ 1 ] * (2 * c21[ 1 ] * c23[ 1 ] + c22y2) - c23[ 1 ] * (2 * c20[ 1 ] * c23[ 1 ] + 2 * c21[ 1 ] * c22[ 1 ])),
@@ -284,9 +335,7 @@ public class Intersection2D extends Intersection {
 					if( 0 <= xRoot && xRoot <= 1 ) {
 						for( double yRoot : yRoots ) {
 							if( Math.abs( xRoot - yRoot ) < TOLERANCE ) {
-								intersections.add( Vector.add( Vector.scale( c23, s * s * s ),
-									Vector.add( Vector.scale( c22, s * s ), Vector.add( Vector.scale( c21, s ), c20 ) )
-								) );
+								intersections.add( Vector.add( Vector.scale( c23, s * s * s ), Vector.add( Vector.scale( c22, s * s ), Vector.add( Vector.scale( c21, s ), c20 ) ) ) );
 								break checkRoots;
 							}
 						}
@@ -295,9 +344,7 @@ public class Intersection2D extends Intersection {
 			}
 		}
 
-		return intersections.size() == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION,
-			intersections.toArray( new double[ intersections.size() ][] )
-		);
+		return intersections.size() == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION, intersections.toArray( new double[ intersections.size() ][] ) );
 	}
 
 	private static Polynomial bezout( double[] e1, double[] e2 ) {
@@ -319,12 +366,7 @@ public class Intersection2D extends Intersection {
 		double BFpDE = BF + DE;
 		double BEmCD = BE - CD;
 
-		return new Polynomial( AB * BC - AC * AC,
-			AB * BEmCD + AD * BC - 2 * AC * AE,
-			AB * BFpDE + AD * BEmCD - AE * AE - 2 * AC * AF,
-			AB * DF + AD * BFpDE - 2 * AE * AF,
-			AD * DF - AF * AF
-		);
+		return new Polynomial( AB * BC - AC * AC, AB * BEmCD + AD * BC - 2 * AC * AE, AB * BFpDE + AD * BEmCD - AE * AE - 2 * AC * AF, AB * DF + AD * BFpDE - 2 * AE * AF, AD * DF - AF * AF );
 	}
 
 }

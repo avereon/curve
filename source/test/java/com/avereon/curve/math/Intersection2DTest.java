@@ -284,6 +284,60 @@ public class Intersection2DTest {
 	}
 
 	@Test
+	void testIntersectEllipseEllipseWithRotations() {
+		double ONE_THIRD = 1.0 / 3.0;
+		double[] c1 = Vector.of( 1, 2 );
+		double rx1 = 5;
+		double ry1 = 2;
+		double r1 = ONE_THIRD * Constants.QUARTER_CIRCLE;
+		double[] c2 = Vector.of( 2, 1 );
+		double rx2 = 3;
+		double ry2 = 4;
+		double r2 = 0.5 * Constants.QUARTER_CIRCLE;
+
+		Intersection2D x = Intersection2D.intersectEllipseEllipse( c1, rx1, ry1, r1, c2, rx2, ry2, r2 );
+
+		assertThat( x.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( x.getPoints().length, is( 4 ) );
+	}
+
+	@Test
+	void testIntersectEllipseEllipseWithRotationsAndSame() {
+		double ONE_THIRD = 1.0 / 3.0;
+		double[] c1 = Vector.of( 1, 2 );
+		double rx1 = 5;
+		double ry1 = 2;
+		double r1 = ONE_THIRD * Constants.QUARTER_CIRCLE;
+		double[] c2 = Vector.of( 1, 2 );
+		double rx2 = 5;
+		double ry2 = 2;
+		double r2 = ONE_THIRD * Constants.QUARTER_CIRCLE;
+
+		Intersection2D x = Intersection2D.intersectEllipseEllipse( c1, rx1, ry1, r1, c2, rx2, ry2, r2 );
+
+		assertThat( x.getType(), is( Intersection.Type.SAME ) );
+		assertThat( x.getPoints().length, is( 0 ) );
+	}
+
+	@Test
+	void testIntersectEllipseEllipseWithRotationsAndNoIntersections() {
+		double ONE_THIRD = 1.0 / 3.0;
+		double[] c1 = Vector.of( 10, 2 );
+		double rx1 = 5;
+		double ry1 = 2;
+		double r1 = ONE_THIRD * Constants.QUARTER_CIRCLE;
+		double[] c2 = Vector.of( 2, -10 );
+		double rx2 = 3;
+		double ry2 = 4;
+		double r2 = 0.5 * Constants.QUARTER_CIRCLE;
+
+		Intersection2D x = Intersection2D.intersectEllipseEllipse( c1, rx1, ry1, r1, c2, rx2, ry2, r2 );
+
+		assertThat( x.getType(), is( Intersection.Type.NONE ) );
+		assertThat( x.getPoints().length, is( 0 ) );
+	}
+
+	@Test
 	void testIntersectBezier3Bezier3() {
 		double[] a1 = Vector.of( -1, -2 );
 		double[] a2 = Vector.of( -1, 8 );

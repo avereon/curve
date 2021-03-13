@@ -441,7 +441,7 @@ public class Geometry {
 	 * @return True if all the points are coplanar with the plane, false otherwise
 	 */
 	public static boolean areCoplanar( double[] origin, double[] normal, double[]... points ) {
-		return areCoplanar( origin, normal, Constants.DISTANCE_TOLERANCE, points );
+		return areCoplanar( origin, normal, Constants.RESOLUTION_LENGTH, points );
 	}
 
 	/**
@@ -493,7 +493,7 @@ public class Geometry {
 	 * @return True if the vectors are considered parallel, false otherwise
 	 */
 	public static boolean areParallel( double[] vector1, double[] vector2 ) {
-		return distance( Vector.normalize( vector1 ), Vector.normalize( vector2 ) ) < Constants.RESOLUTION_NORMAL;
+		return distance( Vector.normalize( vector1 ), Vector.normalize( vector2 ) ) < Constants.RESOLUTION_LENGTH;
 	}
 
 	/**
@@ -505,7 +505,7 @@ public class Geometry {
 	 * @return True if the vectors are considered parallel, false otherwise
 	 */
 	public static boolean areAntiParallel( double[] vector1, double[] vector2 ) {
-		return distance( Vector.normalize( vector1 ), Vector.normalize( Vector.reverse( vector2 ) ) ) < Constants.RESOLUTION_NORMAL;
+		return distance( Vector.normalize( vector1 ), Vector.normalize( Vector.reverse( vector2 ) ) ) < Constants.RESOLUTION_LENGTH;
 	}
 
 	/**
