@@ -161,7 +161,7 @@ public class Intersection2D extends Intersection {
 		return new Intersection2D( Type.INTERSECTION, Point.of( x1, y1 ), Point.of( x2, y2 ) );
 	}
 
-	public static Intersection2D intersectLineCurve( double[] l1, double[] l2, double[] a, double[] b, double[] c, double[] d ) {
+	public static Intersection2D intersectLineBezier3( double[] l1, double[] l2, double[] a, double[] b, double[] c, double[] d ) {
 		double[] roots = Geometry.curveLineRoots( a, b, c, d, l1, l2 );
 
 		List<double[]> intersections = new ArrayList<>( 3 );
@@ -210,7 +210,7 @@ public class Intersection2D extends Intersection {
 		double norm0 = 1e-3 * (a[ 0 ] * a[ 0 ] + 2 * a[ 1 ] * a[ 1 ] + a[ 2 ] * a[ 2 ]);
 		double norm1 = 1e-3 * (b[ 0 ] * b[ 0 ] + 2 * b[ 1 ] * b[ 1 ] + b[ 2 ] * b[ 2 ]);
 
-		Set<double[]> intersections = new HashSet<>();
+		List<double[]> intersections = new ArrayList<>();
 
 		for( double yRoot : yRoots ) {
 			Polynomial xPoly = new Polynomial( a[ 0 ], a[ 3 ] + yRoot * a[ 1 ], a[ 5 ] + yRoot * (a[ 4 ] + yRoot * a[ 2 ]) );
@@ -256,6 +256,82 @@ public class Intersection2D extends Intersection {
 		}
 
 		return intersections.length == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION, intersections );
+	}
+
+	public static Intersection2D intersectEllipseBezier3( double[] ec, double rx, double ry, double er, double[] a, double[] b, double[] c, double[] d ) {
+		// Rotate everything so that the axes of the ellipse are parallel with the X and Y axes
+
+		// Find the intersections
+
+		// Convert intersections
+		return null;
+	}
+
+		/**
+		 * This implementation assumes that the ellipse axes are aligned with the X
+		 * and Y axes.
+		 *
+		 * @param ec
+		 * @param rx
+		 * @param ry
+		 * @param a
+		 * @param b
+		 * @param c
+		 * @param d
+		 * @return
+		 */
+public static Intersection2D intersectEllipseBezier3( double[] ec, double rx, double ry, double[] a, double[] b, double[] c, double[] d ) {
+//		var a, b, c, d;       // temporary variables
+//		var c3, c2, c1, c0;   // coefficients of cubic
+//		var result = new Intersection("No Intersection");
+//
+//		// Calculate the coefficients of cubic polynomial
+//		a = p1.multiply(-1);
+//		b = p2.multiply(3);
+//		c = p3.multiply(-3);
+//		d = a.add(b.add(c.add(p4)));
+//		c3 = new Vector2D(d.x, d.y);
+//
+//		a = p1.multiply(3);
+//		b = p2.multiply(-6);
+//		c = p3.multiply(3);
+//		d = a.add(b.add(c));
+//		c2 = new Vector2D(d.x, d.y);
+//
+//		a = p1.multiply(-3);
+//		b = p2.multiply(3);
+//		c = a.add(b);
+//		c1 = new Vector2D(c.x, c.y);
+//
+//		c0 = new Vector2D(p1.x, p1.y);
+//
+//		var rxrx  = rx*rx;
+//		var ryry  = ry*ry;
+//		var poly = new Polynomial(
+//			c3.x*c3.x*ryry + c3.y*c3.y*rxrx,
+//			2*(c3.x*c2.x*ryry + c3.y*c2.y*rxrx),
+//			2*(c3.x*c1.x*ryry + c3.y*c1.y*rxrx) + c2.x*c2.x*ryry + c2.y*c2.y*rxrx,
+//			2*c3.x*ryry*(c0.x - ec.x) + 2*c3.y*rxrx*(c0.y - ec.y) +
+//				2*(c2.x*c1.x*ryry + c2.y*c1.y*rxrx),
+//			2*c2.x*ryry*(c0.x - ec.x) + 2*c2.y*rxrx*(c0.y - ec.y) +
+//				c1.x*c1.x*ryry + c1.y*c1.y*rxrx,
+//			2*c1.x*ryry*(c0.x - ec.x) + 2*c1.y*rxrx*(c0.y - ec.y),
+//			c0.x*c0.x*ryry - 2*c0.y*ec.y*rxrx - 2*c0.x*ec.x*ryry +
+//				c0.y*c0.y*rxrx + ec.x*ec.x*ryry + ec.y*ec.y*rxrx - rxrx*ryry
+//		);
+//		var roots = poly.getRootsInInterval(0,1);
+//
+//		for ( var i = 0; i < roots.length; i++ ) {
+//			var t = roots[i];
+//
+//			result.points.push(
+//				c3.multiply(t*t*t).add(c2.multiply(t*t).add(c1.multiply(t).add(c0)))
+//			);
+//		}
+//
+//		if ( result.points.length > 0 ) result.status = "Intersection";
+
+		return new Intersection2D( Intersection.Type.NONE );
 	}
 
 	public static Intersection2D intersectBezier3Bezier3(

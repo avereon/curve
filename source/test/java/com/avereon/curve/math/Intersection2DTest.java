@@ -152,7 +152,7 @@ public class Intersection2DTest {
 		double[] c = Point.of( 1, 1 );
 		double[] d = Point.of( 1, 0 );
 
-		Intersection2D intersection = Intersection2D.intersectLineCurve( l1, l2, a, b, c, d );
+		Intersection2D intersection = Intersection2D.intersectLineBezier3( l1, l2, a, b, c, d );
 		assertThat( intersection.getPoints().length, is( 0 ) );
 		assertThat( intersection.getType(), is( Intersection.Type.NONE ) );
 	}
@@ -166,7 +166,7 @@ public class Intersection2DTest {
 		double[] c = Point.of( 1, 1 );
 		double[] d = Point.of( 1, 0 );
 
-		Intersection2D intersection = Intersection2D.intersectLineCurve( l1, l2, a, b, c, d );
+		Intersection2D intersection = Intersection2D.intersectLineBezier3( l1, l2, a, b, c, d );
 
 		double[] e = Point.of( 0.5, 0.75 );
 		assertThat( intersection.getPoints()[ 0 ], near( e ) );
@@ -181,14 +181,14 @@ public class Intersection2DTest {
 		double[] c = Point.of( 1, 1 );
 		double[] d = Point.of( 1, 0 );
 
-		Intersection2D intersection = Intersection2D.intersectLineCurve( Point.of( 0, 0.5 ), Point.of( 1, 0.5 ), a, b, c, d );
+		Intersection2D intersection = Intersection2D.intersectLineBezier3( Point.of( 0, 0.5 ), Point.of( 1, 0.5 ), a, b, c, d );
 		double offset = 0.11509982054024945;
 		assertThat( intersection.getPoints()[ 0 ], near( Point.of( offset, 0.5 ) ) );
 		assertThat( intersection.getPoints()[ 1 ], near( Point.of( 1 - offset, 0.5 ) ) );
 		assertThat( intersection.getPoints().length, is( 2 ) );
 		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
 
-		intersection = Intersection2D.intersectLineCurve( Point.of( -0.25, 0 ), Point.of( 0.75, 1 ), a, b, c, d );
+		intersection = Intersection2D.intersectLineBezier3( Point.of( -0.25, 0 ), Point.of( 0.75, 1 ), a, b, c, d );
 		assertThat( intersection.getPoints()[ 0 ], near( Point.of( 0.030397656825319842, 0.2803976568253193 ) ) );
 		assertThat( intersection.getPoints()[ 1 ], near( Point.of( 0.5, 0.75 ) ) );
 		assertThat( intersection.getPoints().length, is( 2 ) );
@@ -297,6 +297,10 @@ public class Intersection2DTest {
 
 		Intersection2D x = Intersection2D.intersectEllipseEllipse( c1, rx1, ry1, r1, c2, rx2, ry2, r2 );
 
+		assertThat( x.getPoints()[ 0 ], near( Point.of( 4.943996959877696, 2.778855224957914, 0 ) ) );
+		assertThat( x.getPoints()[ 1 ], near( Point.of( -2.1238408414073597, 2.1622077631954775, 0 ) ) );
+		assertThat( x.getPoints()[ 2 ], near( Point.of( -0.4862630247260602, -0.8049108703010766, 0 ) ) );
+		assertThat( x.getPoints()[ 3 ], near( Point.of( -3.3818161710771095, -0.3928664039763583, 0 ) ) );
 		assertThat( x.getType(), is( Intersection.Type.INTERSECTION ) );
 		assertThat( x.getPoints().length, is( 4 ) );
 	}
@@ -333,6 +337,40 @@ public class Intersection2DTest {
 
 		Intersection2D x = Intersection2D.intersectEllipseEllipse( c1, rx1, ry1, r1, c2, rx2, ry2, r2 );
 
+		assertThat( x.getType(), is( Intersection.Type.NONE ) );
+		assertThat( x.getPoints().length, is( 0 ) );
+	}
+
+	@Test
+	void testIntersectEllipseBezier3() {
+		double[] ec = Point.of( 4, 4 );
+		double rx = 4;
+		double ry = 2;
+		double er = 0.5 * Constants.QUARTER_CIRCLE;
+
+		double[] a = Vector.of( 0, 8 );
+		double[] b = Vector.of( 8, 4 );
+		double[] c = Vector.of( 0, 4 );
+		double[] d = Vector.of( 8, 0 );
+
+		Intersection2D x = Intersection2D.intersectEllipseBezier3( ec, rx, ry, er, a, b, c, d );
+		//assertThat( x.getType(), is( Intersection.Type.INTERSECTION ) );
+		//assertThat( x.getPoints().length, is( 6 ) );
+	}
+
+	@Test
+	void testIntersectEllipseBezier3NoIntersections() {
+		double[] ec = Point.of( -4, 4 );
+		double rx = 4;
+		double ry = 2;
+		double er = 1.5 * Constants.QUARTER_CIRCLE;
+
+		double[] a = Vector.of( 0, 8 );
+		double[] b = Vector.of( 8, 4 );
+		double[] c = Vector.of( 0, 4 );
+		double[] d = Vector.of( 8, 0 );
+
+		Intersection2D x = Intersection2D.intersectEllipseBezier3( ec, rx, ry, er, a, b, c, d );
 		assertThat( x.getType(), is( Intersection.Type.NONE ) );
 		assertThat( x.getPoints().length, is( 0 ) );
 	}
