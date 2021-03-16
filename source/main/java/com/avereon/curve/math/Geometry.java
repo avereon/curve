@@ -1,5 +1,10 @@
 package com.avereon.curve.math;
 
+import java.util.Arrays;
+
+/**
+ * A bezier curve reference: https://pomax.github.io/bezierinfo
+ */
 public class Geometry {
 
 	/**
@@ -242,11 +247,6 @@ public class Geometry {
 		return new double[]{ ry * ry, 0, rx * rx, -2 * ry * ry * c[ 0 ], -2 * rx * rx * c[ 1 ], ry * ry * c[ 0 ] * c[ 0 ] + rx * rx * c[ 1 ] * c[ 1 ] - rx * rx * ry * ry };
 	}
 
-	public static double[] curveLineRoots( double[] a, double[] b, double[] c, double[] d, double[] r ) {
-		double[] n = Vector.add( r, Point.of( a[ 1 ] - d[ 1 ], d[ 0 ] - a[ 0 ] ) );
-		return curveLineRoots( a, b, c, d, r, n );
-	}
-
 	/**
 	 * Get the root (the parametric values) for given curve and line.
 	 *
@@ -289,9 +289,9 @@ public class Geometry {
 		// This gives the same result as using Geometry.curvePoint() but it requires
 		// calculating the coefficients first and therefore takes more compute time
 		// for a single point.
-		double[][] cfs = Geometry.curveCoefficients( a, b, c, d );
-		double x = cfs[ 0 ][ 0 ] * t * t * t + cfs[ 1 ][ 0 ] * t * t + cfs[ 2 ][ 0 ] * t + cfs[ 3 ][ 0 ];
-		double y = cfs[ 0 ][ 1 ] * t * t * t + cfs[ 1 ][ 1 ] * t * t + cfs[ 2 ][ 1 ] * t + cfs[ 3 ][ 1 ];
+		double[][] coefficients = Geometry.curveCoefficients( a, b, c, d );
+		double x = coefficients[ 0 ][ 0 ] * t * t * t + coefficients[ 1 ][ 0 ] * t * t + coefficients[ 2 ][ 0 ] * t + coefficients[ 3 ][ 0 ];
+		double y = coefficients[ 0 ][ 1 ] * t * t * t + coefficients[ 1 ][ 1 ] * t * t + coefficients[ 2 ][ 1 ] * t + coefficients[ 3 ][ 1 ];
 		return new double[]{ x, y };
 	}
 
@@ -307,10 +307,31 @@ public class Geometry {
 	 * @return The parametric value for the reference point
 	 */
 	public static double curveParametricValue( double[] a, double[] b, double[] c, double[] d, double[] r ) {
-		double[] roots = curveLineRoots( a, b, c, d, r );
+//		double x = r[ 1 ];
+//		a[ 1 ] -= x;
+//		b[ 1 ] -= x;
+//		c[ 1 ] -= x;
+//		d[ 1 ] -= x;
+//		a = Vector.subtract( a, r );
+//		b = Vector.subtract( b, r );
+//		c = Vector.subtract( c, r );
+//		d = Vector.subtract( d, r );
+
+		System.out.printf( "a=%f b=%f c=%f d=%f%n", a[ 0 ], b[ 0 ], c[ 0 ], d[ 0 ] );
+
+		double[][] coeffs = curveCoefficients( a, b, c, d );
+		System.out.println( "coeffs[0]=" + Arrays.toString(coeffs[0] ) );
+
+		Polynomial p = new Polynomial( coeffs[0] );
+		System.out.println( "p=" + p );
+		double[] roots = p.getRoots();
+
+		System.out.println( "roots=" + Arrays.toString( roots ) );
+		//double[] roots = curveLineRoots( a, b, c, d, r );
 		for( double root : roots ) {
-			if( root < 0 || root > 1 ) continue;
-			return root;
+			//System.out.println( root );
+			//if( root < 0 || root > 1 ) continue;
+			//return root;
 		}
 		return Double.NaN;
 	}

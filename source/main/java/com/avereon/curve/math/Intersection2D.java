@@ -1,6 +1,9 @@
 package com.avereon.curve.math;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * A reference on 2D intersections: http://www.kevlindev.com/geometry/2D/intersections/index.htm
@@ -231,7 +234,7 @@ public class Intersection2D extends Intersection {
 		if( near( oc1, oc2 ) && near( rx1, rx2 ) && near( ry1, ry2 ) && nearAngle( r1, r2 ) ) return new Intersection2D( Type.SAME );
 
 		// Move everything so that the center of ellipse 1 is at the origin
-		{ oc2 = Vector.subtract( oc2, oc1 ); }
+		oc2 = Vector.subtract( oc2, oc1 );
 
 		// Rotate everything so that the axes of ellipse 1 are parallel with the X and Y axes
 		oc2 = Vector.rotate( oc2, -r1 );
@@ -259,84 +262,70 @@ public class Intersection2D extends Intersection {
 	}
 
 	public static Intersection2D intersectEllipseBezier3( double[] ec, double rx, double ry, double er, double[] a, double[] b, double[] c, double[] d ) {
+		// Move everything so that the center of the ellipse is at the origin
+		a = Vector.subtract( a, ec );
+		b = Vector.subtract( b, ec );
+		c = Vector.subtract( c, ec );
+		d = Vector.subtract( d, ec );
+
 		// Rotate everything so that the axes of the ellipse are parallel with the X and Y axes
+		a = Vector.rotate( a, -er );
+		b = Vector.rotate( b, -er );
+		c = Vector.rotate( c, -er );
+		d = Vector.rotate( d, -er );
 
 		// Find the intersections
+		Intersection2D xn = intersectEllipseBezier3( Point.of( 0, 0, 0 ), rx, ry, a, b, c, d );
 
-		// Convert intersections
-		return null;
+		// For any intersection points, undo rotate and move
+		double[][] intersections = xn.getPoints();
+		for( int index = 0; index < intersections.length; index++ ) {
+			intersections[ index ] = Vector.add( Vector.rotate( intersections[ index ], er ), ec );
+		}
+
+		return intersections.length == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION, intersections );
 	}
 
-		/**
-		 * This implementation assumes that the ellipse axes are aligned with the X
-		 * and Y axes.
-		 *
-		 * @param ec
-		 * @param rx
-		 * @param ry
-		 * @param a
-		 * @param b
-		 * @param c
-		 * @param d
-		 * @return
-		 */
-public static Intersection2D intersectEllipseBezier3( double[] ec, double rx, double ry, double[] a, double[] b, double[] c, double[] d ) {
-//		var a, b, c, d;       // temporary variables
-//		var c3, c2, c1, c0;   // coefficients of cubic
-//		var result = new Intersection("No Intersection");
-//
-//		// Calculate the coefficients of cubic polynomial
-//		a = p1.multiply(-1);
-//		b = p2.multiply(3);
-//		c = p3.multiply(-3);
-//		d = a.add(b.add(c.add(p4)));
-//		c3 = new Vector2D(d.x, d.y);
-//
-//		a = p1.multiply(3);
-//		b = p2.multiply(-6);
-//		c = p3.multiply(3);
-//		d = a.add(b.add(c));
-//		c2 = new Vector2D(d.x, d.y);
-//
-//		a = p1.multiply(-3);
-//		b = p2.multiply(3);
-//		c = a.add(b);
-//		c1 = new Vector2D(c.x, c.y);
-//
-//		c0 = new Vector2D(p1.x, p1.y);
-//
-//		var rxrx  = rx*rx;
-//		var ryry  = ry*ry;
-//		var poly = new Polynomial(
-//			c3.x*c3.x*ryry + c3.y*c3.y*rxrx,
-//			2*(c3.x*c2.x*ryry + c3.y*c2.y*rxrx),
-//			2*(c3.x*c1.x*ryry + c3.y*c1.y*rxrx) + c2.x*c2.x*ryry + c2.y*c2.y*rxrx,
-//			2*c3.x*ryry*(c0.x - ec.x) + 2*c3.y*rxrx*(c0.y - ec.y) +
-//				2*(c2.x*c1.x*ryry + c2.y*c1.y*rxrx),
-//			2*c2.x*ryry*(c0.x - ec.x) + 2*c2.y*rxrx*(c0.y - ec.y) +
-//				c1.x*c1.x*ryry + c1.y*c1.y*rxrx,
-//			2*c1.x*ryry*(c0.x - ec.x) + 2*c1.y*rxrx*(c0.y - ec.y),
-//			c0.x*c0.x*ryry - 2*c0.y*ec.y*rxrx - 2*c0.x*ec.x*ryry +
-//				c0.y*c0.y*rxrx + ec.x*ec.x*ryry + ec.y*ec.y*rxrx - rxrx*ryry
-//		);
-//		var roots = poly.getRootsInInterval(0,1);
-//
-//		for ( var i = 0; i < roots.length; i++ ) {
-//			var t = roots[i];
-//
-//			result.points.push(
-//				c3.multiply(t*t*t).add(c2.multiply(t*t).add(c1.multiply(t).add(c0)))
-//			);
-//		}
-//
-//		if ( result.points.length > 0 ) result.status = "Intersection";
+	/**
+	 * This implementation assumes that the ellipse axes are aligned with the X
+	 * and Y axes.
+	 *
+	 * @param ec The ellipse center
+	 * @param rx The ellipse x radius
+	 * @param ry The ellipse y radius
+	 * @param a The curve point a
+	 * @param b The curve point b
+	 * @param c The curve point c
+	 * @param d The curve point d
+	 * @return The intersection
+	 */
+	public static Intersection2D intersectEllipseBezier3( double[] ec, double rx, double ry, double[] a, double[] b, double[] c, double[] d ) {
+		double[][] coefficients = Geometry.curveCoefficients( a, b, c, d );
+		double[] c3 = coefficients[ 0 ];
+		double[] c2 = coefficients[ 1 ];
+		double[] c1 = coefficients[ 2 ];
+		double[] c0 = coefficients[ 3 ];
 
-		return new Intersection2D( Intersection.Type.NONE );
+		double rxrx = rx * rx;
+		double ryry = ry * ry;
+		Polynomial poly = new Polynomial(
+			c3[ 0 ] * c3[ 0 ] * ryry + c3[ 1 ] * c3[ 1 ] * rxrx,
+			2 * (c3[ 0 ] * c2[ 0 ] * ryry + c3[ 1 ] * c2[ 1 ] * rxrx),
+			2 * (c3[ 0 ] * c1[ 0 ] * ryry + c3[ 1 ] * c1[ 1 ] * rxrx) + c2[ 0 ] * c2[ 0 ] * ryry + c2[ 1 ] * c2[ 1 ] * rxrx,
+			2 * c3[ 0 ] * ryry * (c0[ 0 ] - ec[ 0 ]) + 2 * c3[ 1 ] * rxrx * (c0[ 1 ] - ec[ 1 ]) + 2 * (c2[ 0 ] * c1[ 0 ] * ryry + c2[ 1 ] * c1[ 1 ] * rxrx),
+			2 * c2[ 0 ] * ryry * (c0[ 0 ] - ec[ 0 ]) + 2 * c2[ 1 ] * rxrx * (c0[ 1 ] - ec[ 1 ]) + c1[ 0 ] * c1[ 0 ] * ryry + c1[ 1 ] * c1[ 1 ] * rxrx,
+			2 * c1[ 0 ] * ryry * (c0[ 0 ] - ec[ 0 ]) + 2 * c1[ 1 ] * rxrx * (c0[ 1 ] - ec[ 1 ]),
+			c0[ 0 ] * c0[ 0 ] * ryry - 2 * c0[ 1 ] * ec[ 1 ] * rxrx - 2 * c0[ 0 ] * ec[ 0 ] * ryry + c0[ 1 ] * c0[ 1 ] * rxrx + ec[ 0 ] * ec[ 0 ] * ryry + ec[ 1 ] * ec[ 1 ] * rxrx - rxrx * ryry
+		);
+		var roots = poly.getRootsInInterval( 0, 1 );
+
+		double[][] intersections = new double[ roots.length ][];
+		IntStream.range( 0, roots.length ).forEach( i -> intersections[ i ] = Geometry.curvePoint( a, b, c, d, roots[ i ] ) );
+
+		return intersections.length == 0 ? new Intersection2D( Type.NONE ) : new Intersection2D( Type.INTERSECTION, intersections );
 	}
 
-	public static Intersection2D intersectBezier3Bezier3(
-		double[] a1, double[] a2, double[] a3, double[] a4, double[] b1, double[] b2, double[] b3, double[] b4
-	) {
+	public static Intersection2D intersectBezier3Bezier3( double[] a1, double[] a2, double[] a3, double[] a4, double[] b1, double[] b2, double[] b3, double[] b4 ) {
 		boolean sameForward = Arrays.equals( a1, b1 ) && Arrays.equals( a2, b2 ) && Arrays.equals( a3, b3 ) && Arrays.equals( a4, b4 );
 		boolean sameBackward = Arrays.equals( a1, b4 ) && Arrays.equals( a2, b3 ) && Arrays.equals( a3, b2 ) && Arrays.equals( a4, b1 );
 		if( sameForward || sameBackward ) return new Intersection2D( Type.SAME );

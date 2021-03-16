@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.avereon.curve.match.Matchers.near;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -109,56 +110,14 @@ public class PolynomialTest {
 		assertThat( new Polynomial( 2, 0, 0 ).getDerivative(), is( new Polynomial( 4, 0 ) ) );
 	}
 
-	//	@Test
-	//	@Test void testGetLinearRoot() {
-	//		assertThat( new double[] { 0.0 }, new Polynomial( -2, 0 ).getRoots() );
-	//		assertThat( new double[] { -0.0 }, new Polynomial( 2, 0 ).getRoots() );
-	//		assertThat( new double[] { 1.0 }, new Polynomial( 1, -1 ).getRoots() );
-	//		assertThat( new double[] { 0.5 }, new Polynomial( 2, -1 ).getRoots() );
-	//		assertThat( new double[] { -2.0 }, new Polynomial( 1, 2 ).getRoots() );
-	//	}
-	//
-	//	@Test
-	//	@Test void testGetQuadricRoots() {
-	//		assertThat( new double[] { 1 }, new Polynomial( 1, -2, 1 ).getRoots() );
-	//		assertThat( new double[] { -1 }, new Polynomial( 1, 2, 1 ).getRoots() );
-	//		assertThat( new double[] { 1, 2 }, new Polynomial( 1, -3, 2 ).getRoots() );
-	//		assertThat( new double[] { 0, 3 }, new Polynomial( 1, -3, 0 ).getRoots() );
-	//
-	//		// Test x^2.
-	//		assertThat( new double[] { 0 }, new Polynomial( 1, 0, 0 ).getRoots() );
-	//
-	//		// Test X^2-10+25.
-	//		assertThat( new double[] { 5.0 }, new Polynomial( 1, -10, 25 ).getRoots() );
-	//
-	//		// Test x^2 + 1.
-	//		assertThat( new double[] {}, new Polynomial( 1, 0, 1 ).getRoots() );
-	//	}
-	//
-	//	@Test
-	//	@Test void testGetCubicRoots() {
-	//		assertThat( new double[] { 1, 2, 3 }, new Polynomial( 1, -6, 11, -6 ).getRoots(), 1e-15 );
-	//		assertThat( new double[] { -3, -2, -1 }, new Polynomial( 1, 6, 11, 6 ).getRoots(), 1e-15 );
-	//
-	//		// Test x^3.
-	//		assertThat( new double[] { 0 }, new Polynomial( 1, 0, 0, 0 ).getRoots() );
-	//	}
-	//
-	//	@Test
-	//	@Test void testGetQuarticRoots() {
-	//		assertThat( new double[] { 1, 2, 3, 4 }, new Polynomial( 1, -10, 35, -50, 24 ).getRoots() );
-	//		assertThat( new double[] { -4, -3, -2, -1 }, new Polynomial( 1, 10, 35, 50, 24 ).getRoots() );
-	//		assertThat( new double[] { 1, 2 }, new Polynomial( 1, -6, 13, -12, 4 ).getRoots() );
-	//
-	//		// Text x^4.
-	//		assertThat( new double[] { 0 }, new Polynomial( 1, 0, 0, 0, 0 ).getRoots() );
-	//
-	//		// Test x^4 + 1.
-	//		assertThat( new double[] {}, new Polynomial( 1, 0, 0, 0, 1 ).getRoots() );
-	//
-	//		// Test x^4 - 1.
-	//		assertThat( new double[] { -1, 1 }, new Polynomial( 1, 0, 0, 0, -1 ).getRoots() );
-	//	}
+	@Test
+	void testBisection() {
+		double value = Math.sqrt( 0.5 );
+		assertThat( new Polynomial( 2, 0, -1 ).bisection( -2, -1 ), is( Double.NaN ) );
+		assertThat( new Polynomial( 2, 0, -1 ).bisection( -1, 0 ), closeTo( -value, 10 * Polynomial.TOLERANCE ) );
+		assertThat( new Polynomial( 2, 0, -1 ).bisection( 0, 1 ), closeTo( value, 10 * Polynomial.TOLERANCE ) );
+		assertThat( new Polynomial( 2, 0, -1 ).bisection( 1, 2 ), is( Double.NaN ) );
+	}
 
 	@Test
 	void testGetRootsLinear() {

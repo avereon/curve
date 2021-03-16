@@ -156,7 +156,7 @@ public class Polynomial {
 	/**
 	 * Get the derivative polynomial of this polynomial.
 	 *
-	 * @return
+	 * @return The derivative polynomial
 	 */
 	public final Polynomial getDerivative() {
 		Polynomial derivative = new Polynomial();
@@ -173,10 +173,11 @@ public class Polynomial {
 		double result = Double.NaN;
 		double minValue = this.evaluate( min );
 		double maxValue = this.evaluate( max );
+		double tolerance = TOLERANCE;
 
-		if( Math.abs( minValue ) <= Polynomial.TOLERANCE ) {
+		if( Math.abs( minValue ) <= tolerance ) {
 			result = min;
-		} else if( Math.abs( maxValue ) <= Polynomial.TOLERANCE ) {
+		} else if( Math.abs( maxValue ) <= tolerance ) {
 			result = max;
 		} else if( minValue * maxValue <= 0 ) {
 			double tmp1 = Math.log( max - min );
@@ -187,7 +188,7 @@ public class Polynomial {
 				result = 0.5 * (min + max);
 				double value = this.evaluate( result );
 
-				if( Math.abs( value ) <= Polynomial.TOLERANCE ) break;
+				if( Math.abs( value ) <= tolerance ) break;
 
 				if( value * minValue < 0 ) {
 					max = result;
@@ -225,6 +226,21 @@ public class Polynomial {
 		return result;
 	}
 
+	public final double[] getRoots( double min, double max ) {
+		int count = 0;
+		double[] roots = new double[ getDegree() ];
+		for( double root : getRoots() ) {
+			if( root >= min && root <= max ) {
+				roots[ count ] = root;
+				count++;
+			}
+		}
+
+		double[] result = new double[ count ];
+		System.arraycopy( roots, 0, result, 0, count );
+		return result;
+	}
+
 	public final double[] getRootsInInterval( double min, double max ) {
 		int count = 0;
 		double value = 0;
@@ -232,7 +248,7 @@ public class Polynomial {
 
 		if( this.getDegree() == 1 ) {
 			value = this.bisection( min, max );
-			if( value != Double.NaN ) roots[ count++ ] = value;
+			if( !Double.isNaN( value ) ) roots[ count++ ] = value;
 		} else {
 			// Get the roots of the derivative.
 			Polynomial derivitive = this.getDerivative();
@@ -241,21 +257,21 @@ public class Polynomial {
 			if( derivitiveRoots.length > 0 ) {
 				// Find the roots on [min, derivitiveRoots[0]]
 				value = this.bisection( min, derivitiveRoots[ 0 ] );
-				if( value != Double.NaN ) roots[ count++ ] = value;
+				if( !Double.isNaN( value ) ) roots[ count++ ] = value;
 
 				// Find the roots on [derivitiveRoots[i],derivitiveRoots[i+1]] for 0 <= i <= count-2
 				for( int i = 0; i <= derivitiveRoots.length - 2; i++ ) {
 					value = this.bisection( derivitiveRoots[ i ], derivitiveRoots[ i + 1 ] );
-					if( value != Double.NaN ) roots[ count++ ] = value;
+					if( !Double.isNaN( value ) ) roots[ count++ ] = value;
 				}
 
 				// Find the roots on [derivitiveRoots[count-1],xmax]
 				value = this.bisection( derivitiveRoots[ derivitiveRoots.length - 1 ], max );
-				if( value != Double.NaN ) roots[ count++ ] = value;
+				if( !Double.isNaN( value ) ) roots[ count++ ] = value;
 			} else {
 				// The polynomial is monotone on [min,max]. Has at most one root.
 				value = this.bisection( min, max );
-				if( value != Double.NaN ) roots[ count++ ] = value;
+				if( !Double.isNaN( value ) ) roots[ count++ ] = value;
 			}
 		}
 

@@ -38,6 +38,17 @@ public class Intersection2DTest {
 	}
 
 	@Test
+	void testIntersectLineLineWithSegments() {
+		double[] a = Vector.of( 0, 0 );
+		double[] b = Vector.of( 2, 2 );
+		double[] c = Vector.of( 2, 4 );
+		double[] d = Vector.of( 4, 2 );
+		Intersection2D intersection = Intersection2D.intersectLineLine( a, b, c, d );
+
+		assertThat( intersection, is( new Intersection2D( Intersection.Type.INTERSECTION, Vector.of( 3, 3 ) ) ) );
+	}
+
+	@Test
 	void testIntersectSegmentSegment() {
 		double[] a = Vector.of( 0, 0 );
 		double[] b = Vector.of( 2, 2 );
@@ -342,11 +353,49 @@ public class Intersection2DTest {
 	}
 
 	@Test
-	void testIntersectEllipseBezier3() {
+	void testIntersectEllipseBezier3WithTwoIntersections() {
+		double[] ec = Point.of( 0, 0 );
+		double rx = 2;
+		double ry = 4;
+		double er = 0;
+
+		double[] a = Vector.of( -4, 4 );
+		double[] b = Vector.of( 4, 0 );
+		double[] c = Vector.of( -4, 0 );
+		double[] d = Vector.of( 4, -4 );
+
+		Intersection2D x = Intersection2D.intersectEllipseBezier3( ec, rx, ry, er, a, b, c, d );
+		assertThat( x.getPoints()[ 0 ], near( Point.of( -1.5351200609515785, 2.563908252470462, 0 ) ) );
+		assertThat( x.getPoints()[ 1 ], near( Point.of( 1.5351200609515785, -2.563908252470462, 0 ) ) );
+		assertThat( x.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( x.getPoints().length, is( 2 ) );
+	}
+
+	@Test
+	void testIntersectEllipseBezier3WithTwoIntersectionsA() {
+		double[] ec = Point.of( 0, 0 );
+		double rx = 4;
+		double ry = 2;
+		double er = Constants.QUARTER_CIRCLE;
+
+		double[] a = Vector.of( -4, 4 );
+		double[] b = Vector.of( 4, 0 );
+		double[] c = Vector.of( -4, 0 );
+		double[] d = Vector.of( 4, -4 );
+
+		Intersection2D x = Intersection2D.intersectEllipseBezier3( ec, rx, ry, er, a, b, c, d );
+		assertThat( x.getPoints()[ 0 ], near( Point.of( -1.5351200609515785, 2.563908252470462, 0 ) ) );
+		assertThat( x.getPoints()[ 1 ], near( Point.of( 1.5351200609515785, -2.563908252470462, 0 ) ) );
+		assertThat( x.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( x.getPoints().length, is( 2 ) );
+	}
+
+	@Test
+	void testIntersectEllipseBezier3WithTwoIntersectionsB() {
 		double[] ec = Point.of( 4, 4 );
 		double rx = 4;
 		double ry = 2;
-		double er = 0.5 * Constants.QUARTER_CIRCLE;
+		double er = Constants.QUARTER_CIRCLE;
 
 		double[] a = Vector.of( 0, 8 );
 		double[] b = Vector.of( 8, 4 );
@@ -354,8 +403,33 @@ public class Intersection2DTest {
 		double[] d = Vector.of( 8, 0 );
 
 		Intersection2D x = Intersection2D.intersectEllipseBezier3( ec, rx, ry, er, a, b, c, d );
-		//assertThat( x.getType(), is( Intersection.Type.INTERSECTION ) );
-		//assertThat( x.getPoints().length, is( 6 ) );
+		assertThat( x.getPoints()[ 0 ], near( Point.of( 2.4648799390484215, 6.563908252470462, 0 ) ) );
+		assertThat( x.getPoints()[ 1 ], near( Point.of( 5.5351200609515785, 1.436091747529538, 0 ) ) );
+		assertThat( x.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( x.getPoints().length, is( 2 ) );
+	}
+
+	@Test
+	void testIntersectEllipseBezier3WithSixIntersections() {
+		double[] ec = Point.of( 4, 4 );
+		double rx = 4;
+		double ry = 2;
+		double er = Constants.QUARTER_CIRCLE;
+
+		double[] a = Vector.of( 2, 8 );
+		double[] b = Vector.of( 16, 4 );
+		double[] c = Vector.of( -8, 4 );
+		double[] d = Vector.of( 6, 0 );
+
+		Intersection2D x = Intersection2D.intersectEllipseBezier3( ec, rx, ry, er, a, b, c, d );
+		assertThat( x.getPoints()[ 0 ], near( Point.of( 3.1764536229073514, 7.645145497507086, 0.0 ) ) );
+		assertThat( x.getPoints()[ 1 ], near( Point.of( 5.446609883713707, 6.762115021785103, 0.0 ) ) );
+		assertThat( x.getPoints()[ 2 ], near( Point.of( 5.948948890909494, 4.897993784401789, 0.0 ) ) );
+		assertThat( x.getPoints()[ 3 ], near( Point.of( 2.0510511090905066, 3.1020062155982124, 0.0 ) ) );
+		assertThat( x.getPoints()[ 4 ], near( Point.of( 2.553390116286298, 1.2378849782148946, 0.0 ) ) );
+		assertThat( x.getPoints()[ 5 ], near( Point.of( 4.823546377092655, 0.3548545024929117, 0.0 ) ) );
+		assertThat( x.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( x.getPoints().length, is( 6 ) );
 	}
 
 	@Test
