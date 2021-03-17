@@ -177,8 +177,8 @@ public class GeometryTest {
 
 	@Test
 	void testCurveParametricValue() {
-		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ), is( 0.5 ) );
-		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 0 ), Vector.of( 1, 2 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ), is( 0.5 ) );
+		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ), near( 0.5 ) );
+		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 0 ), Vector.of( 1, 2 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ), near( 0.5 ) );
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public class GeometryTest {
 		double[] b = Vector.of( 16, 4 );
 		double[] c = Vector.of( -8, 4 );
 		double[] d = Vector.of( 6, 0 );
-		assertThat( Geometry.curveParametricValue( a, b, c, d, Point.of( 4, 4 ) ), is( 0.5 ) );
+		assertThat( Geometry.curveParametricValue( a, b, c, d, Point.of( 4, 4 ) ), near( 0.5 ) );
 	}
 
 	@Test

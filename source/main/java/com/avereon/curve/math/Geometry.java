@@ -1,7 +1,5 @@
 package com.avereon.curve.math;
 
-import java.util.Arrays;
-
 /**
  * A bezier curve reference: https://pomax.github.io/bezierinfo
  */
@@ -307,31 +305,18 @@ public class Geometry {
 	 * @return The parametric value for the reference point
 	 */
 	public static double curveParametricValue( double[] a, double[] b, double[] c, double[] d, double[] r ) {
-//		double x = r[ 1 ];
-//		a[ 1 ] -= x;
-//		b[ 1 ] -= x;
-//		c[ 1 ] -= x;
-//		d[ 1 ] -= x;
-//		a = Vector.subtract( a, r );
-//		b = Vector.subtract( b, r );
-//		c = Vector.subtract( c, r );
-//		d = Vector.subtract( d, r );
+		// Get the curve coefficients
+		double[][] coefficients = curveCoefficients( a, b, c, d );
 
-		System.out.printf( "a=%f b=%f c=%f d=%f%n", a[ 0 ], b[ 0 ], c[ 0 ], d[ 0 ] );
+		// Subtract the reference point x coordinate from the last coefficient
+		coefficients[ 3 ][ 0 ] -= r[ 0 ];
 
-		double[][] coeffs = curveCoefficients( a, b, c, d );
-		System.out.println( "coeffs[0]=" + Arrays.toString(coeffs[0] ) );
+		// Calculate the polynomial roots
+		double[] roots = new Polynomial( coefficients[ 0 ][ 0 ], coefficients[ 1 ][ 0 ], coefficients[ 2 ][ 0 ], coefficients[ 3 ][ 0 ] ).getRoots();
 
-		Polynomial p = new Polynomial( coeffs[0] );
-		System.out.println( "p=" + p );
-		double[] roots = p.getRoots();
-
-		System.out.println( "roots=" + Arrays.toString( roots ) );
-		//double[] roots = curveLineRoots( a, b, c, d, r );
+		// Test each root for which one matches the reference point
 		for( double root : roots ) {
-			//System.out.println( root );
-			//if( root < 0 || root > 1 ) continue;
-			//return root;
+			if( root >= 0 && root <= 1 && Geometry.areSamePoint( Geometry.curvePoint( a, b, c, d, root ), r ) ) return root;
 		}
 		return Double.NaN;
 	}
@@ -358,6 +343,12 @@ public class Geometry {
 
 	/**
 	 * Compute the x/y coefficients of a cubic bezier curve.
+	 * <pre>
+	 * c[0] = coefficients for t^3
+	 * c[1] = coefficients for t^2
+	 * c[2] = coefficients for t^1
+	 * c[3] = coefficients for t^0
+	 * </pre>
 	 *
 	 * @param a The curve point a
 	 * @param b The curve point b
