@@ -20,12 +20,12 @@ public interface Constants {
 
 	/**
 	 * The value used to determine if two points in space are distinct. This needs
-	 * to be small enough to be useful for the application but large enough to
-	 * stay away from round off errors. A value between 1e-10 to 1e-15 is common.
+	 * to be small enough to be useful to the application, but large enough to
+	 * stay away from round off errors. A value between 1e-4 to 1e-8 is common.
 	 * <p/>
 	 * This is also the same as DISTANCE_TOLERANCE and RESOLUTION_NORMAL.
 	 */
-	double RESOLUTION_LENGTH = 1e-10;
+	double RESOLUTION_LENGTH = 1e-6;
 
 	/**
 	 * The angle value that corresponds to RESOLUTION_LENGTH that is used to

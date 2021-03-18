@@ -93,9 +93,7 @@ public class Geometry {
 	 * @return The angle between the two vectors
 	 */
 	public static double getAngle( final double[] v1, final double[] v2 ) {
-		double a = getAngle( v1 );
-		double b = getAngle( v2 );
-		return normalizeAngle( b - a );
+		return normalizeAngle( getAngle( v2 ) - getAngle( v1 ) );
 	}
 
 	/**

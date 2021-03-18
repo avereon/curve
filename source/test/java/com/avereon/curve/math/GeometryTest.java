@@ -300,12 +300,13 @@ public class GeometryTest {
 		assertFalse( Geometry.areParallel( Vector.of( -1, 0 ), Vector.of( 2, 0 ) ) );
 
 		// Test boundaries.
-		double inside = Constants.RESOLUTION_LENGTH - Math.ulp( Constants.RESOLUTION_LENGTH );
-		assertFalse( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, Constants.RESOLUTION_LENGTH ) ) );
+		double outside = 1.0001 * Constants.RESOLUTION_LENGTH;
+		double inside = 0.9999 * Constants.RESOLUTION_LENGTH;
+		assertFalse( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, outside ) ) );
 		assertTrue( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, inside ) ) );
 		assertTrue( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, 0 ) ) );
 		assertTrue( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, -inside ) ) );
-		assertFalse( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, -Constants.RESOLUTION_LENGTH ) ) );
+		assertFalse( Geometry.areParallel( Vector.of( 1, 0 ), Vector.of( 1, -outside ) ) );
 	}
 
 	@Test
@@ -320,12 +321,13 @@ public class GeometryTest {
 		assertFalse( Geometry.areAntiParallel( Vector.of( 1, 0 ), Vector.of( 2, 0 ) ) );
 
 		// Test boundaries.
-		double inside = Constants.RESOLUTION_LENGTH - Math.ulp( Constants.RESOLUTION_LENGTH );
-		assertFalse( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, Constants.RESOLUTION_LENGTH ) ) );
+		double outside = 1.0001 * Constants.RESOLUTION_LENGTH;
+		double inside = 0.9999 * Constants.RESOLUTION_LENGTH;
+		assertFalse( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, outside ) ) );
 		assertTrue( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, inside ) ) );
 		assertTrue( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, 0 ) ) );
 		assertTrue( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, -inside ) ) );
-		assertFalse( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, -Constants.RESOLUTION_LENGTH ) ) );
+		assertFalse( Geometry.areAntiParallel( Vector.of( -1, 0 ), Vector.of( 1, -outside ) ) );
 	}
 
 	@Test
