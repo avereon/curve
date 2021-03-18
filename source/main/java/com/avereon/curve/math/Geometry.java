@@ -26,6 +26,17 @@ public class Geometry {
 		return Point.of( 0.5 * (a[ 0 ] + b[ 0 ]), 0.5 * (a[ 1 ] + b[ 1 ]), 0.5 * (a[ 2 ] + b[ 2 ]) );
 	}
 
+	/**
+	 * Get the midpoint of an ellipse arc.
+	 *
+	 * @param origin The center of the ellipse arc
+	 * @param xRadius The x radius of the ellipse arc
+	 * @param yRadius The y radius of the ellipse arc
+	 * @param rotate The rotation of the ellipse arc
+	 * @param start The start angle of the ellipse arc
+	 * @param extent The extent angle of the ellipse arc
+	 * @return The midpoint of the ellipse arc
+	 */
 	public static double[] midpoint( final double[] origin, final double xRadius, final double yRadius, final double rotate, final double start, final double extent ) {
 		// Find the bisecting angle
 		double a = start + 0.5 * extent;
@@ -73,17 +84,31 @@ public class Geometry {
 		return Math.atan2( point[ 1 ], point[ 0 ] );
 	}
 
+	/**
+	 * Get the angle between two vectors. This is the angle needed to go from the
+	 * angle of the first vector to the angle of the second vector such that v1 +
+	 * getAngle( v1, v2 ) = v2
+	 * @param v1 The start vector
+	 * @param v2 The final vector
+	 * @return The angle between the two vectors
+	 */
 	public static double getAngle( final double[] v1, final double[] v2 ) {
-		double a = getAngle( v2 );
-		double b = getAngle( v1 );
+		double a = getAngle( v1 );
+		double b = getAngle( v2 );
 		return normalizeAngle( b - a );
 	}
 
-	public static double normalizeAngle( double c ) {
-		c %= Constants.FULL_CIRCLE;
-		if( c < -Constants.HALF_CIRCLE ) c += Constants.FULL_CIRCLE;
-		if( c > Constants.HALF_CIRCLE ) c -= Constants.FULL_CIRCLE;
-		return c;
+	/**
+	 * Convert any angle into a normalized angle, an angle between -PI (not
+	 * inclusive) and PI (inclusive).
+	 * @param a The angle to normalize
+	 * @return The normalized angle
+	 */
+	public static double normalizeAngle( double a ) {
+		a %= Constants.FULL_CIRCLE;
+		if( a < -Constants.HALF_CIRCLE ) a += Constants.FULL_CIRCLE;
+		if( a > Constants.HALF_CIRCLE ) a -= Constants.FULL_CIRCLE;
+		return a;
 	}
 
 	/**
@@ -227,6 +252,16 @@ public class Geometry {
 		return Vector.scale( Vector.normalize( Vector.reverse( normal ) ), z );
 	}
 
+	/**
+	 * Get the point on an ellipse for the specified angle.
+	 *
+	 * @param origin The center of the ellipse
+	 * @param xRadius The x radius of the ellipse
+	 * @param yRadius The y radius of the ellipse
+	 * @param rotate The rotation angle of the ellipse
+	 * @param angle The angle for which to compute the point
+	 * @return The point at the angle on the ellipse
+	 */
 	public static double[] ellipsePoint( double[] origin, double xRadius, double yRadius, double rotate, double angle ) {
 		double[] p = polarToCartesian( Vector.of( 1, angle ) );
 		p = Vector.scale( p, xRadius, yRadius );
@@ -234,6 +269,17 @@ public class Geometry {
 		return Point.of( p[ 0 ] + origin[ 0 ], p[ 1 ] + origin[ 1 ], p[ 2 ] + origin[ 2 ] );
 	}
 
+	/**
+	 * Get the angle for a point on an ellipse. Technically the point does not
+	 * even need to be on the ellipse, the angle will still be computed.
+	 *
+	 * @param origin The center of the ellipse
+	 * @param xRadius The x radius of the ellipse
+	 * @param yRadius The y radius of the ellipse
+	 * @param rotate The rotation angle of the ellipse
+	 * @param point The point for which to compute the angle
+	 * @return The angle of the point on the ellipse
+	 */
 	public static double ellipseAngle( double[] origin, double xRadius, double yRadius, double rotate, double[] point ) {
 		double[] p = Point.of( point[ 0 ] - origin[ 0 ], point[ 1 ] - origin[ 1 ] );
 		p = Vector.rotate( p, -rotate );
@@ -241,6 +287,14 @@ public class Geometry {
 		return normalizeAngle( Math.atan2( p[ 1 ], p[ 0 ] ) );
 	}
 
+	/**
+	 * Compute the polynomial coefficients for an ellipse.
+	 *
+	 * @param c The center of the ellipse
+	 * @param rx The x radius of the ellipse
+	 * @param ry The y radius of the ellipse
+	 * @return The polynomial coefficients as an array
+	 */
 	public static double[] ellipseCoefficients( double[] c, double rx, double ry ) {
 		return new double[]{ ry * ry, 0, rx * rx, -2 * ry * ry * c[ 0 ], -2 * rx * rx * c[ 1 ], ry * ry * c[ 0 ] * c[ 0 ] + rx * rx * c[ 1 ] * c[ 1 ] - rx * rx * ry * ry };
 	}
@@ -274,6 +328,18 @@ public class Geometry {
 		return new Polynomial( c3, c2, c1, c0 ).getRoots();
 	}
 
+	/**
+	 * Compute the point on a cubic bezier curve for parametric value. This method
+	 * uses the linear interpolation method to compute the curve point. It is
+	 * generally more efficient than the polynomial method for a single point.
+	 *
+	 * @param a The curve point a
+	 * @param b The curve point b
+	 * @param c The curve point c
+	 * @param d The curve point d
+	 * @param t The parametric value between 0 and 1
+	 * @return The point on the curve at the parametric value
+	 */
 	public static double[] curvePoint( double[] a, double[] b, double[] c, double[] d, double t ) {
 		double[] e = Vector.lerp( a, b, t );
 		double[] f = Vector.lerp( b, c, t );
@@ -283,7 +349,19 @@ public class Geometry {
 		return Vector.lerp( h, i, t );
 	}
 
-	public static double[] curvePointHeavy( double[] a, double[] b, double[] c, double[] d, double t ) {
+	/**
+	 * Compute the point on a cubic bezier curve for parametric value. This method
+	 * uses the polynomial method to compute the curve point. It is generally
+	 * less efficient than the linear interpolation method for a single point.
+	 *
+	 * @param a The curve point a
+	 * @param b The curve point b
+	 * @param c The curve point c
+	 * @param d The curve point d
+	 * @param t The parametric value between 0 and 1
+	 * @return The point on the curve at the parametric value
+	 */
+	public static double[] curvePointByPolynomial( double[] a, double[] b, double[] c, double[] d, double t ) {
 		// This gives the same result as using Geometry.curvePoint() but it requires
 		// calculating the coefficients first and therefore takes more compute time
 		// for a single point.
@@ -547,10 +625,26 @@ public class Geometry {
 		return (getSpin( b1, b2, a1 ) != getSpin( b1, b2, a2 )) & (getSpin( a1, a2, b1 ) != getSpin( a1, a2, b2 ));
 	}
 
+	/**
+	 * Compute a normal vector for three points.
+	 *
+	 * @param a Point a
+	 * @param b Point b
+	 * @param c Point c
+	 * @return The normal vector
+	 */
 	public static double[] getNormal( double[] a, double[] b, double[] c ) {
 		return Vector.cross( Vector.minus( a, b ), Vector.minus( b, c ) );
 	}
 
+	/**
+	 * Compute the determinant for three points.
+	 *
+	 * @param a Point a
+	 * @param b Point b
+	 * @param c Point c
+	 * @return The determinant
+	 */
 	public static double determinant( double[] a, double[] b, double[] c ) {
 		return Arithmetic.determinant( a[ 0 ], a[ 1 ], a[ 2 ], b[ 0 ], b[ 1 ], b[ 2 ], c[ 0 ], c[ 1 ], c[ 2 ] );
 	}
@@ -599,24 +693,5 @@ public class Geometry {
 	public static double[] polarDegreesToCartesian( final double[] point ) {
 		return polarToCartesian( Point.of( point[ 0 ], Math.toRadians( point[ 1 ] ), point[ 2 ] ) );
 	}
-
-	//	/**
-	//	 * Determine if the three points are in counter-clockwise(1), straight(0),
-	//	 * or clockwise(-1) order.
-	//	 *
-	//	 * @param a The anchor point/Point2D to test
-	//	 * @param b The direction point/Point2D to test
-	//	 * @param c The point/Point2D to compare
-	//	 * @return Minus one if CCW, zero if straight, and one if CW.
-	//	 */
-	//	public static int getSpin( double[] a, double[] b, double[] c ) {
-	//		double[] ab = Vector.subtract( a, b);
-	//		double[] cb = Vector.subtract( c, b);
-	//
-	//		double ccw = cb[0] * ab[1] - cb[1] * ab[0];
-	//
-	//		if( ccw == 0.0 || ccw == -0.0 ) return 0;
-	//		return ccw > 0 ? -1 : 1;
-	//	}
 
 }
