@@ -114,7 +114,7 @@ public class OrientationTest {
 	void testTransformWithNegativeYAxis() {
 		Orientation orientation = new Orientation( Vector.of( 0, 0, 0 ), Vector.of( 0, -1, 0 ), Vector.of( 0, 0, 1 ) );
 		Transform transform = orientation.getLocalToTargetTransform();
-		assertThat( transform.times( Vector.of( 0, 1, 0 ) ), is( Vector.of( 0, 0, 1 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 1, 0 ) ), is( Vector.of( 0, 0, 1 ) ) );
 	}
 
 	@Test

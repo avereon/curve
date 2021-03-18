@@ -31,7 +31,7 @@ public class Orientation {
 	public Orientation( double[] origin, double[] normal ) {
 		double[] axis = Vector.cross( Vector.UNIT_Z, normal );
 		double angle = Geometry.getAbsAngle( Vector.UNIT_Z, normal );
-		double[] rotate = Transform.rotation( axis, angle ).times( Vector.UNIT_Y );
+		double[] rotate = Transform.rotation( axis, angle ).apply( Vector.UNIT_Y );
 		set( origin, normal, rotate );
 	}
 
@@ -76,7 +76,7 @@ public class Orientation {
 		double angle = Geometry.getAbsAngle( oldNormal, normal );
 
 		Transform transform = Transform.rotation( axis, angle );
-		double[] rotate = transform.timesDirection( getRotate() );
+		double[] rotate = transform.applyDirection( getRotate() );
 
 		set( getOrigin(), normal, rotate );
 	}
@@ -142,7 +142,7 @@ public class Orientation {
 		this.zrotation = zrotation;
 
 		Transform transform = Transform.yrotation( -yrotation ).combine( Transform.xrotation( -xrotation ) ).combine( Transform.zrotation( -zrotation ) );
-		set( getOrigin(), transform.times( Vector.UNIT_Z ), transform.times( Vector.UNIT_Y ) );
+		set( getOrigin(), transform.apply( Vector.UNIT_Z ), transform.apply( Vector.UNIT_Y ) );
 		toLocal = toTarget = null;
 	}
 
@@ -153,7 +153,7 @@ public class Orientation {
 	 * @param transform The orientation transform
 	 */
 	public final void transform( Transform transform ) {
-		set( transform.times( getOrigin() ), transform.timesDirection( getNormal() ), transform.timesDirection( getRotate() ) );
+		set( transform.apply( getOrigin() ), transform.applyDirection( getNormal() ), transform.applyDirection( getRotate() ) );
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class Orientation {
 	 * @param transform The orientation transform
 	 */
 	public final void transformOrigin( Transform transform ) {
-		set( transform.times( getOrigin() ), getNormal(), getRotate() );
+		set( transform.apply( getOrigin() ), getNormal(), getRotate() );
 	}
 
 	/**
@@ -171,7 +171,7 @@ public class Orientation {
 	 * @param transform The orientation transform
 	 */
 	public final void transformAxes( Transform transform ) {
-		set( getOrigin(), transform.timesDirection( getNormal() ), transform.timesDirection( getRotate() ) );
+		set( getOrigin(), transform.applyDirection( getNormal() ), transform.applyDirection( getRotate() ) );
 	}
 
 	/**
@@ -276,13 +276,13 @@ public class Orientation {
 			if( normal[ 0 ] > 0.0 ) yrotation *= -1.0;
 		}
 		transform = Transform.yrotation( yrotation );
-		vector = transform.times( normal );
+		vector = transform.apply( normal );
 		length = Vector.magnitude( normal );
 		xrotation = Math.acos( vector[ 2 ] / length );
 		if( Double.isNaN( xrotation ) ) xrotation = Math.acos( vector[ 2 ] > 0.0 ? 1.0 : -1.0 );
 		if( vector[ 1 ] < 0.0 ) xrotation *= -1.0;
 		transform = Transform.xrotation( xrotation ).combine( transform );
-		vector = transform.times( rotate );
+		vector = transform.apply( rotate );
 		length = Math.sqrt( vector[ 0 ] * vector[ 0 ] + vector[ 1 ] * vector[ 1 ] );
 		zrotation = Math.acos( vector[ 1 ] / length );
 		if( Double.isNaN( zrotation ) ) zrotation = Math.acos( vector[ 1 ] > 0.0 ? 1.0 : -1.0 );

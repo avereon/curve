@@ -11,13 +11,31 @@ public class Transform {
 	private boolean negate;
 
 	public Transform( double[][] m ) {
-		this( m[ 0 ][ 0 ], m[ 0 ][ 1 ], m[ 0 ][ 2 ], m[ 0 ][ 3 ], m[ 1 ][ 0 ], m[ 1 ][ 1 ], m[ 1 ][ 2 ], m[ 1 ][ 3 ], m[ 2 ][ 0 ], m[ 2 ][ 1 ], m[ 2 ][ 2 ], m[ 2 ][ 3 ], m[ 3 ][ 0 ], m[ 3 ][ 1 ], m[ 3 ][ 2 ], m[ 3 ][ 3 ] );
+		this( m[ 0 ][ 0 ],
+			m[ 0 ][ 1 ],
+			m[ 0 ][ 2 ],
+			m[ 0 ][ 3 ],
+			m[ 1 ][ 0 ],
+			m[ 1 ][ 1 ],
+			m[ 1 ][ 2 ],
+			m[ 1 ][ 3 ],
+			m[ 2 ][ 0 ],
+			m[ 2 ][ 1 ],
+			m[ 2 ][ 2 ],
+			m[ 2 ][ 3 ],
+			m[ 3 ][ 0 ],
+			m[ 3 ][ 1 ],
+			m[ 3 ][ 2 ],
+			m[ 3 ][ 3 ]
+		);
 	}
 
 	/**
 	 * Create a new transform.
 	 */
-	public Transform( double m00, double m01, double m02, double m03, double m10, double m11, double m12, double m13, double m20, double m21, double m22, double m23, double m30, double m31, double m32, double m33 ) {
+	public Transform(
+		double m00, double m01, double m02, double m03, double m10, double m11, double m12, double m13, double m20, double m21, double m22, double m23, double m30, double m31, double m32, double m33
+	) {
 		m[ 0 ][ 0 ] = m00;
 		m[ 0 ][ 1 ] = m01;
 		m[ 0 ][ 2 ] = m02;
@@ -36,12 +54,13 @@ public class Transform {
 		m[ 3 ][ 3 ] = m33;
 	}
 
-	public boolean isNegate() {
-		return negate;
-	}
-
-	public void setNegate( boolean negate ) {
-		this.negate = negate;
+	public boolean isMirror() {
+		// FIXME This really should be the x-scale and y-scale have different signs
+		// This can use a scale of the unit vectors to determine the signum for each axis
+		double[] w = applyXY( Vector.of( 1, 1, 0 ) );
+		double x = Math.signum( w[ 0 ] );
+		double y = Math.signum( w[ 1 ] );
+		return x != y;
 	}
 
 	/**
@@ -50,9 +69,12 @@ public class Transform {
 	 * element equal to 1.
 	 */
 	// TODO Rename to apply?
-	public final double[] times( double[] vector ) {
+	public final double[] apply( double[] vector ) {
 		double w = m[ 3 ][ 0 ] * vector[ 0 ] + m[ 3 ][ 1 ] * vector[ 1 ] + m[ 3 ][ 2 ] * vector[ 2 ] + m[ 3 ][ 3 ];
-		return Vector.of( (m[ 0 ][ 0 ] * vector[ 0 ] + m[ 0 ][ 1 ] * vector[ 1 ] + m[ 0 ][ 2 ] * vector[ 2 ] + m[ 0 ][ 3 ]) / w, (m[ 1 ][ 0 ] * vector[ 0 ] + m[ 1 ][ 1 ] * vector[ 1 ] + m[ 1 ][ 2 ] * vector[ 2 ] + m[ 1 ][ 3 ]) / w, (m[ 2 ][ 0 ] * vector[ 0 ] + m[ 2 ][ 1 ] * vector[ 1 ] + m[ 2 ][ 2 ] * vector[ 2 ] + m[ 2 ][ 3 ]) / w );
+		return Vector.of( (m[ 0 ][ 0 ] * vector[ 0 ] + m[ 0 ][ 1 ] * vector[ 1 ] + m[ 0 ][ 2 ] * vector[ 2 ] + m[ 0 ][ 3 ]) / w,
+			(m[ 1 ][ 0 ] * vector[ 0 ] + m[ 1 ][ 1 ] * vector[ 1 ] + m[ 1 ][ 2 ] * vector[ 2 ] + m[ 1 ][ 3 ]) / w,
+			(m[ 2 ][ 0 ] * vector[ 0 ] + m[ 2 ][ 1 ] * vector[ 1 ] + m[ 2 ][ 2 ] * vector[ 2 ] + m[ 2 ][ 3 ]) / w
+		);
 	}
 
 	/**
@@ -63,8 +85,11 @@ public class Transform {
 	 * This is faster than times() when a direction vector can be used.
 	 */
 	// TODO Rename to apply?
-	public final double[] timesDirection( double[] vector ) {
-		return Vector.of( m[ 0 ][ 0 ] * vector[ 0 ] + m[ 0 ][ 1 ] * vector[ 1 ] + m[ 0 ][ 2 ] * vector[ 2 ], m[ 1 ][ 0 ] * vector[ 0 ] + m[ 1 ][ 1 ] * vector[ 1 ] + m[ 1 ][ 2 ] * vector[ 2 ], m[ 2 ][ 0 ] * vector[ 0 ] + m[ 2 ][ 1 ] * vector[ 1 ] + m[ 2 ][ 2 ] * vector[ 2 ] );
+	public final double[] applyDirection( double[] vector ) {
+		return Vector.of( m[ 0 ][ 0 ] * vector[ 0 ] + m[ 0 ][ 1 ] * vector[ 1 ] + m[ 0 ][ 2 ] * vector[ 2 ],
+			m[ 1 ][ 0 ] * vector[ 0 ] + m[ 1 ][ 1 ] * vector[ 1 ] + m[ 1 ][ 2 ] * vector[ 2 ],
+			m[ 2 ][ 0 ] * vector[ 0 ] + m[ 2 ][ 1 ] * vector[ 1 ] + m[ 2 ][ 2 ] * vector[ 2 ]
+		);
 	}
 
 	/**
@@ -73,9 +98,11 @@ public class Transform {
 	 * when the z component is not of interest.
 	 */
 	// TODO Rename to apply?
-	public final double[] timesXY( double[] vector ) {
+	public final double[] applyXY( double[] vector ) {
 		double w = m[ 3 ][ 0 ] * vector[ 0 ] + m[ 3 ][ 1 ] * vector[ 1 ] + m[ 3 ][ 2 ] * vector[ 2 ] + m[ 3 ][ 3 ];
-		return Vector.of( (m[ 0 ][ 0 ] * vector[ 0 ] + m[ 0 ][ 1 ] * vector[ 1 ] + m[ 0 ][ 2 ] * vector[ 2 ] + m[ 0 ][ 3 ]) / w, (m[ 1 ][ 0 ] * vector[ 0 ] + m[ 1 ][ 1 ] * vector[ 1 ] + m[ 1 ][ 2 ] * vector[ 2 ] + m[ 1 ][ 3 ]) / w );
+		return Vector.of( (m[ 0 ][ 0 ] * vector[ 0 ] + m[ 0 ][ 1 ] * vector[ 1 ] + m[ 0 ][ 2 ] * vector[ 2 ] + m[ 0 ][ 3 ]) / w,
+			(m[ 1 ][ 0 ] * vector[ 0 ] + m[ 1 ][ 1 ] * vector[ 1 ] + m[ 1 ][ 2 ] * vector[ 2 ] + m[ 1 ][ 3 ]) / w
+		);
 	}
 
 	/**
@@ -84,7 +111,7 @@ public class Transform {
 	 * determining whether a point lies in front or behind the camera.
 	 */
 	// TODO Rename to apply?
-	public final double timesZ( double[] vector ) {
+	public final double applyZ( double[] vector ) {
 		double w = m[ 3 ][ 0 ] * vector[ 0 ] + m[ 3 ][ 1 ] * vector[ 1 ] + m[ 3 ][ 2 ] * vector[ 2 ] + m[ 3 ][ 3 ];
 		return (m[ 2 ][ 0 ] * vector[ 0 ] + m[ 2 ][ 1 ] * vector[ 1 ] + m[ 2 ][ 2 ] * vector[ 2 ] + m[ 2 ][ 3 ]) / w;
 	}
@@ -275,7 +302,23 @@ public class Transform {
 		// Normalize the axis
 		axis = Vector.normalize( axis );
 
-		return new Transform( theta * axis[ 0 ] * axis[ 0 ] + cos, theta * axis[ 0 ] * axis[ 1 ] - sin * axis[ 2 ], theta * axis[ 0 ] * axis[ 2 ] + sin * axis[ 1 ], 0.0, theta * axis[ 0 ] * axis[ 1 ] + sin * axis[ 2 ], theta * axis[ 1 ] * axis[ 1 ] + cos, theta * axis[ 1 ] * axis[ 2 ] - sin * axis[ 0 ], 0.0, theta * axis[ 0 ] * axis[ 2 ] - sin * axis[ 1 ], theta * axis[ 1 ] * axis[ 2 ] + sin * axis[ 0 ], theta * axis[ 2 ] * axis[ 2 ] + cos, 0.0, 0.0, 0.0, 0.0, 1.0 );
+		return new Transform( theta * axis[ 0 ] * axis[ 0 ] + cos,
+			theta * axis[ 0 ] * axis[ 1 ] - sin * axis[ 2 ],
+			theta * axis[ 0 ] * axis[ 2 ] + sin * axis[ 1 ],
+			0.0,
+			theta * axis[ 0 ] * axis[ 1 ] + sin * axis[ 2 ],
+			theta * axis[ 1 ] * axis[ 1 ] + cos,
+			theta * axis[ 1 ] * axis[ 2 ] - sin * axis[ 0 ],
+			0.0,
+			theta * axis[ 0 ] * axis[ 2 ] - sin * axis[ 1 ],
+			theta * axis[ 1 ] * axis[ 2 ] + sin * axis[ 0 ],
+			theta * axis[ 2 ] * axis[ 2 ] + cos,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		);
 	}
 
 	/**
@@ -329,31 +372,30 @@ public class Transform {
 		return new Transform( cos, -sin, 0.0, 0.0, sin, cos, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 );
 	}
 
-		/**
-		 * Create a mirror transform using three vectors to define a mirror plane. Two
-		 * points are used to define a 2D mirror axis and the third point is a normal.
-		 *
-		 * @param a Axis point one.
-		 * @param b Axis point two.
-		 * @param n Axis normal.
-		 * @return A mirror transform.
-		 */
-		public static Transform mirror( double[] a, double[] b, double[] n ) {
-			if( a == null || b == null || n == null ) return null;
+	/**
+	 * Create a mirror transform using three vectors to define a mirror plane. Two
+	 * points are used to define a 2D mirror axis and the third point is a normal.
+	 *
+	 * @param a Axis point one.
+	 * @param b Axis point two.
+	 * @param n Axis normal.
+	 * @return A mirror transform.
+	 */
+	public static Transform mirror( double[] a, double[] b, double[] n ) {
+		if( a == null || b == null || n == null ) return null;
 
-	//		Orientation orientation = new Orientation( a, n, a.minus( b ) );
-	//		Transform local = orientation.getTargetToLocalTransform();
+		Orientation orientation = new Orientation( a, n, Vector.subtract( a, b ) );
+		Transform local = orientation.getTargetToLocalTransform();
 
-			Transform transform = Transform.identity();
-	//		transform = transform.combine( orientation.getLocalToTargetTransform() );
-	//		transform = transform.combine( Transform.translation( local.times( a ) ) );
-	//		transform = transform.combine( Transform.scale( -1, 1, 1 ) );
-	//		transform = transform.combine( Transform.translation( local.times( a ).reverse() ) );
-	//		transform = transform.combine( orientation.getTargetToLocalTransform() );
-			transform.setNegate( true );
+		Transform transform = Transform.identity();
+		transform = transform.combine( orientation.getLocalToTargetTransform() );
+		transform = transform.combine( Transform.translation( local.apply( a ) ) );
+		transform = transform.combine( Transform.scale( -1, 1, 1 ) );
+		transform = transform.combine( Transform.translation( Vector.reverse( local.apply( a ) ) ) );
+		transform = transform.combine( orientation.getTargetToLocalTransform() );
 
-			return transform;
-		}
+		return transform;
+	}
 
 	/**
 	 * Create a transform to convert from the target orientation to the local
@@ -367,7 +409,23 @@ public class Transform {
 		double[] zrotate = Vector.scale( normal, 1.0 / Vector.magnitude( normal ) );
 		double[] xrotate = Vector.normalize( Vector.cross( rotate, normal ) );
 		double[] yrotate = Vector.cross( zrotate, xrotate );
-		return new Transform( xrotate[ 0 ], xrotate[ 1 ], xrotate[ 2 ], -(xrotate[ 0 ] * origin[ 0 ] + xrotate[ 1 ] * origin[ 1 ] + xrotate[ 2 ] * origin[ 2 ]), yrotate[ 0 ], yrotate[ 1 ], yrotate[ 2 ], -(yrotate[ 0 ] * origin[ 0 ] + yrotate[ 1 ] * origin[ 1 ] + yrotate[ 2 ] * origin[ 2 ]), zrotate[ 0 ], zrotate[ 1 ], zrotate[ 2 ], -(zrotate[ 0 ] * origin[ 0 ] + zrotate[ 1 ] * origin[ 1 ] + zrotate[ 2 ] * origin[ 2 ]), 0.0, 0.0, 0.0, 1.0 );
+		return new Transform( xrotate[ 0 ],
+			xrotate[ 1 ],
+			xrotate[ 2 ],
+			-(xrotate[ 0 ] * origin[ 0 ] + xrotate[ 1 ] * origin[ 1 ] + xrotate[ 2 ] * origin[ 2 ]),
+			yrotate[ 0 ],
+			yrotate[ 1 ],
+			yrotate[ 2 ],
+			-(yrotate[ 0 ] * origin[ 0 ] + yrotate[ 1 ] * origin[ 1 ] + yrotate[ 2 ] * origin[ 2 ]),
+			zrotate[ 0 ],
+			zrotate[ 1 ],
+			zrotate[ 2 ],
+			-(zrotate[ 0 ] * origin[ 0 ] + zrotate[ 1 ] * origin[ 1 ] + zrotate[ 2 ] * origin[ 2 ]),
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		);
 	}
 
 	/**
@@ -381,7 +439,23 @@ public class Transform {
 		double[] zrotate = Vector.scale( normal, 1.0 / Vector.magnitude( normal ) );
 		double[] xrotate = Vector.normalize( Vector.cross( rotate, normal ) );
 		double[] yrotate = Vector.cross( zrotate, xrotate );
-		return new Transform( xrotate[ 0 ], yrotate[ 0 ], zrotate[ 0 ], origin[ 0 ], xrotate[ 1 ], yrotate[ 1 ], zrotate[ 1 ], origin[ 1 ], xrotate[ 2 ], yrotate[ 2 ], zrotate[ 2 ], origin[ 2 ], 0.0, 0.0, 0.0, 1.0 );
+		return new Transform( xrotate[ 0 ],
+			yrotate[ 0 ],
+			zrotate[ 0 ],
+			origin[ 0 ],
+			xrotate[ 1 ],
+			yrotate[ 1 ],
+			zrotate[ 1 ],
+			origin[ 1 ],
+			xrotate[ 2 ],
+			yrotate[ 2 ],
+			zrotate[ 2 ],
+			origin[ 2 ],
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		);
 	}
 
 	/**
@@ -446,6 +520,10 @@ public class Transform {
 		return new Transform( 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, a, 1.0 - a, 0.0, 0.0, a, 1.0 - a );
 	}
 
+	public final double[][] getMatrixArray() {
+		return m;
+	}
+
 	@Override
 	public boolean equals( Object object ) {
 		if( !(object instanceof Transform) ) return false;
@@ -480,10 +558,6 @@ public class Transform {
 		builder.append( "]\n" );
 
 		return builder.toString();
-	}
-
-	public final double[][] getMatrixArray() {
-		return m;
 	}
 
 	/**

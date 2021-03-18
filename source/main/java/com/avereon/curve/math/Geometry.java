@@ -123,9 +123,9 @@ public class Geometry {
 
 		Transform transform = new Orientation( o, n, r ).getTargetToLocalTransform();
 
-		double[] lb = Vector.normalize( transform.timesXY( b ) );
+		double[] lb = Vector.normalize( transform.applyXY( b ) );
 		double[] lo = Vector.of();
-		double[] la = Vector.normalize( transform.timesXY( a ) );
+		double[] la = Vector.normalize( transform.applyXY( a ) );
 
 		if( Vector.magnitude( Vector.plus( la, lb ) ) == 0.0 ) return Math.PI;
 		return Math.acos( Vector.dot( la, lb ) ) * getSpin( lb, lo, la );

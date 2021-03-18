@@ -7,6 +7,8 @@ import java.nio.DoubleBuffer;
 import static com.avereon.curve.match.Matchers.near;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TransformTest {
 
@@ -44,26 +46,26 @@ public class TransformTest {
 	}
 
 	@Test
-	void testTimes() {
-		double[] vector = Transform.scale( 2, 2, 2 ).times( Vector.of( 1, 2, 3 ) );
+	void testApply() {
+		double[] vector = Transform.scale( 2, 2, 2 ).apply( Vector.of( 1, 2, 3 ) );
 		assertThat( vector, is( Vector.of( 2, 4, 6 ) ) );
 	}
 
 	@Test
-	void testTimesDirection() {
-		double[] vector = Transform.identity().timesDirection( Vector.of( 1, 2, 3 ) );
+	void testApplyDirection() {
+		double[] vector = Transform.identity().applyDirection( Vector.of( 1, 2, 3 ) );
 		assertThat( vector, is( Vector.of( 1, 2, 3 ) ) );
 	}
 
 	@Test
-	void testTimesXY() {
-		double[] vector = Transform.identity().timesXY( Vector.of( 1, 2, 3 ) );
+	void testApplyXY() {
+		double[] vector = Transform.identity().applyXY( Vector.of( 1, 2, 3 ) );
 		assertThat( vector, is( Vector.of( 1, 2, 0 ) ) );
 	}
 
 	@Test
-	void testTimesZ() {
-		double z = Transform.identity().timesZ( Vector.of( 1, 2, 3 ) );
+	void testApplyZ() {
+		double z = Transform.identity().applyZ( Vector.of( 1, 2, 3 ) );
 		assertThat( z, is( 3.0 ) );
 	}
 
@@ -84,97 +86,107 @@ public class TransformTest {
 	void testScale() {
 		Transform transform = Transform.scale( 1, 2, 3 );
 		assertMatrixValues( transform, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1 );
-		assertThat( transform.times( Vector.of( 1, 1, 1 ) ), is( Vector.of( 1, 2, 3 ) ) );
+		assertThat( transform.apply( Vector.of( 1, 1, 1 ) ), is( Vector.of( 1, 2, 3 ) ) );
 	}
 
 	@Test
 	void testScaleWithOrigin() {
 		Transform transform = Transform.scale( Vector.of( 1, 1, 1 ), 1, 2, 3 );
 		assertMatrixValues( transform, 1, 0, 0, 0, 0, 2, 0, -1, 0, 0, 3, -2, 0, 0, 0, 1 );
-		assertThat( transform.times( Vector.of( 0, 0, 0 ) ), is( Vector.of( 0, -1, -2 ) ) );
-		assertThat( transform.times( Vector.of( 1, 1, 1 ) ), is( Vector.of( 1, 1, 1 ) ) );
-		assertThat( transform.times( Vector.of( 2, 2, 2 ) ), is( Vector.of( 2, 3, 4 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, 0 ) ), is( Vector.of( 0, -1, -2 ) ) );
+		assertThat( transform.apply( Vector.of( 1, 1, 1 ) ), is( Vector.of( 1, 1, 1 ) ) );
+		assertThat( transform.apply( Vector.of( 2, 2, 2 ) ), is( Vector.of( 2, 3, 4 ) ) );
 	}
 
 	@Test
 	void testTranslation() {
 		Transform transform = Transform.translation( 1, 2, 3 );
 		assertMatrixValues( transform, 1, 0, 0, 1, 0, 1, 0, 2, 0, 0, 1, 3, 0, 0, 0, 1 );
-		assertThat( transform.times( Vector.of( 1, 1, 1 ) ), is( Vector.of( 2, 3, 4 ) ) );
+		assertThat( transform.apply( Vector.of( 1, 1, 1 ) ), is( Vector.of( 2, 3, 4 ) ) );
 	}
 
 	@Test
 	void testRotation() {
 		Transform transform = Transform.rotation( Vector.of( 1, 1, 0 ), Math.PI );
 		assertMatrixValues( transform, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1 );
-		assertThat( Geometry.distance( Vector.of( 0, 1, 0 ), transform.times( Vector.of( 1, 0, 0 ) ) ), closeTo( 0.0, 1e-15 ) );
+		assertThat( Geometry.distance( Vector.of( 0, 1, 0 ), transform.apply( Vector.of( 1, 0, 0 ) ) ), closeTo( 0.0, 1e-15 ) );
 
 		transform = Transform.rotation( Vector.UNIT_Y, 0 );
-		assertThat( transform.times( Vector.UNIT_X ), is( Vector.UNIT_X ) );
+		assertThat( transform.apply( Vector.UNIT_X ), is( Vector.UNIT_X ) );
 	}
 
 	@Test
 	void testRotationWithZeroAxis() {
 		Transform transform = Transform.rotation( Vector.of(), Math.PI );
-		assertThat( transform.times( Vector.UNIT_X ), is( Vector.UNIT_X ) );
+		assertThat( transform.apply( Vector.UNIT_X ), is( Vector.UNIT_X ) );
 	}
 
 	@Test
 	void testRotationWithZeroAngle() {
 		Transform transform = Transform.rotation( Vector.UNIT_Y, 0 );
-		assertThat( transform.times( Vector.UNIT_X ), is( Vector.UNIT_X ) );
+		assertThat( transform.apply( Vector.UNIT_X ), is( Vector.UNIT_X ) );
 	}
 
 	@Test
 	void testRotationWithOrigin() {
 		Transform transform = Transform.rotation( Vector.of( 1, 1, 0 ), Vector.UNIT_Z, Constants.QUARTER_CIRCLE );
-		assertThat( transform.times( Vector.of( 2, 2, 0 ) ), near( Vector.of( 0, 2 ), 1e-15 ) );
+		assertThat( transform.apply( Vector.of( 2, 2, 0 ) ), near( Vector.of( 0, 2 ), 1e-15 ) );
 	}
 
 	@Test
 	void testXrotation() {
 		Transform transform = Transform.xrotation( Math.PI / 2 );
 		assertMatrixValues( transform, 1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 );
-		assertThat( Geometry.distance( Vector.of( 0, 0, 1 ), transform.times( Vector.of( 0, 1, 0 ) ) ), closeTo( 0.0, 1e-16 ) );
+		assertThat( Geometry.distance( Vector.of( 0, 0, 1 ), transform.apply( Vector.of( 0, 1, 0 ) ) ), closeTo( 0.0, 1e-16 ) );
 	}
 
 	@Test
 	void testYrotation() {
 		Transform transform = Transform.yrotation( Math.PI / 2 );
 		assertMatrixValues( transform, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1 );
-		assertThat( Geometry.distance( Vector.of( 0, 0, -1 ), transform.times( Vector.of( 1, 0, 0 ) ) ), closeTo( 0.0, 1e-16 ) );
+		assertThat( Geometry.distance( Vector.of( 0, 0, -1 ), transform.apply( Vector.of( 1, 0, 0 ) ) ), closeTo( 0.0, 1e-16 ) );
 	}
 
 	@Test
 	void testZrotation() {
 		Transform transform = Transform.zrotation( Math.PI / 2 );
 		assertMatrixValues( transform, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
-		assertThat( Geometry.distance( Vector.of( -1, 0, 0 ), transform.times( Vector.of( 0, 1, 0 ) ) ), closeTo( 0.0, 1e-16 ) );
+		assertThat( Geometry.distance( Vector.of( -1, 0, 0 ), transform.apply( Vector.of( 0, 1, 0 ) ) ), closeTo( 0.0, 1e-16 ) );
 	}
 
-	//	@Test
-	//	 void testMirror() throws Exception {
-	//		Transform transform = null;
-	//
-	//		transform = Transform.mirror( Vector.of( 1, 0 ), Vector.of( 1, 1 ), Vector.getUnitZ() );
-	//		assertThat( Vector.of(), transform.times( Vector.of( 2, 0, 0 ) ), 1e-12 );
-	//
-	//		transform = Transform.mirror( Vector.of( 2, 0 ), Vector.of( 0, 2 ), Vector.getUnitZ() );
-	//		assertThat( Vector.of(), transform.times( Vector.of( 2, 2, 0 ) ), 1e-12 );
-	//	}
+	@Test
+	void testMirror() {
+		Transform transform;
+
+		transform = Transform.mirror( Vector.of( 1, 0 ), Vector.of( 1, 1 ), Vector.UNIT_Z );
+		assertThat( transform.apply( Vector.of( 2, 0, 0 ) ), near( Vector.of() ) );
+
+		transform = Transform.mirror( Vector.of( 2, 0 ), Vector.of( 0, 2 ), Vector.UNIT_Z );
+		assertThat( transform.apply( Vector.of( 2, 2, 0 ) ), near( Vector.of() ) );
+	}
+
+	@Test
+	void testIsMirror() {
+		assertTrue( Transform.scale( -1, 1, 1 ).isMirror() );
+		assertTrue( Transform.scale( 1, -1, 1 ).isMirror() );
+		assertFalse( Transform.scale( -1, 1, 1 ).combine( Transform.scale( -1, 1, 1 ) ).isMirror() );
+		assertFalse( Transform.scale( 1, -1, 1 ).combine( Transform.scale( 1, -1, 1 ) ).isMirror() );
+
+		assertTrue( Transform.mirror( Point.of( 1, 1, 1 ), Point.of( 2, 2, 2 ), Point.of( 3, 3, 3 ) ).isMirror() );
+	}
 
 	@Test
 	void testLocalTransform() {
 		Transform transform = Transform.localTransform( Vector.of( 1, 0, 0 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 1, 0 ) );
 		assertMatrixValues( transform, 1, 0, 0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
-		assertThat( transform.times( Vector.of( 1, 0, 0 ) ), is( Vector.of( 0, 0, 0 ) ) );
+		assertThat( transform.apply( Vector.of( 1, 0, 0 ) ), is( Vector.of( 0, 0, 0 ) ) );
 	}
 
 	@Test
 	void testWorldTransform() {
 		Transform transform = Transform.targetTransform( Vector.of( 1, 0, 0 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 1, 0 ) );
 		assertMatrixValues( transform, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
-		assertThat( transform.times( Vector.of( 0, 0, 0 ) ), is( Vector.of( 1, 0, 0 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, 0 ) ), is( Vector.of( 1, 0, 0 ) ) );
 	}
 
 	@Test
@@ -193,57 +205,57 @@ public class TransformTest {
 	void testPerspective() {
 		Transform transform = Transform.perspective( 1 );
 		assertMatrixValues( transform, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0.25, 0.75, 0, 0, 0.25, 0.75 );
-		assertThat( transform.times( Vector.of( 1, 1, 2 ) ), is( Vector.of( 0.8, 0.8, 1 ) ) );
+		assertThat( transform.apply( Vector.of( 1, 1, 2 ) ), is( Vector.of( 0.8, 0.8, 1 ) ) );
 	}
 
 	@Test
 	void testInverseIdentity() {
 		Transform transform = Transform.identity();
 		transform = transform.inverse();
-		assertThat( transform.times( Vector.of( 1, 1, 1 ) ), is( Vector.of( 1, 1, 1 ) ) );
+		assertThat( transform.apply( Vector.of( 1, 1, 1 ) ), is( Vector.of( 1, 1, 1 ) ) );
 	}
 
 	@Test
 	void testInverseScale() {
 		Transform transform = Transform.scale( 1, 2, 3 );
 		transform = transform.inverse();
-		assertThat( transform.times( Vector.of( 1, 1, 1 ) ), is( Vector.of( 1, 1 / 2.0, 1 / 3.0 ) ) );
+		assertThat( transform.apply( Vector.of( 1, 1, 1 ) ), is( Vector.of( 1, 1 / 2.0, 1 / 3.0 ) ) );
 	}
 
 	@Test
 	void testInverseTranslation() {
 		Transform transform = Transform.translation( 1, 2, 3 );
 		transform = transform.inverse();
-		assertThat( transform.times( Vector.of() ), is( Vector.of( -1, -2, -3 ) ) );
+		assertThat( transform.apply( Vector.of() ), is( Vector.of( -1, -2, -3 ) ) );
 	}
 
 	@Test
 	void testInverseRotation() {
 		Transform transform = Transform.rotation( Vector.of( 0, 0, 1 ), Math.PI / 2 );
 		transform = transform.inverse();
-		assertThat( transform.times( Vector.of( 1, 0, 0 ) ), near( Vector.of( 0, -1, 0 ), 1E-16 ) );
+		assertThat( transform.apply( Vector.of( 1, 0, 0 ) ), near( Vector.of( 0, -1, 0 ), 1E-16 ) );
 	}
 
 	@Test
 	public void testInverseOrtho() {
 		Transform transform = Transform.ortho( -1, 1, -1, 1, -1, -3 );
 		transform = transform.inverse();
-		assertThat( transform.times( Vector.of( 0, 0, -1 ) ), is( Vector.of( 0, 0, 1 ) ) );
-		assertThat( transform.times( Vector.of( 0, 0, -0.5 ) ), is( Vector.of( 0, 0, 1.5 ) ) );
-		assertThat( transform.times( Vector.of( 0, 0, 0 ) ), is( Vector.of( 0, 0, 2 ) ) );
-		assertThat( transform.times( Vector.of( 0, 0, 0.5 ) ), is( Vector.of( 0, 0, 2.5 ) ) );
-		assertThat( transform.times( Vector.of( 0, 0, 1 ) ), is( Vector.of( 0, 0, 3 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, -1 ) ), is( Vector.of( 0, 0, 1 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, -0.5 ) ), is( Vector.of( 0, 0, 1.5 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, 0 ) ), is( Vector.of( 0, 0, 2 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, 0.5 ) ), is( Vector.of( 0, 0, 2.5 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, 1 ) ), is( Vector.of( 0, 0, 3 ) ) );
 	}
 
 	@Test
 	public void testInverseFrustrum() {
 		Transform transform = Transform.frustrum( -1, 1, -1, 1, -1, -3 );
 		transform = transform.inverse();
-		assertThat( transform.times( Vector.of( 0, 0, -1 ) ), is( Vector.of( 0, 0, 1 ) ) );
-		assertThat( transform.times( Vector.of( 0, 0, 0 ) ), is( Vector.of( 0, 0, 1.5 ) ) );
-		assertThat( transform.times( Vector.of( 0, 0, 0.5 ) ), is( Vector.of( 0, 0, 2 ) ) );
-		assertThat( transform.times( Vector.of( 0, 0, 0.8 ) ), is( Vector.of( 0, 0, 2.5 ) ) );
-		assertThat( transform.times( Vector.of( 0, 0, 1 ) ), is( Vector.of( 0, 0, 3 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, -1 ) ), is( Vector.of( 0, 0, 1 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, 0 ) ), is( Vector.of( 0, 0, 1.5 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, 0.5 ) ), is( Vector.of( 0, 0, 2 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, 0.8 ) ), is( Vector.of( 0, 0, 2.5 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 0, 1 ) ), is( Vector.of( 0, 0, 3 ) ) );
 	}
 
 	@Test
@@ -274,24 +286,42 @@ public class TransformTest {
 		assertThat( Transform.identity().toString(), is( builder.toString() ) );
 	}
 
-	private static void assertMatrixValues( Transform transform, double e00, double e01, double e02, double e03, double e10, double e11, double e12, double e13, double e20, double e21, double e22, double e23, double e30, double e31, double e32, double e33 ) {
+	private static void assertMatrixValues(
+		Transform transform,
+		double e00,
+		double e01,
+		double e02,
+		double e03,
+		double e10,
+		double e11,
+		double e12,
+		double e13,
+		double e20,
+		double e21,
+		double e22,
+		double e23,
+		double e30,
+		double e31,
+		double e32,
+		double e33
+	) {
 		double[][] m = transform.getMatrixArray();
-		assertThat( m[ 0 ][ 0 ], closeTo( e00, 1e-12 ) );
-		assertThat( m[ 0 ][ 1 ], closeTo( e01, 1e-12 ) );
-		assertThat( m[ 0 ][ 2 ], closeTo( e02, 1e-12 ) );
-		assertThat( m[ 0 ][ 3 ], closeTo( e03, 1e-12 ) );
-		assertThat( m[ 1 ][ 0 ], closeTo( e10, 1e-12 ) );
-		assertThat( m[ 1 ][ 1 ], closeTo( e11, 1e-12 ) );
-		assertThat( m[ 1 ][ 2 ], closeTo( e12, 1e-12 ) );
-		assertThat( m[ 1 ][ 3 ], closeTo( e13, 1e-12 ) );
-		assertThat( m[ 2 ][ 0 ], closeTo( e20, 1e-12 ) );
-		assertThat( m[ 2 ][ 1 ], closeTo( e21, 1e-12 ) );
-		assertThat( m[ 2 ][ 2 ], closeTo( e22, 1e-12 ) );
-		assertThat( m[ 2 ][ 3 ], closeTo( e23, 1e-12 ) );
-		assertThat( m[ 3 ][ 0 ], closeTo( e30, 1e-12 ) );
-		assertThat( m[ 3 ][ 1 ], closeTo( e31, 1e-12 ) );
-		assertThat( m[ 3 ][ 2 ], closeTo( e32, 1e-12 ) );
-		assertThat( m[ 3 ][ 3 ], closeTo( e33, 1e-12 ) );
+		assertThat( m[ 0 ][ 0 ], near( e00 ) );
+		assertThat( m[ 0 ][ 1 ], near( e01 ) );
+		assertThat( m[ 0 ][ 2 ], near( e02 ) );
+		assertThat( m[ 0 ][ 3 ], near( e03 ) );
+		assertThat( m[ 1 ][ 0 ], near( e10 ) );
+		assertThat( m[ 1 ][ 1 ], near( e11 ) );
+		assertThat( m[ 1 ][ 2 ], near( e12 ) );
+		assertThat( m[ 1 ][ 3 ], near( e13 ) );
+		assertThat( m[ 2 ][ 0 ], near( e20 ) );
+		assertThat( m[ 2 ][ 1 ], near( e21 ) );
+		assertThat( m[ 2 ][ 2 ], near( e22 ) );
+		assertThat( m[ 2 ][ 3 ], near( e23 ) );
+		assertThat( m[ 3 ][ 0 ], near( e30 ) );
+		assertThat( m[ 3 ][ 1 ], near( e31 ) );
+		assertThat( m[ 3 ][ 2 ], near( e32 ) );
+		assertThat( m[ 3 ][ 3 ], near( e33 ) );
 	}
 
 }
