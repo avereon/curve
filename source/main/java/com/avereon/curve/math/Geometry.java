@@ -88,6 +88,7 @@ public class Geometry {
 	 * Get the angle between two vectors. This is the angle needed to go from the
 	 * angle of the first vector to the angle of the second vector such that v1 +
 	 * getAngle( v1, v2 ) = v2
+	 *
 	 * @param v1 The start vector
 	 * @param v2 The final vector
 	 * @return The angle between the two vectors
@@ -99,12 +100,13 @@ public class Geometry {
 	/**
 	 * Convert any angle into a normalized angle, an angle between -PI (not
 	 * inclusive) and PI (inclusive).
+	 *
 	 * @param a The angle to normalize
 	 * @return The normalized angle
 	 */
 	public static double normalizeAngle( double a ) {
 		a %= Constants.FULL_CIRCLE;
-		if( a < -Constants.HALF_CIRCLE ) a += Constants.FULL_CIRCLE;
+		if( a <= -Constants.HALF_CIRCLE ) a += Constants.FULL_CIRCLE;
 		if( a > Constants.HALF_CIRCLE ) a -= Constants.FULL_CIRCLE;
 		return a;
 	}
@@ -129,6 +131,18 @@ public class Geometry {
 
 		if( Vector.magnitude( Vector.plus( la, lb ) ) == 0.0 ) return Math.PI;
 		return Math.acos( Vector.dot( la, lb ) ) * getSpin( lb, lo, la );
+	}
+
+	/**
+	 * Get the angle defined by points a, b and c with b at the vertex.
+	 *
+	 * @param a Point a
+	 * @param b Point b
+	 * @param c Point c
+	 * @return The angle between the points
+	 */
+	public static double pointAngle( final double[] a, final double[] b, final double[] c ) {
+		return normalizeAngle( getAngle( Vector.subtract( c, b ) ) - getAngle( Vector.subtract( a, b ) ) );
 	}
 
 	/**

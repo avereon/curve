@@ -443,6 +443,7 @@ public class GeometryTest {
 	@Test
 	void testNormalizeAngle() {
 		assertThat( Geometry.normalizeAngle( 0 ), is( 0.0 ) );
+		assertThat( Geometry.normalizeAngle( -Math.PI ), is( Math.PI ) );
 
 		assertThat( Geometry.normalizeAngle( Math.PI + 1 ), is( -Math.PI + 1 ) );
 		assertThat( Geometry.normalizeAngle( -Math.PI - 1 ), is( Math.PI - 1 ) );
@@ -485,6 +486,24 @@ public class GeometryTest {
 		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, -1, 0 ) ), near( -Math.PI * 0.25 ) );
 
 		assertThat( Geometry.getAngle( Vector.of( -2, 3, 0 ), normal, Vector.of( -0.75, 3, 0 ), Vector.of( -1.625, 3 - 0.5, 0 ) ), near( -0.9272952180016123 ) );
+	}
+
+	@Test
+	void testPointAngle() {
+		assertThat( Geometry.pointAngle( Vector.of( 4, -2 ), Vector.of( 3, -2 ), Vector.of( 4, -2 ) ), is( 0.0 ) );
+		assertThat( Geometry.pointAngle( Vector.of( 4, -2 ), Vector.of( 3, -2 ), Vector.of( 4, -1 ) ), is( Math.PI * 0.25 ) );
+		assertThat( Geometry.pointAngle( Vector.of( 4, -2 ), Vector.of( 3, -2 ), Vector.of( 3, -1 ) ), is( Math.PI * 0.5 ) );
+		assertThat( Geometry.pointAngle( Vector.of( 4, -2 ), Vector.of( 3, -2 ), Vector.of( 2, -1 ) ), is( Math.PI * 0.75 ) );
+		assertThat( Geometry.pointAngle( Vector.of( 2, -2 ), Vector.of( 3, -2 ), Vector.of( 4, -2 ) ), is( Math.PI ) );
+		assertThat( Geometry.pointAngle( Vector.of( 4, -2 ), Vector.of( 3, -2 ), Vector.of( 2, -3 ) ), is( -Math.PI * 0.75 ) );
+		assertThat( Geometry.pointAngle( Vector.of( 4, -2 ), Vector.of( 3, -2 ), Vector.of( 3, -3 ) ), is( -Math.PI * 0.5 ) );
+		assertThat( Geometry.pointAngle( Vector.of( 4, -2 ), Vector.of( 3, -2 ), Vector.of( 4, -3 ) ), is( -Math.PI * 0.25 ) );
+		assertThat( Geometry.pointAngle( Vector.of( 4, -2 ), Vector.of( 3, -2 ), Vector.of( 6, -2 ) ), is( 0.0 ) );
+
+		assertThat( Geometry.pointAngle( Vector.of( 4, -1 ), Vector.of( 3, -2 ), Vector.of( 2, -1 ) ), is( Math.PI * 0.5 ) );
+		assertThat( Geometry.pointAngle( Vector.of( 2, -1 ), Vector.of( 3, -2 ), Vector.of( 4, -1 ) ), is( -Math.PI * 0.5 ) );
+		assertThat( Geometry.pointAngle( Vector.of( -4, -1 ), Vector.of( -3, 0 ), Vector.of( -2, -1 ) ), is( Math.PI * 0.5 ) );
+		assertThat( Geometry.pointAngle( Vector.of( -2, -1 ), Vector.of( -3, 0 ), Vector.of( -4, -1 ) ), is( -Math.PI * 0.5 ) );
 	}
 
 }
