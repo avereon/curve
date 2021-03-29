@@ -55,12 +55,7 @@ public class Transform {
 	}
 
 	public boolean isMirror() {
-		// FIXME This really should be the x-scale and y-scale have different signs
-		// This can use a scale of the unit vectors to determine the signum for each axis
-		double[] w = applyXY( Vector.of( 1, 1, 0 ) );
-		double x = Math.signum( w[ 0 ] );
-		double y = Math.signum( w[ 1 ] );
-		return x != y;
+		return determinant() < 0;
 	}
 
 	/**

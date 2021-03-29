@@ -167,12 +167,41 @@ public class TransformTest {
 
 	@Test
 	void testIsMirror() {
+		assertTrue( Transform.mirror( Point.of( 0, 0, 0 ), Point.of( 0, 1, 0 ), Point.of( 0, 0, 1 ) ).isMirror() );
+		assertTrue( Transform.mirror( Point.of( 1, 1, -1 ), Point.of( 2, -2, 2 ), Point.of( -3, 3, 3 ) ).isMirror() );
+
+		// Double mirrors should not be mirrors
+		assertFalse( Transform
+			.mirror( Point.of( 0, 0, 0 ), Point.of( 0, 1, 0 ), Point.of( 0, 0, 1 ) )
+			.combine( Transform.mirror( Point.of( 0, 0, 0 ), Point.of( 0, 1, 0 ), Point.of( 0, 0, 1 ) ) )
+			.isMirror() );
+		assertFalse( Transform
+			.mirror( Point.of( 1, 1, 1 ), Point.of( 2, 2, 2 ), Point.of( 3, 3, 3 ) )
+			.combine( Transform.mirror( Point.of( 1, 1, 1 ), Point.of( 2, 2, 2 ), Point.of( 3, 3, 3 ) ) )
+			.isMirror() );
+
+		// Some types of scale should cause mirrors
 		assertTrue( Transform.scale( -1, 1, 1 ).isMirror() );
 		assertTrue( Transform.scale( 1, -1, 1 ).isMirror() );
+
+		// Inverted scales should not be mirrors
 		assertFalse( Transform.scale( -1, 1, 1 ).combine( Transform.scale( -1, 1, 1 ) ).isMirror() );
 		assertFalse( Transform.scale( 1, -1, 1 ).combine( Transform.scale( 1, -1, 1 ) ).isMirror() );
 
-		assertTrue( Transform.mirror( Point.of( 1, 1, 1 ), Point.of( 2, 2, 2 ), Point.of( 3, 3, 3 ) ).isMirror() );
+		// Translations should not cause mirrors
+		assertFalse( Transform.translation( -1, 0, 0 ).isMirror() );
+		assertFalse( Transform.translation( 1, 0, 0 ).isMirror() );
+		assertFalse( Transform.translation( 0, -1, 0 ).isMirror() );
+		assertFalse( Transform.translation( 0, 1, 0 ).isMirror() );
+
+		// Rotations should not cause mirrors
+		assertFalse( Transform.rotation( Point.of( 1, 1, 0 ), -270).isMirror() );
+		assertFalse( Transform.rotation( Point.of( 1, 1, 0 ), -180).isMirror() );
+		assertFalse( Transform.rotation( Point.of( 1, 1, 0 ), -90).isMirror() );
+		assertFalse( Transform.rotation( Point.of( 1, 1, 0 ), 0).isMirror() );
+		assertFalse( Transform.rotation( Point.of( 1, 1, 0 ), 90).isMirror() );
+		assertFalse( Transform.rotation( Point.of( 1, 1, 0 ), 180).isMirror() );
+		assertFalse( Transform.rotation( Point.of( 1, 1, 0 ), 270).isMirror() );
 	}
 
 	@Test
