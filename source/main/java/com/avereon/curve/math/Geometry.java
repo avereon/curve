@@ -565,6 +565,19 @@ public class Geometry {
 	}
 
 	/**
+	 * Determine if two sizes (lengths, radii, etc.) can be considered the same
+	 * by checking if teh difference between them is smaller than
+	 * RESOLUTION_LENGTH.
+	 *
+	 * @param a First size
+	 * @param b Second size
+	 * @return True if the two sizes are considered the same, false otherwise
+	 */
+	public static boolean areSameSize( double a, double b ) {
+		return Math.abs( a - b ) < Constants.RESOLUTION_LENGTH;
+	}
+
+	/**
 	 * Determine if two points can be considered the same by checking if the distance between the two points is smaller than RESOLUTION_LENGTH.
 	 *
 	 * @param point1 First point

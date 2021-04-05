@@ -275,6 +275,13 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testAreSameSize() {
+		assertTrue( Geometry.areSameSize( 0, 0 ) );
+		assertFalse( Geometry.areSameSize( 0, Constants.RESOLUTION_LENGTH ) );
+		assertTrue( Geometry.areSameSize( 0, Constants.RESOLUTION_LENGTH - Math.ulp( Constants.RESOLUTION_LENGTH ) ) );
+	}
+
+	@Test
 	void testAreSamePoint() {
 		assertTrue( Geometry.areSamePoint( Vector.of(), Vector.of() ) );
 		assertFalse( Geometry.areSamePoint( Vector.of(), Vector.of( Constants.RESOLUTION_LENGTH, 0, 0 ) ) );
