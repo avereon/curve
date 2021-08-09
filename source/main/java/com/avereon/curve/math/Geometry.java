@@ -159,6 +159,20 @@ public class Geometry {
 	}
 
 	/**
+	 * Get the distance between a point p and the line defined by parameter a and parameter b.
+	 *
+	 * @param p The point to which to get the distance
+	 * @param a The first point on the line
+	 * @param b The second point on the line
+	 * @return The distance between the point and line
+	 */
+	public static double pointLineDistance( double[] p, double[] a, double[] b ) {
+		double[] t = Vector.minus( b, a );
+		double[] u = Vector.cross( t, Vector.minus( b, p ) );
+		return Vector.magnitude( u ) / Vector.magnitude( t );
+	}
+
+	/**
 	 * Get the distance between a line defined by parameter a and parameter b and the point p.
 	 *
 	 * @param a The first point on the line
@@ -166,10 +180,8 @@ public class Geometry {
 	 * @param p The point to which to get the distance
 	 * @return The distance between the line and point
 	 */
-	public static double pointLineDistance( double[] a, double[] b, double[] p ) {
-		double[] t = Vector.minus( b, a );
-		double[] u = Vector.cross( t, Vector.minus( b, p ) );
-		return Vector.magnitude( u ) / Vector.magnitude( t );
+	public static double linePointDistance( double[] a, double[] b, double[] p ) {
+		return pointLineDistance( p, a, b );
 	}
 
 	/**
@@ -202,8 +214,7 @@ public class Geometry {
 		double angleb = Geometry.getAbsAngle( ab, pb );
 		if( anglea > Constants.QUARTER_CIRCLE || angleb > Constants.QUARTER_CIRCLE ) return Double.NaN;
 
-		double[] u = Vector.cross( ba, Vector.minus( b, p ) );
-		return Vector.magnitude( u ) / Vector.magnitude( ba );
+		return pointLineDistance( p, a, b );
 	}
 
 	/**
@@ -506,6 +517,18 @@ public class Geometry {
 		return Vector.add( p, vectorToLine( a, b, p ) );
 	}
 
+	public static double[] nearestBoundLinePoint( double[] a, double[] b, double[] p ) {
+		double[] pb = Vector.minus( p, b );
+		double[] pa = Vector.minus( p, a );
+		double[] ba = Vector.minus( b, a );
+		double[] ab = Vector.minus( a, b );
+		double anglea = Geometry.getAbsAngle( ba, pa );
+		double angleb = Geometry.getAbsAngle( ab, pb );
+		if( anglea > Constants.QUARTER_CIRCLE || angleb > Constants.QUARTER_CIRCLE ) return null;
+
+		return nearestLinePoint( a, b, p );
+	}
+
 	/**
 	 * Determine if all the points are collinear with a line defined by point a and point b. It is important to note that this method is only accurate if all the
 	 * points are in between points a and b. All the points must lie within
@@ -518,7 +541,7 @@ public class Geometry {
 	 */
 	public static boolean areCollinear( double[] a, double[] b, double[]... points ) {
 		for( double[] vector : points ) {
-			if( pointLineDistance( a, b, vector ) >= Constants.RESOLUTION_LENGTH ) return false;
+			if( linePointDistance( a, b, vector ) >= Constants.RESOLUTION_LENGTH ) return false;
 		}
 		return true;
 	}
