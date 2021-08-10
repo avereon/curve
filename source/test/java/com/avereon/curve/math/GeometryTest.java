@@ -179,6 +179,14 @@ public class GeometryTest {
 	void testCurveParametricValue() {
 		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ), near( 0.5 ) );
 		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 0 ), Vector.of( 1, 2 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ), near( 0.5 ) );
+
+		double[] q1 = Geometry.curvePoint( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), 0.25 );
+		double[] q3 = Geometry.curvePoint( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), 0.75 );
+
+		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 0, 1 ) ), near( 0.0 ) );
+		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), q1 ), near( 0.25 ) );
+		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), q3 ), near( 0.75 ) );
+		assertThat( Geometry.curveParametricValue( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 2, 1 ) ), near( 1.0 ) );
 	}
 
 	@Test
@@ -188,6 +196,15 @@ public class GeometryTest {
 		double[] c = Vector.of( -8, 4 );
 		double[] d = Vector.of( 6, 0 );
 		assertThat( Geometry.curveParametricValue( a, b, c, d, Point.of( 4, 4 ) ), near( 0.5 ) );
+	}
+
+	@Test
+	void testCurveParametricValueNear() {
+		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 0, 1 ) ), near( 0.0 ) );
+		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 0.5, 2 ) ), near( 0.2019641810083393 ) );
+		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ), near( 0.5 ) );
+		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1.5, 0 ) ), near( 0.7980358189916608 ) );
+		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 2, 1 ) ), near( 1.0 ) );
 	}
 
 	@Test

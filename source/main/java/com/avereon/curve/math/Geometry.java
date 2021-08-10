@@ -1,5 +1,7 @@
 package com.avereon.curve.math;
 
+import java.util.*;
+
 /**
  * A bezier curve reference: https://pomax.github.io/bezierinfo
  */
@@ -395,7 +397,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Compute the parametric value of a point near a curve. It is assumed that
+	 * Compute the parametric value of a point on a curve. It is assumed that
 	 * all points are coplanar and no bounds checks are done for performance.
 	 *
 	 * @param a The curve point a
@@ -420,6 +422,39 @@ public class Geometry {
 			if( root >= 0 && root <= 1 && Geometry.areSamePoint( Geometry.curvePoint( a, b, c, d, root ), r ) ) return root;
 		}
 		return Double.NaN;
+	}
+
+	/**
+	 * Compute the parametric value of a point on a curve. It is assumed that
+	 * all points are coplanar and no bounds checks are done for performance.
+	 *
+	 * @param a The curve point a
+	 * @param b The curve point b
+	 * @param c The curve point c
+	 * @param d The curve point d
+	 * @param r The reference point
+	 * @return The parametric value for the reference point
+	 */
+	public static double curveParametricValueNear( double[] a, double[] b, double[] c, double[] d, double[] r ) {
+		// Get the curve coefficients
+		double[][] coefficients = curveCoefficients( a, b, c, d );
+
+		// Subtract the reference point x coordinate from the last coefficient
+		coefficients[ 3 ][ 0 ] -= r[ 0 ];
+
+		// Calculate the polynomial roots
+		double[] roots = new Polynomial( coefficients[ 0 ][ 0 ], coefficients[ 1 ][ 0 ], coefficients[ 2 ][ 0 ], coefficients[ 3 ][ 0 ] ).getRoots();
+
+		// Test each root for which one matches the reference point
+		Map<double[], Double> rootMap = new HashMap<>();
+		for( double root : roots ) {
+			if( root >= 0 && root <= 1 ) {
+				rootMap.put( Geometry.curvePoint( a, b, c, d, root ), root );
+			}
+		}
+
+		double[] nearest = nearest( new ArrayList<>( rootMap.keySet() ).toArray( new double[ 0 ][ 0 ] ), r );
+		return nearest == null ? Double.NaN : rootMap.get( nearest );
 	}
 
 	/**
