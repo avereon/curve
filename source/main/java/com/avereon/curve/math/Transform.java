@@ -63,7 +63,6 @@ public class Transform {
 	 * assumed to be in homogeneous coordinates, and to have an implicit fourth
 	 * element equal to 1.
 	 */
-	// TODO Rename to apply?
 	public final double[] apply( double[] vector ) {
 		double w = m[ 3 ][ 0 ] * vector[ 0 ] + m[ 3 ][ 1 ] * vector[ 1 ] + m[ 3 ][ 2 ] * vector[ 2 ] + m[ 3 ][ 3 ];
 		return Vector.of( (m[ 0 ][ 0 ] * vector[ 0 ] + m[ 0 ][ 1 ] * vector[ 1 ] + m[ 0 ][ 2 ] * vector[ 2 ] + m[ 0 ][ 3 ]) / w,
@@ -79,7 +78,6 @@ public class Transform {
 	 * <p>
 	 * This is faster than times() when a direction vector can be used.
 	 */
-	// TODO Rename to apply?
 	public final double[] applyDirection( double[] vector ) {
 		return Vector.of( m[ 0 ][ 0 ] * vector[ 0 ] + m[ 0 ][ 1 ] * vector[ 1 ] + m[ 0 ][ 2 ] * vector[ 2 ],
 			m[ 1 ][ 0 ] * vector[ 0 ] + m[ 1 ][ 1 ] * vector[ 1 ] + m[ 1 ][ 2 ] * vector[ 2 ],
@@ -92,7 +90,6 @@ public class Transform {
 	 * and y components of the output vector. This can save several operations
 	 * when the z component is not of interest.
 	 */
-	// TODO Rename to apply?
 	public final double[] applyXY( double[] vector ) {
 		double w = m[ 3 ][ 0 ] * vector[ 0 ] + m[ 3 ][ 1 ] * vector[ 1 ] + m[ 3 ][ 2 ] * vector[ 2 ] + m[ 3 ][ 3 ];
 		return Vector.of( (m[ 0 ][ 0 ] * vector[ 0 ] + m[ 0 ][ 1 ] * vector[ 1 ] + m[ 0 ][ 2 ] * vector[ 2 ] + m[ 0 ][ 3 ]) / w,
@@ -105,7 +102,6 @@ public class Transform {
 	 * component of the output vector. This is useful, for example, for
 	 * determining whether a point lies in front or behind the camera.
 	 */
-	// TODO Rename to apply?
 	public final double applyZ( double[] vector ) {
 		double w = m[ 3 ][ 0 ] * vector[ 0 ] + m[ 3 ][ 1 ] * vector[ 1 ] + m[ 3 ][ 2 ] * vector[ 2 ] + m[ 3 ][ 3 ];
 		return (m[ 2 ][ 0 ] * vector[ 0 ] + m[ 2 ][ 1 ] * vector[ 1 ] + m[ 2 ][ 2 ] * vector[ 2 ] + m[ 2 ][ 3 ]) / w;
