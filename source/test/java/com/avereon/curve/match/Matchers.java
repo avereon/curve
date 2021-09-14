@@ -25,6 +25,14 @@ public class Matchers {
 		return new PointCloseTo( expected, tolerance );
 	}
 
+	public static Matcher<Iterable<double[]>> nearInAnyOrder( double[]... expected ) {
+		return new NearAllInAnyOrder( expected, TOLERANCE );
+	}
+
+//	public static NearAllInAnyOrder nearAll( double[][] expected, double tolerance ) {
+//		return new NearAllInAnyOrder( expected, tolerance );
+//	}
+
 	public static Matcher<double[]> sameDirection( double[] expected ) {
 		return new VectorSameDirection( expected );
 	}

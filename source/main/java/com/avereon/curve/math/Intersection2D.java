@@ -164,6 +164,59 @@ public class Intersection2D extends Intersection {
 		return new Intersection2D( Type.INTERSECTION, Point.of( x1, y1 ), Point.of( x2, y2 ) );
 	}
 
+	/**
+	 * Find the intersection of a line and an ellipse. An intersection object is
+	 * returned with the following values:
+	 * <ul>
+	 * <li>None, no points: the line and ellipse do not intersect
+	 * <li>Intersection, 1 intersection point: the line is tangent to the ellipse
+	 * <li>Intersection, 2 intersection points: line and ellipse intersect
+	 * </ul>
+	 * @param a1 The first line point
+	 * @param a2 The other line point
+	 * @param o The center of the ellipse
+	 * @param rx
+	 * @param ry
+	 * @return
+	 */
+	public static Intersection2D intersectLineEllipse( double[] a1, double[] a2, double[] o, double rx, double ry ) {
+		// Transform the line points relative to the ellipse origin
+		double[] p1 = Vector.subtract( a1, o );
+		double[] p2 = Vector.subtract( a2, o );
+
+		Intersection2D x = intersectLineEllipse( p1, p2, rx, ry );
+
+		// Transform the intersection points relative to the ellipse origin
+		double[][] points = Arrays.stream( x.getPoints() ).map( p -> Vector.add( p, o ) ).toArray( double[][]::new );
+
+		return new Intersection2D( x.getType(), points );
+	}
+
+	/**
+	 * This implementation assumes that the ellipse is at the origin.
+	 *
+	 * @param p1 First line point
+	 * @param p2 Other line point
+	 * @param rx The circle x radius
+	 * @param ry The circle y radius
+	 * @return The intersection
+	 */
+	public static Intersection2D intersectLineEllipse( double[] p1, double[] p2, double rx, double ry ) {
+		Transform targetToLocal = Transform.scale( 1, rx / ry, 0 );
+		Transform localToTarget = Transform.scale( 1, ry / rx, 0 );
+
+		// Transform the line points according to the eccentricity of the ellipse
+		double[] p3 = targetToLocal.apply( p1 );
+		double[] p4 = targetToLocal.apply( p2 );
+
+		Intersection2D intersection = intersectLineCircle( p3, p4, rx );
+		double[][] points = intersection.getPoints();
+		for( int index = 0; index < points.length; index++ ) {
+			points[ index ] = localToTarget.apply( points[ index ] );
+		}
+		return new Intersection2D( intersection.getType(), points );
+	}
+
 	public static Intersection2D intersectLineBezier3( double[] l1, double[] l2, double[] a, double[] b, double[] c, double[] d ) {
 		double[] roots = Geometry.curveLineRoots( a, b, c, d, l1, l2 );
 

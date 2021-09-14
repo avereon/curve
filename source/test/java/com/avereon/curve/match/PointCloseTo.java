@@ -9,11 +9,11 @@ public class PointCloseTo extends TypeSafeMatcher<double[]> {
 
 	private final double[] expected;
 
-	private final double delta;
+	private final double tolerance;
 
-	public PointCloseTo( double[] expected, double error ) {
+	public PointCloseTo( double[] expected, double tolerance ) {
 		this.expected = expected;
-		this.delta = error;
+		this.tolerance = tolerance;
 	}
 
 	@Override
@@ -27,16 +27,16 @@ public class PointCloseTo extends TypeSafeMatcher<double[]> {
 				.appendText( " differed by " )
 				.appendValue( this.actualDelta( item ) )
 				.appendText( " more than delta " )
-				.appendValue( this.delta );
+				.appendValue( this.tolerance );
 	}
 
 	@Override
 	public void describeTo( Description description ) {
-		description.appendText( "a point within " ).appendValue( this.delta ).appendText( " of " ).appendValue( this.expected );
+		description.appendText( "a point within " ).appendValue( this.tolerance ).appendText( " of " ).appendValue( this.expected );
 	}
 
 	private double actualDelta( double[] item ) {
-		return Vector.distance( item, expected ) - this.delta;
+		return Vector.distance( item, expected ) - this.tolerance;
 	}
 
 	public static Matcher<double[]> closeTo( double[] operand, double error ) {

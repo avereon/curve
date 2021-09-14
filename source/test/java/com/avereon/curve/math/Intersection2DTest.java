@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static com.avereon.curve.match.Matchers.near;
+import static com.avereon.curve.match.Matchers.nearInAnyOrder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
@@ -104,10 +105,10 @@ public class Intersection2DTest {
 		assertThat( intersection.getPoints().length, is( 2 ) );
 		assertThat( Arrays.asList( intersection.getPoints() ), containsInAnyOrder( Point.of( -4, 3, 0 ), Point.of( 4, 3, 0 ) ) );
 
-		intersection = Intersection2D.intersectLineCircle( Point.of( -1, 4 ), Point.of( 1, 4 ), Point.of( 1, 1 ), 5.0 );
+		intersection = Intersection2D.intersectLineCircle( Point.of( 4, -1 ), Point.of( 4, 1 ), Point.of( 1, 1 ), 5.0 );
 		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
 		assertThat( intersection.getPoints().length, is( 2 ) );
-		assertThat( Arrays.asList( intersection.getPoints() ), containsInAnyOrder( Point.of( -3, 4, 0 ), Point.of( 5, 4, 0 ) ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), containsInAnyOrder( Point.of( 4, -3, 0 ), Point.of( 4, 5, 0 ) ) );
 	}
 
 	@Test
@@ -138,7 +139,7 @@ public class Intersection2DTest {
 
 		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
 		assertThat( intersection.getPoints().length, is( 1 ) );
-		assertThat( intersection.getPoints()[ 0 ], is( Point.of( 4, 6 ) ) );
+		assertThat( intersection.getPoints()[ 0 ], near( Point.of( 4, 6 ) ) );
 	}
 
 	@Test
@@ -149,6 +150,70 @@ public class Intersection2DTest {
 		double r = 5.0;
 
 		Intersection2D intersection = Intersection2D.intersectLineCircle( p1, p2, o, r );
+
+		assertThat( intersection.getType(), is( Intersection.Type.NONE ) );
+		assertThat( intersection.getPoints().length, is( 0 ) );
+	}
+
+	@Test
+	void testIntersectLineEllipse() {
+		Intersection2D intersection = Intersection2D.intersectLineEllipse( Point.of( -1, 0 ), Point.of( 1, 0 ), Point.of( 0, 0 ), 4.0, 5.0 );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), containsInAnyOrder( Point.of( -4, 0, 0 ), Point.of( 4, 0, 0 ) ) );
+
+		intersection = Intersection2D.intersectLineEllipse( Point.of( -1, 3 ), Point.of( 1, 3 ), Point.of( 0, 0 ), 4.0, 5.0 );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), nearInAnyOrder( Point.of( -3.2, 3, 0 ), Point.of( 3.2, 3, 0 ) ) );
+
+		intersection = Intersection2D.intersectLineEllipse( Point.of( 4, -1 ), Point.of( 4, 1 ), Point.of( 1, 1 ), 5.0, 4.0 );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), nearInAnyOrder( Point.of( 4, -2.2, 0 ), Point.of( 4, 4.2, 0 ) ) );
+	}
+
+	@Test
+	void testIntersectLineRadiusRadius() {
+		Intersection2D intersection = Intersection2D.intersectLineEllipse( Point.of( -1, 0 ), Point.of( 0, 0 ), 4.0, 5.0 );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), nearInAnyOrder( Point.of( -4, 0, 0 ), Point.of( 4, 0, 0 ) ) );
+
+		intersection = Intersection2D.intersectLineEllipse( Point.of( -1, 3 ), Point.of( 1, 3 ), 4.0, 5.0 );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), nearInAnyOrder( Point.of( -3.2, 3, 0 ), Point.of( 3.2, 3, 0 ) ) );
+
+		intersection = Intersection2D.intersectLineEllipse( Point.of( -3, 1 ), Point.of( -3, -1 ), 5.0, 4.0 );
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 2 ) );
+		assertThat( Arrays.asList( intersection.getPoints() ), nearInAnyOrder( Point.of( -3, -3.2, 0 ), Point.of( -3, 3.2, 0 ) ) );
+	}
+
+	@Test
+	void testIntersectLineEllipseTangent() {
+		double[] p1 = Point.of( 1, 6 );
+		double[] p2 = Point.of( 8, 6 );
+		double[] o = Point.of( 4, 1 );
+		double rx = 2.0;
+		double ry = 5.0;
+		Intersection2D intersection = Intersection2D.intersectLineEllipse( p1, p2, o, rx, ry );
+
+		assertThat( intersection.getType(), is( Intersection.Type.INTERSECTION ) );
+		assertThat( intersection.getPoints().length, is( 1 ) );
+		assertThat( intersection.getPoints()[ 0 ], near( Point.of( 4, 6 ) ) );
+	}
+
+	@Test
+	void testIntersectLineNoIntersection() {
+		double[] p1 = Point.of( 1, 1 );
+		double[] p2 = Point.of( 8, 1 );
+		double[] o = Point.of( 1, 14 );
+		double rx = 5.0;
+		double ry = 2.0;
+
+		Intersection2D intersection = Intersection2D.intersectLineEllipse( p1, p2, o, rx, ry );
 
 		assertThat( intersection.getType(), is( Intersection.Type.NONE ) );
 		assertThat( intersection.getPoints().length, is( 0 ) );
