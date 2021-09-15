@@ -15,6 +15,11 @@ public class Intersection3D extends Intersection {
 	}
 
 	public static Intersection3D intersectPlanePlane( double[] ao, double[] an, double[] bo, double[] bn ) {
+		// Determine the vector parallel to the intersection line
+		double[] v = Vector.cross( an, bn );
+
+		// TODO Determine a specific point on the line
+
 		// TODO Implement plane-plane intersection
 		return new Intersection3D( Type.NONE );
 	}
