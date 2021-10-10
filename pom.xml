@@ -8,12 +8,12 @@
 	<parent>
 		<groupId>com.avereon.pom</groupId>
 		<artifactId>jar</artifactId>
-		<version>3.2.0-SNAPSHOT</version>
+		<version>3.2.0</version>
 	</parent>
 
 	<groupId>com.avereon</groupId>
 	<artifactId>curve</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.2</version>
 	<packaging>jar</packaging>
 
 	<name>Curve</name>
