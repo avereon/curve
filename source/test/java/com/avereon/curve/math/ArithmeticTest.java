@@ -88,4 +88,26 @@ public class ArithmeticTest {
 		assertThat( Arithmetic.bc( 6, 3 ), is( 20 ) );
 	}
 
+	@Test
+	public void testBchi() {
+		assertThat( Arithmetic.bchi( 0 ), is( 1.0 ) );
+		assertThat( Arithmetic.bchi( 1 ), is( 0.5 ) );
+		assertThat( Arithmetic.bchi( 2 ), is( -0.125 ) );
+		assertThat( Arithmetic.bchi( 3 ), is( 0.0625 ) );
+		assertThat( Arithmetic.bchi( 4 ), is( -0.0390625 ) );
+		assertThat( Arithmetic.bchi( 5 ), is( 0.02734375 ) );
+		assertThat( Arithmetic.bchi( 6 ), is( -0.0205078125 ) );
+		assertThat( Arithmetic.bchi( 7 ), is( 0.01611328125 ) );
+	}
+
+	@Test
+	public void testFactorial() {
+		assertThat( Arithmetic.factorial( 0 ), is( 1 ) );
+		assertThat( Arithmetic.factorial( 1 ), is( 1 ) );
+		assertThat( Arithmetic.factorial( 2 ), is( 2 ) );
+		assertThat( Arithmetic.factorial( 3 ), is( 6 ) );
+		assertThat( Arithmetic.factorial( 4 ), is( 24 ) );
+		assertThat( Arithmetic.factorial( 5 ), is( 120 ) );
+	}
+
 }

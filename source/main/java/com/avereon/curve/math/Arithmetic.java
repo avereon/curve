@@ -94,4 +94,31 @@ public class Arithmetic {
 		return bc( n - 1, k - 1 ) + bc( n - 1, k );
 	}
 
+	public static double bchi( int k ) {
+		int twok = k + k;
+
+		int b = bc( twok, k );
+		double n = Math.pow( -1, k + 1 );
+		double d = Math.pow( 2, twok ) * (twok - 1);
+		double c = n / d;
+
+		return b * c;
+	}
+
+//	public static double ff( double n, int x ) {
+//		if( x == 0 ) return 1;
+//		double sum = 1;
+//
+//		for( int k = 0; k < x; k++ ) {
+//			sum *= (n - k);
+//		}
+//
+//		return sum;
+//	}
+
+	public static int factorial( int n ) {
+		if( n == 0 ) return 1;
+		return n * factorial( n - 1 );
+	}
+
 }
