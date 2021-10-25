@@ -79,4 +79,13 @@ public class ArithmeticTest {
 		assertThat( Arithmetic.determinant( 1, 2, 3, 4, 5, 6, 7, 8, 9 ), is( 0.0 ) );
 	}
 
+	@Test
+	public void testBc() {
+		assertThat( Arithmetic.bc( 0, 0 ), is( 1 ) );
+		assertThat( Arithmetic.bc( 1, 0 ), is( 1 ) );
+		assertThat( Arithmetic.bc( 1, 1 ), is( 1 ) );
+		assertThat( Arithmetic.bc( 2, 1 ), is( 2 ) );
+		assertThat( Arithmetic.bc( 6, 3 ), is( 20 ) );
+	}
+
 }

@@ -81,4 +81,17 @@ public class Arithmetic {
 		return a - b - c + d + e - f;
 	}
 
+	/**
+	 * Compute the binomial coefficient 'n choose k'.
+	 *
+	 * @param n The number of elements to choose from
+	 * @param k The number of elements to choose
+	 * @return The binomial coefficient 'n choose k'
+	 */
+	public static int bc( int n, int k ) {
+		if( k > n ) return 0;
+		if( k == 0 || k == n ) return 1;
+		return bc( n - 1, k - 1 ) + bc( n - 1, k );
+	}
+
 }
