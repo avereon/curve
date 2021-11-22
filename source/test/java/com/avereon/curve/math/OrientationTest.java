@@ -1,13 +1,10 @@
 package com.avereon.curve.math;
 
+import com.avereon.curve.assertion.VectorAssert;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
-import static com.avereon.curve.match.Matchers.near;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrientationTest {
 
@@ -114,25 +111,25 @@ public class OrientationTest {
 	void testTransformWithNegativeYAxis() {
 		Orientation orientation = new Orientation( Vector.of( 0, 0, 0 ), Vector.of( 0, -1, 0 ), Vector.of( 0, 0, 1 ) );
 		Transform transform = orientation.getLocalToTargetTransform();
-		assertThat( transform.apply( Vector.of( 0, 1, 0 ) ), is( Vector.of( 0, 0, 1 ) ) );
+		assertThat( transform.apply( Vector.of( 0, 1, 0 ) ) ).isEqualTo( Vector.of( 0, 0, 1 ) );
 	}
 
 	@Test
 	void testGetLocalToWorldTransform() {
 		Orientation orientation = new Orientation();
-		assertThat( orientation.getLocalToTargetTransform(), is( Transform.identity() ) );
+		assertThat( orientation.getLocalToTargetTransform() ).isEqualTo( Transform.identity() );
 
 		orientation.transform( Transform.translation( 1, 2, 3 ) );
-		assertThat( orientation.getLocalToTargetTransform(), is( Transform.translation( 1, 2, 3 ) ) );
+		assertThat( orientation.getLocalToTargetTransform() ).isEqualTo( Transform.translation( 1, 2, 3 ) );
 	}
 
 	@Test
 	void testGetWorldToLocalTransform() {
 		Orientation orientation = new Orientation();
-		assertThat( orientation.getTargetToLocalTransform(), is( Transform.identity() ) );
+		assertThat( orientation.getTargetToLocalTransform() ).isEqualTo( Transform.identity() );
 
 		orientation.transform( Transform.translation( 1, 2, 3 ) );
-		assertThat( orientation.getTargetToLocalTransform(), is( Transform.translation( -1, -2, -3 ) ) );
+		assertThat( orientation.getTargetToLocalTransform() ).isEqualTo( Transform.translation( -1, -2, -3 ) );
 	}
 
 	@Test
@@ -154,19 +151,19 @@ public class OrientationTest {
 		assertEquals( orientation4, orientation3 );
 		assertEquals( orientation3, orientation4 );
 
-		assertNotEquals( orientation1, orientation3 );
-		assertNotEquals( orientation3, orientation1 );
+		assertThat( orientation1 ).isNotEqualTo( orientation3 );
+		assertThat( orientation3 ).isNotEqualTo( orientation1 );
 	}
 
 	@Test
 	void testHashCode() {
 		Orientation orientation1 = new Orientation();
 		Orientation orientation2 = new Orientation();
-		assertThat( orientation1.hashCode(), is( orientation2.hashCode() ) );
+		assertThat( orientation1.hashCode() ).isEqualTo( orientation2.hashCode() );
 
 		Orientation orientation3 = new Orientation( Vector.of( 0, 1, 2 ), Vector.of( 3, 4, 5 ), Vector.of( 6, 7, 8 ) );
 		Orientation orientation4 = new Orientation( Vector.of( 0, 1, 2 ), Vector.of( 3, 4, 5 ), Vector.of( 6, 7, 8 ) );
-		assertThat( orientation3.hashCode(), is( orientation4.hashCode() ) );
+		assertThat( orientation3.hashCode() ).isEqualTo( orientation4.hashCode() );
 	}
 
 	public static void assertEquals( Orientation expected, Orientation actual ) {
@@ -175,9 +172,9 @@ public class OrientationTest {
 
 	public static void assertEquals( Orientation expected, Orientation actual, double tolerance ) {
 		try {
-			assertThat( actual.getOrigin(), near( expected.getOrigin(), tolerance ) );
-			assertThat( actual.getNormal(), near( expected.getNormal(), tolerance ) );
-			assertThat( actual.getRotate(), near( expected.getRotate(), tolerance ) );
+			VectorAssert.assertThat( actual.getOrigin() ).isCloseTo( expected.getOrigin(), tolerance );
+			VectorAssert.assertThat( actual.getNormal() ).isCloseTo( expected.getNormal(), tolerance );
+			VectorAssert.assertThat( actual.getRotate() ).isCloseTo( expected.getRotate(), tolerance );
 		} catch( AssertionError error ) {
 			throw new AssertionError( "expected: " + expected + " was: " + actual );
 		}
@@ -188,11 +185,11 @@ public class OrientationTest {
 	}
 
 	public static void assertOrientationValues( Orientation orientation, double[] origin, double[] normal, double[] rotate, double tolerance ) {
-		assertNotNull( orientation );
+		assertThat( orientation ).isNotNull();
 		try {
-			assertThat( orientation.getOrigin(), near( Vector.of( origin[ 0 ], origin[ 1 ], origin[ 2 ] ), tolerance ) );
-			assertThat( orientation.getNormal(), near( Vector.of( normal[ 0 ], normal[ 1 ], normal[ 2 ] ), tolerance ) );
-			assertThat( orientation.getRotate(), near( Vector.of( rotate[ 0 ], rotate[ 1 ], rotate[ 2 ] ), tolerance ) );
+			VectorAssert.assertThat( orientation.getOrigin() ).isCloseTo( Vector.of( origin[ 0 ], origin[ 1 ], origin[ 2 ] ), tolerance );
+			VectorAssert.assertThat( orientation.getNormal() ).isCloseTo( Vector.of( normal[ 0 ], normal[ 1 ], normal[ 2 ] ), tolerance );
+			VectorAssert.assertThat( orientation.getRotate() ).isCloseTo( Vector.of( rotate[ 0 ], rotate[ 1 ], rotate[ 2 ] ), tolerance );
 		} catch( AssertionFailedError error ) {
 			throw new AssertionError( "expected: " + new Orientation( origin, normal, rotate ) + " was: " + orientation );
 		}
@@ -203,14 +200,14 @@ public class OrientationTest {
 	}
 
 	public static void assertOrientationValues( Orientation orientation, double[] position, double[] z, double[] up, double xrotate, double yrotate, double zrotate, double tolerance ) {
-		assertNotNull( orientation );
+		assertThat( orientation ).isNotNull();
 		try {
-			assertThat( orientation.getOrigin(), near( position, tolerance ) );
-			assertThat( orientation.getNormal(), near( z, tolerance ) );
-			assertThat( orientation.getRotate(), near( up, tolerance ) );
-			assertThat( orientation.getXRotation(), is( xrotate ) );
-			assertThat( orientation.getYRotation(), is( yrotate ) );
-			assertThat( orientation.getZRotation(), is( zrotate ) );
+			VectorAssert.assertThat( orientation.getOrigin() ).isCloseTo( position, tolerance );
+			VectorAssert.assertThat( orientation.getNormal() ).isCloseTo( z, tolerance );
+			VectorAssert.assertThat( orientation.getRotate() ).isCloseTo( up, tolerance );
+			assertThat( orientation.getXRotation() ).isEqualTo( xrotate );
+			assertThat( orientation.getYRotation() ).isEqualTo( yrotate );
+			assertThat( orientation.getZRotation() ).isEqualTo( zrotate );
 		} catch( AssertionFailedError error ) {
 			throw new AssertionError( "expected: " + new Orientation( position, z, up ) + " was: " + orientation );
 		}
