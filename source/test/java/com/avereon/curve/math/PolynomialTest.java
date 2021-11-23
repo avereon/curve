@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class PolynomialTest {
 
-	private static final Offset<Double> tolerance = Offset.offset( 1e-15 );
+	private static final Offset<Double> tolerance = Offset.offset( 1e-12 );
 
 	@Test
 	void testConstants() {
@@ -113,10 +113,10 @@ public class PolynomialTest {
 	@Test
 	void testBisection() {
 		double value = Math.sqrt( 0.5 );
-		assertThat( new Polynomial( 2, 0, -1 ).bisection( -2, -1 ) ).isEqualTo( Double.NaN );
+		assertThat( new Polynomial( 2, 0, -1 ).bisection( -2, -1 ) ).isNaN();
 		assertThat( new Polynomial( 2, 0, -1 ).bisection( -1, 0 ) ).isCloseTo( -value, Offset.offset( 10 * Polynomial.TOLERANCE ) );
 		assertThat( new Polynomial( 2, 0, -1 ).bisection( 0, 1 ) ).isCloseTo( value, Offset.offset( 10 * Polynomial.TOLERANCE ) );
-		assertThat( new Polynomial( 2, 0, -1 ).bisection( 1, 2 ) ).isEqualTo( Double.NaN );
+		assertThat( new Polynomial( 2, 0, -1 ).bisection( 1, 2 ) ).isNaN();
 	}
 
 	@Test
