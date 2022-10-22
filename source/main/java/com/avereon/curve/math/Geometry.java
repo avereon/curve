@@ -1,6 +1,11 @@
 package com.avereon.curve.math;
 
-import java.util.*;
+import org.tinyspline.BSpline;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A bezier curve reference: https://pomax.github.io/bezierinfo
@@ -458,7 +463,8 @@ public class Geometry {
 	}
 
 	/**
-	 * Subdivide a cubic bezier curve. The parameters t is expected to be in the range 0.0 to 1.0 but in not range checked for performance reasons.
+	 * Subdivide a cubic bezier curve. The parameters t is expected to be in the
+	 * range 0.0 to 1.0 but is not range checked for performance reasons.
 	 *
 	 * @param p1 Control point a
 	 * @param p2 Control point b
@@ -475,6 +481,36 @@ public class Geometry {
 		double[] p9 = Vector.lerp( p6, p7, t );
 		double[] p10 = Vector.lerp( p8, p9, t );
 		return new double[][][]{ new double[][]{ p1, p5, p8, p10 }, new double[][]{ p10, p9, p7, p4 } };
+	}
+
+	public static double[][][] interpolateCubicNatural( double[][] points ) {
+		List<Double> pointList = new ArrayList<>( points.length * 2 );
+		for( double[] point : points ) {
+			pointList.add( point[ 0 ] );
+			pointList.add( point[ 1 ] );
+		}
+
+		// Use tinyspline to interpolate the curves
+		BSpline spline = BSpline.interpolateCubicNatural( pointList, 2 );
+
+		List<Double> controlPoints = spline.getControlPoints();
+		int size = (int)(spline.getOrder() * spline.getDimension());
+		int surfaceCount = controlPoints.size() / size;
+
+		double[][][] curves = new double[surfaceCount][4][2];
+		for( int index = 0; index < surfaceCount; index++ ) {
+			int offset = index * size;
+			curves[index][0][0] = controlPoints.get( offset );
+			curves[index][0][1] = controlPoints.get( offset + 1 );
+			curves[index][1][0] = controlPoints.get( offset + 2 );
+			curves[index][1][1] = controlPoints.get( offset + 3 );
+			curves[index][2][0] = controlPoints.get( offset + 4 );
+			curves[index][2][1] = controlPoints.get( offset + 5 );
+			curves[index][3][0] = controlPoints.get( offset + 6 );
+			curves[index][3][1] = controlPoints.get( offset + 7 );
+		}
+
+		return curves;
 	}
 
 	/**

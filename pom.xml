@@ -46,8 +46,17 @@
 		<!-- Keep consistent with the CI pipeline -->
 		<java.version>11</java.version>
 
-		<!-- Version numbers updated 14 Dec 2020 -->
+		<!-- Version numbers updated 22 Oct 2022 -->
+		<tinyspline.version>0.5.0-1</tinyspline.version>
 	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.tinyspline</groupId>
+			<artifactId>tinyspline</artifactId>
+			<version>${tinyspline.version}</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
