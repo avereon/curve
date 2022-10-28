@@ -1,7 +1,9 @@
 package com.avereon.curve.math;
 
 /**
- * NOTE: All methods in this class assume three dimensional vectors. If a smaller array is used then an {@link ArrayIndexOutOfBoundsException} will likely be thrown. If a larger array is used the excess values are ignored.
+ * NOTE: All methods in this class assume three-dimensional vectors. If a
+ * smaller array is used then an {@link ArrayIndexOutOfBoundsException} will
+ * likely be thrown. If a larger array is used the excess values are ignored.
  */
 public class Vector extends Point {
 
@@ -92,7 +94,7 @@ public class Vector extends Point {
 	/**
 	 * Multiply a vector with a scalar.
 	 *
-	 * @param v     The vector to scale
+	 * @param v The vector to scale
 	 * @param scale The scalar value
 	 * @return A new vector that is multiplied by the scalar
 	 */
@@ -103,7 +105,7 @@ public class Vector extends Point {
 	/**
 	 * Multiply a vector with scalars for the X and Y coordinates.
 	 *
-	 * @param v      The vector to scale
+	 * @param v The vector to scale
 	 * @param scaleX The X scalar value
 	 * @param scaleY The Y scalar value
 	 * @return A new vector that is multiplied by the scalars
@@ -115,7 +117,7 @@ public class Vector extends Point {
 	/**
 	 * Multiply a vector with scalars for each coordinate.
 	 *
-	 * @param v      The vector to scale
+	 * @param v The vector to scale
 	 * @param scaleX The x coordinate scalar
 	 * @param scaleY The y coordinate scalar
 	 * @param scaleZ The z coordinate scalar
