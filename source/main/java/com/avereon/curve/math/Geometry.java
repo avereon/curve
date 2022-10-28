@@ -483,36 +483,6 @@ public class Geometry {
 		return new double[][][]{ new double[][]{ p1, p5, p8, p10 }, new double[][]{ p10, p9, p7, p4 } };
 	}
 
-	public static double[][][] interpolateCubicNatural( double[][] points ) {
-		List<Double> pointList = new ArrayList<>( points.length * 2 );
-		for( double[] point : points ) {
-			pointList.add( point[ 0 ] );
-			pointList.add( point[ 1 ] );
-		}
-
-		// Use tinyspline to interpolate the curves
-		BSpline spline = BSpline.interpolateCubicNatural( pointList, 2 );
-
-		List<Double> controlPoints = spline.getControlPoints();
-		int size = (int)(spline.getOrder() * spline.getDimension());
-		int surfaceCount = controlPoints.size() / size;
-
-		double[][][] curves = new double[surfaceCount][4][2];
-		for( int index = 0; index < surfaceCount; index++ ) {
-			int offset = index * size;
-			curves[index][0][0] = controlPoints.get( offset );
-			curves[index][0][1] = controlPoints.get( offset + 1 );
-			curves[index][1][0] = controlPoints.get( offset + 2 );
-			curves[index][1][1] = controlPoints.get( offset + 3 );
-			curves[index][2][0] = controlPoints.get( offset + 4 );
-			curves[index][2][1] = controlPoints.get( offset + 5 );
-			curves[index][3][0] = controlPoints.get( offset + 6 );
-			curves[index][3][1] = controlPoints.get( offset + 7 );
-		}
-
-		return curves;
-	}
-
 	/**
 	 * Compute the x/y coefficients of a cubic bezier curve.
 	 * <pre>
@@ -553,6 +523,47 @@ public class Geometry {
 		c0 = Vector.of( a[ 0 ], a[ 1 ] );
 
 		return new double[][]{ c3, c2, c1, c0 };
+	}
+
+	/**
+	 * Convert a list of points into a natural cubic spline curve as a list of
+	 * cubic bezier curve segments.
+	 * @param points The list of 2D points to interpolate
+	 * @return The list of cubic curve segments
+	 */
+	public static double[][][] interpolateCubicNatural( double[][] points ) {
+		List<Double> valueList = new ArrayList<>( points.length * 3 );
+		for( double[] point : points ) {
+			valueList.add( point[ 0 ] );
+			valueList.add( point[ 1 ] );
+			valueList.add( point[ 2 ] );
+		}
+
+		// Use tinyspline to interpolate the curves
+		BSpline spline = BSpline.interpolateCubicNatural( valueList, 3 );
+
+		List<Double> controlPoints = spline.getControlPoints();
+		int size = (int)(spline.getOrder() * spline.getDimension());
+		int surfaceCount = controlPoints.size() / size;
+
+		double[][][] curves = new double[surfaceCount][4][3];
+		for( int index = 0; index < surfaceCount; index++ ) {
+			int offset = index * size;
+			curves[index][0][0] = controlPoints.get( offset );
+			curves[index][0][1] = controlPoints.get( offset + 1 );
+			curves[index][0][2] = controlPoints.get( offset + 2 );
+			curves[index][1][0] = controlPoints.get( offset + 3 );
+			curves[index][1][1] = controlPoints.get( offset + 4 );
+			curves[index][1][2] = controlPoints.get( offset + 5 );
+			curves[index][2][0] = controlPoints.get( offset + 6 );
+			curves[index][2][1] = controlPoints.get( offset + 7 );
+			curves[index][2][2] = controlPoints.get( offset + 8 );
+			curves[index][3][0] = controlPoints.get( offset + 9 );
+			curves[index][3][1] = controlPoints.get( offset + 10 );
+			curves[index][3][2] = controlPoints.get( offset + 11 );
+		}
+
+		return curves;
 	}
 
 	/**

@@ -2,7 +2,8 @@ package com.avereon.curve.assertion;
 
 import com.avereon.curve.math.Vector;
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
+
+import java.util.Arrays;
 
 public class VectorArrayAssert extends AbstractAssert<VectorArrayAssert, double[][]> {
 
@@ -15,15 +16,17 @@ public class VectorArrayAssert extends AbstractAssert<VectorArrayAssert, double[
 	}
 
 	public VectorArrayAssert areCloseTo( double[]... vectors ) {
-		for( double[] expected : vectors ) {
-			Assertions.assertThat( containsCloseTo( expected, actual, VectorAssert.TOLERANCE ) ).isTrue();
-		}
-		return this;
+		return areCloseTo( vectors, VectorAssert.TOLERANCE);
 	}
 
 	public VectorArrayAssert areCloseTo( double[][] vectors, double tolerance ) {
+		if( vectors.length != actual.length ) {
+			throw failureWithActualExpected( Arrays.deepToString( actual ), Arrays.deepToString( vectors ), "Array length mismatch: %d != %d",vectors.length, actual.length );
+		}
 		for( double[] expected : vectors ) {
-			Assertions.assertThat( containsCloseTo( expected, actual, tolerance ) ).isTrue();
+			if( !containsCloseTo( expected, actual, tolerance ) ) {
+				throw failureWithActualExpected( Arrays.deepToString( actual ), Arrays.deepToString( vectors ), "Distance is greater than %s at %s", tolerance, Arrays.toString(expected) );
+			}
 		}
 		return this;
 	}
@@ -32,6 +35,7 @@ public class VectorArrayAssert extends AbstractAssert<VectorArrayAssert, double[
 		for( double[] check : vectors ) {
 			if( closeTo( vector, check, tolerance ) ) return true;
 		}
+
 		return false;
 	}
 

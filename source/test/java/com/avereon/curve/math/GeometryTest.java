@@ -1,5 +1,6 @@
 package com.avereon.curve.math;
 
+import com.avereon.curve.assertion.VectorArrayAssert;
 import com.avereon.curve.assertion.VectorAssert;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
@@ -201,11 +202,13 @@ public class GeometryTest {
 	@Test
 	void testCurveParametricValueNear() {
 		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 0, 1 ) ) ).isCloseTo( 0.0, Offset.offset( 1e-15 ) );
-		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 0.5, 2 ) ) )
-			.isCloseTo( 0.2019641810083393, Offset.offset( 1e-15 ) );
+		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 0.5, 2 ) ) ).isCloseTo( 0.2019641810083393,
+			Offset.offset( 1e-15 )
+		);
 		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ) ).isCloseTo( 0.5, Offset.offset( 1e-15 ) );
-		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1.5, 0 ) ) )
-			.isCloseTo( 0.7980358189916608, Offset.offset( 1e-15 ) );
+		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1.5, 0 ) ) ).isCloseTo( 0.7980358189916608,
+			Offset.offset( 1e-15 )
+		);
 		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 2, 1 ) ) ).isCloseTo( 1.0, Offset.offset( 1e-15 ) );
 	}
 
@@ -231,6 +234,43 @@ public class GeometryTest {
 		assertThat( c[ 1 ] ).isEqualTo( Vector.of( 0, -9 ) );
 		assertThat( c[ 2 ] ).isEqualTo( Vector.of( 3, 3 ) );
 		assertThat( c[ 3 ] ).isEqualTo( Vector.of( 0, 0 ) );
+	}
+
+	@Test
+	void testInterpolateCubicNatural() {
+		double tolerance = 1e-7;
+		double[][] points = new double[][]{ Point.of( 0, 0 ), Point.of( 0, 1 ), Point.of( 1, 1 ), Point.of( 1, 0 ), Point.of( 2, 0 ), Point.of( 2, 1 ), Point.of( 3, 1 ), Point.of( 3, 0 ) };
+		double[][][] curves = Geometry.interpolateCubicNatural( points );
+
+		VectorArrayAssert
+			.assertThat( curves[ 0 ] )
+			.areCloseTo( new double[][]{ Point.of( 0, 0 ), Point.of( -0.1219512231466247, 0.3943662089361271 ), Point.of( -0.2439024462932494, 0.7887324178722542 ), Point.of( 0, 1 ) }, tolerance );
+
+		VectorArrayAssert
+			.assertThat( curves[ 1 ] )
+			.areCloseTo( new double[][]{ Point.of( 0, 1 ), Point.of( 0.2439024462932494, 1.2112676417323904 ), Point.of( 0.8536585620263729, 1.2394366566563995 ), Point.of( 1, 1 ) }, tolerance );
+
+		VectorArrayAssert
+			.assertThat( curves[ 2 ] )
+			.areCloseTo( new double[][]{ Point.of( 1, 1 ), Point.of( 1.146341497578272, 0.7605634029482452 ), Point.of( 0.8292683173970479, 0.2535211343160817 ), Point.of( 1, 0 ) }, tolerance );
+
+		VectorArrayAssert
+			.assertThat( curves[ 3 ] )
+			.areCloseTo( new double[][]{ Point.of( 1, 0 ), Point.of( 1.1707317422075971, -0.2535211343160817 ), Point.of( 1.8292683471993705, -0.2535211343160817 ), Point.of( 2, 0 ) }, tolerance );
+
+		VectorArrayAssert
+			.assertThat( curves[ 4 ] )
+			.areCloseTo( new double[][]{ Point.of( 2, 0 ), Point.of( 2.1707317720099195, 0.2535211343160817 ), Point.of( 1.8536585918286952, 0.7605634029482452 ), Point.of( 2, 1 ) }, tolerance );
+
+		VectorArrayAssert
+			.assertThat( curves[ 5 ] )
+			.areCloseTo( new double[][]{ Point.of( 2, 1 ), Point.of( 2.146341527380594, 1.2394366566563995 ), Point.of( 2.7560976431137174, 1.2112676417323904 ), Point.of( 3, 1 ) }, tolerance );
+
+		VectorArrayAssert
+			.assertThat( curves[ 6 ] )
+			.areCloseTo( new double[][]{ Point.of( 3, 1 ), Point.of( 3.2439025357002165, 0.7887324178722542 ), Point.of( 3.121951312553592, 0.3943662089361271 ), Point.of( 3, 0 ) }, tolerance );
+
+		assertThat( curves.length ).isEqualTo( 7 );
 	}
 
 	@Test

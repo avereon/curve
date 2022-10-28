@@ -2,8 +2,8 @@ package com.avereon.curve.assertion;
 
 import com.avereon.curve.math.Vector;
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.data.Offset;
+
+import java.util.Arrays;
 
 public class VectorAssert extends AbstractAssert<VectorAssert, double[]> {
 
@@ -28,7 +28,9 @@ public class VectorAssert extends AbstractAssert<VectorAssert, double[]> {
 	}
 
 	public VectorAssert isCloseTo( double[] expected, double tolerance ) {
-		Assertions.assertThat( Vector.distance( actual, expected ) ).isCloseTo( 0.0, Offset.offset( tolerance ) );
+		if( Vector.distance( actual, expected ) > tolerance ) {
+			throw failureWithActualExpected( Arrays.toString( actual ), Arrays.toString( expected ), "Distance is greater than %s", tolerance );
+		}
 		return this;
 	}
 
