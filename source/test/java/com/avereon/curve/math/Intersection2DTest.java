@@ -80,11 +80,22 @@ public class Intersection2DTest {
 	}
 
 	@Test
-	void testIntersectSegmentSegmentCoincident() {
+	void testIntersectSegmentSegmentSame() {
 		double[] a = Vector.of( 0, 0 );
 		double[] b = Vector.of( 2, 2 );
 		double[] c = Vector.of( 0, 0 );
 		double[] d = Vector.of( 2, 2 );
+		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
+
+		assertThat( intersection ).isEqualTo( new Intersection2D( Intersection.Type.SAME ) );
+	}
+
+	@Test
+	void testIntersectSegmentSegmentCoincident() {
+		double[] a = Vector.of( 0, 0 );
+		double[] b = Vector.of( 2, 2 );
+		double[] c = Vector.of( 1, 1 );
+		double[] d = Vector.of( 3, 3 );
 		Intersection2D intersection = Intersection2D.intersectSegmentSegment( a, b, c, d );
 
 		assertThat( intersection ).isEqualTo( new Intersection2D( Intersection.Type.COINCIDENT ) );

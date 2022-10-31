@@ -640,6 +640,14 @@ public class Geometry {
 		return nearestLinePoint( a, b, p );
 	}
 
+	public static boolean near( double distance ) {
+		return near( distance, Constants.RESOLUTION_LENGTH);
+	}
+
+	public static boolean near( double distance, double tolerance ) {
+		return distance <= tolerance;
+	}
+
 	/**
 	 * Determine if all the points are collinear with a line defined by point a and point b. It is important to note that this method is only accurate if all the
 	 * points are in between points a and b. All the points must lie within

@@ -46,11 +46,11 @@ public class Intersection2D extends Intersection {
 	 * @return The intersection
 	 */
 	public static Intersection2D intersectLineLine( double[] a1, double[] a2, double[] b1, double[] b2 ) {
-		double distance = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
-		double angle = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
-		double scale = distance / angle;
+		double distanceA2B = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
+		double distanceB2A = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
+		double scale = distanceB2A / distanceA2B;
 
-		if( near( distance ) ) return new Intersection2D( Type.SAME );
+		if( near( distanceB2A ) ) return new Intersection2D( Type.SAME );
 		return new Intersection2D( Type.INTERSECTION, Vector.of( a1[ 0 ] + scale * (a2[ 0 ] - a1[ 0 ]), a1[ 1 ] + scale * (a2[ 1 ] - a1[ 1 ]) ) );
 	}
 
@@ -71,12 +71,21 @@ public class Intersection2D extends Intersection {
 	 * @return The intersection
 	 */
 	public static Intersection2D intersectSegmentSegment( double[] a1, double[] a2, double[] b1, double[] b2 ) {
-		Intersection2D result;
+		// Same segments
+		if( Arrays.equals( a1, b1 ) && Arrays.equals( a2, b2 ) ) return new Intersection2D( Intersection2D.Type.SAME );
+		if( Arrays.equals( a1, b2 ) && Arrays.equals( a2, b1 ) ) return new Intersection2D( Intersection2D.Type.SAME );
+
+		// Matching end points
+		if( Arrays.equals( a1, b1 ) ) return new Intersection2D( Intersection2D.Type.INTERSECTION, a1 );
+		if( Arrays.equals( a1, b2 ) ) return new Intersection2D( Intersection2D.Type.INTERSECTION, a1 );
+		if( Arrays.equals( a2, b1 ) ) return new Intersection2D( Intersection2D.Type.INTERSECTION, a2 );
+		if( Arrays.equals( a2, b2 ) ) return new Intersection2D( Intersection2D.Type.INTERSECTION, a2 );
 
 		double distanceA2B = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
 		double distanceB2A = (a2[ 0 ] - a1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (a2[ 1 ] - a1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
 		double angleA2B = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
 
+		Intersection2D result;
 		if( angleA2B != 0 ) {
 			double ua = distanceA2B / angleA2B;
 			double ub = distanceB2A / angleA2B;
@@ -172,6 +181,7 @@ public class Intersection2D extends Intersection {
 	 * <li>Intersection, 1 intersection point: the line is tangent to the ellipse
 	 * <li>Intersection, 2 intersection points: line and ellipse intersect
 	 * </ul>
+	 *
 	 * @param a1 The first line point
 	 * @param a2 The other line point
 	 * @param o The center of the ellipse
