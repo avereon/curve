@@ -17,6 +17,14 @@ public class Vector extends Point {
 		return magnitude( b[ 0 ] - a[ 0 ], b[ 1 ] - a[ 1 ], b[ 2 ] - a[ 2 ] );
 	}
 
+	public static double distance( double ax, double ay, double bx, double by ) {
+		return magnitude( bx - ax, by - ay );
+	}
+
+	public static double distance( double ax, double ay, double az, double bx, double by, double bz ) {
+		return magnitude( bx - ax, by - ay, bz - az );
+	}
+
 	/**
 	 * Calculate the magnitude of the vector. If the vector is invalid then Double.NaN is returned. If the vector is infinite then Double.POSITIVE_INFINITY is returned.
 	 *
@@ -163,7 +171,11 @@ public class Vector extends Point {
 		return Geometry.polarToCartesian( Point.of( Vector.magnitude( v ), Geometry.getAngle( v ) + a ) );
 	}
 
-	private static double magnitude( double x, double y, double z ) {
+	public static double magnitude( double x, double y ) {
+		return Math.sqrt( x * x + y * y );
+	}
+
+	public static double magnitude( double x, double y, double z ) {
 		return Math.sqrt( x * x + y * y + z * z );
 	}
 
