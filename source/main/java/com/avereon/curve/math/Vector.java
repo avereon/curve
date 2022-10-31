@@ -195,4 +195,8 @@ public class Vector extends Point {
 		return Math.sqrt( x * x + y * y + z * z );
 	}
 
+	public static String toString( double[] v ) {
+		return "Vector[" + v[ 0 ] + ", " + v[ 1 ] + ", " + v[ 2 ] + "]";
+	}
+
 }

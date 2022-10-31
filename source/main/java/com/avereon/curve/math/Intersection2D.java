@@ -46,11 +46,11 @@ public class Intersection2D extends Intersection {
 	 * @return The intersection
 	 */
 	public static Intersection2D intersectLineLine( double[] a1, double[] a2, double[] b1, double[] b2 ) {
-		double distanceA2B = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
-		double distanceB2A = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
-		double scale = distanceB2A / distanceA2B;
+		double c = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
+		if( near( c ) ) return new Intersection2D( Type.SAME );
 
-		if( near( distanceB2A ) ) return new Intersection2D( Type.SAME );
+		double d = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
+		double scale = c / d;
 		return new Intersection2D( Type.INTERSECTION, Vector.of( a1[ 0 ] + scale * (a2[ 0 ] - a1[ 0 ]), a1[ 1 ] + scale * (a2[ 1 ] - a1[ 1 ]) ) );
 	}
 
@@ -81,14 +81,14 @@ public class Intersection2D extends Intersection {
 		if( Arrays.equals( a2, b1 ) ) return new Intersection2D( Intersection2D.Type.INTERSECTION, a2 );
 		if( Arrays.equals( a2, b2 ) ) return new Intersection2D( Intersection2D.Type.INTERSECTION, a2 );
 
-		double distanceA2B = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
-		double distanceB2A = (a2[ 0 ] - a1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (a2[ 1 ] - a1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
-		double angleA2B = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
+		double c = (b2[ 0 ] - b1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (b2[ 1 ] - b1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
+		double d = (a2[ 0 ] - a1[ 0 ]) * (a1[ 1 ] - b1[ 1 ]) - (a2[ 1 ] - a1[ 1 ]) * (a1[ 0 ] - b1[ 0 ]);
+		double alpha = (b2[ 1 ] - b1[ 1 ]) * (a2[ 0 ] - a1[ 0 ]) - (b2[ 0 ] - b1[ 0 ]) * (a2[ 1 ] - a1[ 1 ]);
 
 		Intersection2D result;
-		if( angleA2B != 0 ) {
-			double ua = distanceA2B / angleA2B;
-			double ub = distanceB2A / angleA2B;
+		if( alpha != 0 ) {
+			double ua = c / alpha;
+			double ub = d / alpha;
 
 			if( 0 <= ua && ua <= 1 && 0 <= ub && ub <= 1 ) {
 				result = new Intersection2D( Type.INTERSECTION, Vector.of( a1[ 0 ] + ua * (a2[ 0 ] - a1[ 0 ]), a1[ 1 ] + ua * (a2[ 1 ] - a1[ 1 ]) ) );
@@ -96,7 +96,7 @@ public class Intersection2D extends Intersection {
 				result = new Intersection2D( Type.NONE );
 			}
 		} else {
-			if( near( distanceA2B ) || near( distanceB2A ) ) {
+			if( near( c ) || near( d ) ) {
 				result = new Intersection2D( Type.COINCIDENT );
 			} else {
 				result = new Intersection2D( Type.PARALLEL );
