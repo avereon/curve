@@ -231,9 +231,9 @@ public class VectorTest {
 
 	@Test
 	void testToString() {
-		assertThat( Vector.toString( Vector.of( 1.2, 3.4, 5.6 ) ) ).isEqualTo( "[1.2, 3.4, 5.6]" );
-		assertThat( Vector.toString( Vector.of( 1.2, Double.POSITIVE_INFINITY, 5.6 ) ) ).isEqualTo( "[Infinity, Infinity, Infinity]" );
-		assertThat( Vector.toString( Vector.of( 1.2, Double.NaN, 5.6 ) ) ).isEqualTo( "[NaN, NaN, NaN]" );
+		assertThat( Vector.toString( Vector.of( 1.2, 3.4, 5.6 ) ) ).isEqualTo( "Vector[1.2, 3.4, 5.6]" );
+		assertThat( Vector.toString( Vector.of( 1.2, Double.POSITIVE_INFINITY, 5.6 ) ) ).isEqualTo( "Vector[Infinity, Infinity, Infinity]" );
+		assertThat( Vector.toString( Vector.of( 1.2, Double.NaN, 5.6 ) ) ).isEqualTo( "Vector[NaN, NaN, NaN]" );
 	}
 
 }

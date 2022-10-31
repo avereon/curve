@@ -59,7 +59,7 @@ public class Point {
 	}
 
 	public static String toString( double[] v ) {
-		return "[" + v[ 0 ] + ", " + v[ 1 ] + ", " + v[ 2 ] + "]";
+		return "Vector[" + v[ 0 ] + ", " + v[ 1 ] + ", " + v[ 2 ] + "]";
 	}
 
 }

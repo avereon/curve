@@ -69,6 +69,14 @@ public class Vector extends Point {
 		return of( a[ 1 ] * b[ 2 ] - a[ 2 ] * b[ 1 ], a[ 2 ] * b[ 0 ] - a[ 0 ] * b[ 2 ], a[ 0 ] * b[ 1 ] - a[ 1 ] * b[ 0 ] );
 	}
 
+	public static double crossProduct( double[] a, double[] b ) {
+		return crossProduct( a[ 0 ], a[ 1 ], b[ 0 ], b[ 1 ] );
+	}
+
+	public static double crossProduct( double ax, double ay, double bx, double by ) {
+		return ax * by - ay * bx;
+	}
+
 	/**
 	 * Calculate the sum of one vector with another.
 	 *
@@ -80,12 +88,20 @@ public class Vector extends Point {
 		return of( a[ 0 ] + b[ 0 ], a[ 1 ] + b[ 1 ], a[ 2 ] + b[ 2 ] );
 	}
 
+	public static double[] add( double[] a, double x, double y ) {
+		return add( a, x, y, 0 );
+	}
+
+	public static double[] add( double[] a, double x, double y, double z ) {
+		return of( a[ 0 ] + x, a[ 1 ] + y, a[ 2 ] + z );
+	}
+
 	public static double[] plus( double[] a, double[] b ) {
 		return add( a, b );
 	}
 
 	/**
-	 * Calculate the difference of one vector with another.
+	 * Calculate the difference of one vector from another.
 	 *
 	 * @param a The first vector
 	 * @param b The second vector

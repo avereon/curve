@@ -70,26 +70,26 @@ public class GeometryTest {
 
 	@Test
 	void testPointPlaneDistance() {
-		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Z, Vector.of( 0, 0, 3 ) ) ).isEqualTo( 3.0 );
-		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Z, Vector.of( 0, 0, 0 ) ) ).isEqualTo( 0.0 );
-		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Z, Vector.of( 0, 0, -5 ) ) ).isEqualTo( 5.0 );
+		assertThat( Geometry.pointPlaneDistance( Vector.of( 0, 0, 3 ), Vector.ZERO, Vector.UNIT_Z ) ).isEqualTo( 3.0 );
+		assertThat( Geometry.pointPlaneDistance( Vector.of( 0, 0, 0 ), Vector.ZERO, Vector.UNIT_Z ) ).isEqualTo( 0.0 );
+		assertThat( Geometry.pointPlaneDistance( Vector.of( 0, 0, -5 ), Vector.ZERO, Vector.UNIT_Z ) ).isEqualTo( 5.0 );
 
-		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Y, Vector.of( 2, 7, -3 ) ) ).isEqualTo( 7.0 );
-		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Y, Vector.of( 2, 0, 3 ) ) ).isEqualTo( 0.0 );
-		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_Y, Vector.of( -2, -6, 3 ) ) ).isEqualTo( 6.0 );
+		assertThat( Geometry.pointPlaneDistance( Vector.of( 2, 7, -3 ), Vector.ZERO, Vector.UNIT_Y ) ).isEqualTo( 7.0 );
+		assertThat( Geometry.pointPlaneDistance( Vector.of( 2, 0, 3 ), Vector.ZERO, Vector.UNIT_Y ) ).isEqualTo( 0.0 );
+		assertThat( Geometry.pointPlaneDistance( Vector.of( -2, -6, 3 ), Vector.ZERO, Vector.UNIT_Y ) ).isEqualTo( 6.0 );
 
-		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_X, Vector.of( 2, 4, -3 ) ) ).isEqualTo( 2.0 );
-		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_X, Vector.of( 0, -3, 4 ) ) ).isEqualTo( 0.0 );
-		assertThat( Geometry.pointPlaneDistance( Vector.ZERO, Vector.UNIT_X, Vector.of( -4, -2, -3 ) ) ).isEqualTo( 4.0 );
+		assertThat( Geometry.pointPlaneDistance( Vector.of( 2, 4, -3 ), Vector.ZERO, Vector.UNIT_X ) ).isEqualTo( 2.0 );
+		assertThat( Geometry.pointPlaneDistance( Vector.of( 0, -3, 4 ), Vector.ZERO, Vector.UNIT_X ) ).isEqualTo( 0.0 );
+		assertThat( Geometry.pointPlaneDistance( Vector.of( -4, -2, -3 ), Vector.ZERO, Vector.UNIT_X ) ).isEqualTo( 4.0 );
 	}
 
 	@Test
 	void testPointLineBoundDistance() {
-		assertThat( Geometry.pointLineBoundDistance( Vector.of( 1, -1, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ) ).isEqualTo( 1.0 );
-		assertThat( Geometry.pointLineBoundDistance( Vector.of( 1, 4, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ) ).isNaN();
-		assertThat( Geometry.pointLineBoundDistance( Vector.of( 2, 1, 3 ), Vector.of( 2, 3, 3 ), Vector.of( 1, 2, 3 ) ) ).isEqualTo( 1.0 );
-		assertThat( Geometry.pointLineBoundDistance( Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ), Vector.ZERO ) ).isCloseTo( Math.sqrt( 2 ) / 2, Offset.offset( 1E-15 ) );
-		assertThat( Geometry.pointLineBoundDistance( Vector.of( 0, 118 ), Vector.of( 526, 237 ), Vector.of( 51, 136 ) ) ).isCloseTo( 6.302695656181068, Offset.offset( 1E-15 ) );
+		assertThat( Geometry.pointLineBoundDistance( Vector.ZERO, Vector.of( 1, -1, 0 ), Vector.of( 1, 1, 0 ) ) ).isEqualTo( 1.0 );
+		assertThat( Geometry.pointLineBoundDistance( Vector.ZERO, Vector.of( 1, 4, 0 ), Vector.of( 1, 1, 0 ) ) ).isNaN();
+		assertThat( Geometry.pointLineBoundDistance( Vector.of( 1, 2, 3 ), Vector.of( 2, 1, 3 ), Vector.of( 2, 3, 3 ) ) ).isEqualTo( 1.0 );
+		assertThat( Geometry.pointLineBoundDistance( Vector.ZERO, Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ) ).isCloseTo( Math.sqrt( 2 ) / 2, Offset.offset( 1E-15 ) );
+		assertThat( Geometry.pointLineBoundDistance( Vector.of( 51, 136 ), Vector.of( 0, 118 ), Vector.of( 526, 237 ) ) ).isCloseTo( 6.302695656181068, Offset.offset( 1E-15 ) );
 	}
 
 	@Test
@@ -487,7 +487,7 @@ public class GeometryTest {
 
 	@Test
 	void testAngleWithTwoVectors() {
-		assertThat( Geometry.getAngle( Vector.ZERO, Vector.ZERO ) ).isEqualTo( 0.0 );
+		assertThat( Geometry.getAngle( Vector.ZERO, Vector.ZERO ) ).isNaN();
 
 		assertThat( Geometry.getAngle( Vector.of( 1, 0, 0 ), Vector.of( 1, 0, 0 ) ) ).isEqualTo( 0.0 );
 		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 0, 1, 0 ) ) ).isEqualTo( 0.0 );
@@ -508,14 +508,14 @@ public class GeometryTest {
 
 	@Test
 	void testNormalizeAngle() {
-		assertThat( Geometry.normalizeAngle( 0 ) ).isEqualTo( 0.0 );
-		assertThat( Geometry.normalizeAngle( -Math.PI ) ).isEqualTo( Math.PI );
+		assertThat( Geometry.clampAngle( 0 ) ).isEqualTo( 0.0 );
+		assertThat( Geometry.clampAngle( -Math.PI ) ).isEqualTo( Math.PI );
 
-		assertThat( Geometry.normalizeAngle( Math.PI + 1 ) ).isEqualTo( -Math.PI + 1 );
-		assertThat( Geometry.normalizeAngle( -Math.PI - 1 ) ).isEqualTo( Math.PI - 1 );
+		assertThat( Geometry.clampAngle( Math.PI + 1 ) ).isEqualTo( -Math.PI + 1 );
+		assertThat( Geometry.clampAngle( -Math.PI - 1 ) ).isEqualTo( Math.PI - 1 );
 
-		assertThat( Geometry.normalizeAngle( 13 * Math.PI + 1 ) ).isCloseTo( -Math.PI + 1, Offset.offset( 1e-12 ) );
-		assertThat( Geometry.normalizeAngle( 13 * -Math.PI - 1 ) ).isCloseTo( Math.PI - 1, Offset.offset( 1e-12 ) );
+		assertThat( Geometry.clampAngle( 13 * Math.PI + 1 ) ).isCloseTo( -Math.PI + 1, Offset.offset( 1e-12 ) );
+		assertThat( Geometry.clampAngle( 13 * -Math.PI - 1 ) ).isCloseTo( Math.PI - 1, Offset.offset( 1e-12 ) );
 	}
 
 	@Test

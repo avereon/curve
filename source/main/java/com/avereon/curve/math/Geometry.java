@@ -2,10 +2,7 @@ package com.avereon.curve.math;
 
 import org.tinyspline.BSpline;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A bezier curve reference: https://pomax.github.io/bezierinfo
@@ -101,7 +98,7 @@ public class Geometry {
 	 * @return The angle between the two vectors
 	 */
 	public static double getAngle( final double[] v1, final double[] v2 ) {
-		return normalizeAngle( getAngle( v2 ) - getAngle( v1 ) );
+		return clampAngle( getAngle( Vector.normalize( v2 ) ) - getAngle( Vector.normalize( v1 ) ) );
 	}
 
 	/**
@@ -111,7 +108,7 @@ public class Geometry {
 	 * @param a The angle to normalize
 	 * @return The normalized angle
 	 */
-	public static double normalizeAngle( double a ) {
+	public static double clampAngle( double a ) {
 		a %= Constants.FULL_CIRCLE;
 		if( a <= -Constants.HALF_CIRCLE ) a += Constants.FULL_CIRCLE;
 		if( a > Constants.HALF_CIRCLE ) a -= Constants.FULL_CIRCLE;
@@ -149,7 +146,7 @@ public class Geometry {
 	 * @return The angle between the points
 	 */
 	public static double pointAngle( final double[] a, final double[] b, final double[] c ) {
-		return normalizeAngle( getAngle( Vector.subtract( c, b ) ) - getAngle( Vector.subtract( a, b ) ) );
+		return clampAngle( getAngle( Vector.subtract( c, b ) ) - getAngle( Vector.subtract( a, b ) ) );
 	}
 
 	/**
@@ -179,6 +176,12 @@ public class Geometry {
 		return Vector.magnitude( u ) / Vector.magnitude( t );
 	}
 
+	public static double pointLineOffset( double[] p, double[] a, double[] b ) {
+		double[] s = Vector.minus( b, p );
+		double[] t = Vector.minus( b, a );
+		return -Vector.crossProduct( t, s ) / Vector.magnitude( t );
+	}
+
 	/**
 	 * Get the distance between a line defined by parameter a and parameter b and the point p.
 	 *
@@ -194,25 +197,37 @@ public class Geometry {
 	/**
 	 * Get the distance between a plane and a point.
 	 *
+	 * @param p The point to which to determine the distance
+	 * @param origin The origin of the plane
+	 * @param normal The normal of the plane
+	 * @return The distance between the plane and the point
+	 */
+	public static double pointPlaneDistance( double[] p, double[] origin, double[] normal ) {
+		return Math.abs( pointPlaneOffset( p, origin, normal ) );
+	}
+
+	/**
+	 * Get the distance between a plane and a point.
+	 *
 	 * @param origin The origin of the plane
 	 * @param normal The normal of the plane
 	 * @param p The point to which to determine the distance
 	 * @return The distance between the plane and the point
 	 */
-	public static double pointPlaneDistance( double[] origin, double[] normal, double[] p ) {
-		return Math.abs( Vector.dot( normal, Vector.minus( p, origin ) ) ) / Vector.magnitude( normal );
+	public static double pointPlaneOffset( double[] p, double[] origin, double[] normal ) {
+		return Vector.dot( normal, Vector.minus( p, origin ) ) / Vector.magnitude( normal );
 	}
 
 	/**
 	 * Get the distance between a line defined by parameter a and parameter b and the point p. If the point is outside of the line segment then Double.NaN is
 	 * returned.
 	 *
+	 * @param p The point to which to get the distance
 	 * @param a The first point on the line
 	 * @param b The second point on the line
-	 * @param p The point to which to get the distance
 	 * @return The distance between the line and point or NaN if the point is outside the line segment
 	 */
-	public static double pointLineBoundDistance( double[] a, double[] b, double[] p ) {
+	public static double pointLineBoundDistance( double[] p, double[] a, double[] b ) {
 		double[] pb = Vector.minus( p, b );
 		double[] pa = Vector.minus( p, a );
 		double[] ba = Vector.minus( b, a );
@@ -222,6 +237,19 @@ public class Geometry {
 		if( anglea > Constants.QUARTER_CIRCLE || angleb > Constants.QUARTER_CIRCLE ) return Double.NaN;
 
 		return pointLineDistance( p, a, b );
+	}
+
+	public static double pointLineBoundOffset( double[] p, double[] a, double[] b ) {
+		double[] line = Vector.subtract( b, a );
+		double[] c = Vector.add( a, -line[ 1 ], line[ 0 ] );
+		double[] d = Vector.add( b, -line[ 1 ], line[ 0 ] );
+
+		//		Point2D line = b.subtract( a );
+		//		Point2D c = a.add( -line.getY(), line.getX() );
+		//		Point2D d = b.add( -line.getY(), line.getX() );
+		double dl = pointLineOffset( p, a, c );
+		double dr = pointLineOffset( p, b, d );
+		return (dl < 0 && dr > 0) ? pointLineOffset( p, a, b ) : Double.NaN;
 	}
 
 	/**
@@ -314,7 +342,7 @@ public class Geometry {
 		double[] p = Point.of( point[ 0 ] - origin[ 0 ], point[ 1 ] - origin[ 1 ] );
 		p = Vector.rotate( p, -rotate );
 		p = Vector.scale( p, 1 / xRadius, 1 / yRadius );
-		return normalizeAngle( Math.atan2( p[ 1 ], p[ 0 ] ) );
+		return clampAngle( Math.atan2( p[ 1 ], p[ 0 ] ) );
 	}
 
 	/**
@@ -528,6 +556,7 @@ public class Geometry {
 	/**
 	 * Convert a list of points into a natural cubic spline curve as a list of
 	 * cubic bezier curve segments.
+	 *
 	 * @param points The list of 2D points to interpolate
 	 * @return The list of cubic curve segments
 	 */
@@ -546,21 +575,21 @@ public class Geometry {
 		int size = (int)(spline.getOrder() * spline.getDimension());
 		int surfaceCount = controlPoints.size() / size;
 
-		double[][][] curves = new double[surfaceCount][4][3];
+		double[][][] curves = new double[ surfaceCount ][ 4 ][ 3 ];
 		for( int index = 0; index < surfaceCount; index++ ) {
 			int offset = index * size;
-			curves[index][0][0] = controlPoints.get( offset );
-			curves[index][0][1] = controlPoints.get( offset + 1 );
-			curves[index][0][2] = controlPoints.get( offset + 2 );
-			curves[index][1][0] = controlPoints.get( offset + 3 );
-			curves[index][1][1] = controlPoints.get( offset + 4 );
-			curves[index][1][2] = controlPoints.get( offset + 5 );
-			curves[index][2][0] = controlPoints.get( offset + 6 );
-			curves[index][2][1] = controlPoints.get( offset + 7 );
-			curves[index][2][2] = controlPoints.get( offset + 8 );
-			curves[index][3][0] = controlPoints.get( offset + 9 );
-			curves[index][3][1] = controlPoints.get( offset + 10 );
-			curves[index][3][2] = controlPoints.get( offset + 11 );
+			curves[ index ][ 0 ][ 0 ] = controlPoints.get( offset );
+			curves[ index ][ 0 ][ 1 ] = controlPoints.get( offset + 1 );
+			curves[ index ][ 0 ][ 2 ] = controlPoints.get( offset + 2 );
+			curves[ index ][ 1 ][ 0 ] = controlPoints.get( offset + 3 );
+			curves[ index ][ 1 ][ 1 ] = controlPoints.get( offset + 4 );
+			curves[ index ][ 1 ][ 2 ] = controlPoints.get( offset + 5 );
+			curves[ index ][ 2 ][ 0 ] = controlPoints.get( offset + 6 );
+			curves[ index ][ 2 ][ 1 ] = controlPoints.get( offset + 7 );
+			curves[ index ][ 2 ][ 2 ] = controlPoints.get( offset + 8 );
+			curves[ index ][ 3 ][ 0 ] = controlPoints.get( offset + 9 );
+			curves[ index ][ 3 ][ 1 ] = controlPoints.get( offset + 10 );
+			curves[ index ][ 3 ][ 2 ] = controlPoints.get( offset + 11 );
 		}
 
 		return curves;
@@ -664,7 +693,7 @@ public class Geometry {
 	 */
 	public static boolean areCoplanar( double[] origin, double[] normal, double tolerance, double[]... points ) {
 		for( double[] vector : points ) {
-			if( pointPlaneDistance( origin, normal, vector ) > tolerance ) return false;
+			if( pointPlaneDistance( vector, origin, normal ) > tolerance ) return false;
 		}
 		return true;
 	}
