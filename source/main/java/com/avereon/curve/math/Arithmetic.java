@@ -47,11 +47,11 @@ public class Arithmetic {
 	/**
 	 * Evaluate a 2x2 matrix determinant.
 	 *
-	 * @param a1
-	 * @param a2
-	 * @param b1
-	 * @param b2
-	 * @return
+	 * @param a1 Element a1
+	 * @param a2 Element a2
+	 * @param b1 Element b1
+	 * @param b2 Element b2
+	 * @return The determinant for a 2x2 matrix
 	 */
 	public static double determinant( double a1, double a2, double b1, double b2 ) {
 		return a1 * b2 - a2 * b1;
@@ -60,16 +60,16 @@ public class Arithmetic {
 	/**
 	 * Evaluate a 3x3 matrix determinant.
 	 *
-	 * @param a1
-	 * @param a2
-	 * @param a3
-	 * @param b1
-	 * @param b2
-	 * @param b3
-	 * @param c1
-	 * @param c2
-	 * @param c3
-	 * @return
+	 * @param a1 Element a1
+	 * @param a2 Element a2
+	 * @param a3 Element a3
+	 * @param b1 Element b1
+	 * @param b2 Element b2
+	 * @param b3 Element b3
+	 * @param c1 Element c1
+	 * @param c2 Element c2
+	 * @param c3 Element c3
+	 * @return The determinant for a 2x2 matrix
 	 */
 	public static double determinant( double a1, double a2, double a3, double b1, double b2, double b3, double c1, double c2, double c3 ) {
 		double a = a1 * b2 * c3;
@@ -105,17 +105,12 @@ public class Arithmetic {
 		return b * c;
 	}
 
-//	public static double ff( double n, int x ) {
-//		if( x == 0 ) return 1;
-//		double sum = 1;
-//
-//		for( int k = 0; k < x; k++ ) {
-//			sum *= (n - k);
-//		}
-//
-//		return sum;
-//	}
-
+	/**
+	 * Calculate the nth factorial.
+	 *
+	 * @param n The factorial index
+	 * @return The nth factorial
+	 */
 	public static int factorial( int n ) {
 		if( n == 0 ) return 1;
 		return n * factorial( n - 1 );
