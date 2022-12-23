@@ -321,8 +321,8 @@ public class Geometry {
 	 * @return The point at the angle on the ellipse
 	 */
 	public static double[] ellipsePoint( double[] origin, double xRadius, double yRadius, double rotate, double angle ) {
-		double[] p = polarToCartesian( Vector.of( 1, angle -rotate ) );
-		//p = Vector.rotate( p, -rotate );
+		double[] p = polarToCartesian( Vector.of( 1, angle ) );
+		p = Vector.rotate( p, -rotate );
 		p = Vector.scale( p, xRadius, yRadius );
 		p = Vector.rotate( p, rotate );
 		return Point.of( p[ 0 ] + origin[ 0 ], p[ 1 ] + origin[ 1 ], p[ 2 ] + origin[ 2 ] );
