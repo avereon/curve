@@ -134,6 +134,13 @@ public class GeometryTest {
 		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( 0, 1 ) ) ).isCloseTo( Constants.QUARTER_CIRCLE, Offset.offset( 1E-15 ) );
 		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( -2, 0 ) ) ).isCloseTo( Constants.HALF_CIRCLE, Offset.offset( 1E-15 ) );
 		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( 0, -1 ) ) ).isCloseTo( -Constants.QUARTER_CIRCLE, Offset.offset( 1E-15 ) );
+
+		// Test with rotated ellipses
+		// This tests with a 2x1 ellipse rotated at 45 degree increments and a point on the x-axis
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, Math.toRadians( 45 ), Vector.of( 2, 0 ) ) ).isCloseTo( -1.1071487177940909, Offset.offset( 1E-15 ) );
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, Math.toRadians( 90 ), Vector.of( 2, 0 ) ) ).isCloseTo( -Constants.QUARTER_CIRCLE, Offset.offset( 1E-15 ) );
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, Math.toRadians( 135 ), Vector.of( 2, 0 ) ) ).isCloseTo( -2.0344439357957027, Offset.offset( 1E-15 ) );
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, Math.toRadians( 180 ), Vector.of( 2, 0 ) ) ).isCloseTo( Constants.HALF_CIRCLE, Offset.offset( 1E-15 ) );
 	}
 
 	@Test
