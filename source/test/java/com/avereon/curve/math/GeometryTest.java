@@ -151,15 +151,18 @@ public class GeometryTest {
 
 	@Test
 	void testEllipsePointWithScaleAndRotate() {
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.QUARTER_CIRCLE, 0 ) ).isCloseTo( Vector.of( -5, 4 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, 0 ) ).isCloseTo( Vector.of( -7, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.QUARTER_CIRCLE, 0 ) ).isCloseTo( Vector.of( -4, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, 0 ) ).isCloseTo( Vector.of( -3, 2 ) );
+
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -7, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -7, 2 ) );
 	}
 
 	@Test
 	void testEllipsePointWithScaleRotateAndStart() {
 		double n = Math.sqrt( 0.5 );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 - n, 3 + 2 * n ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, -Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 + n, 3 + 2 * n ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 + n, 3 + 2 * n ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, -Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 + n, 3 - 2 * n ) );
 	}
 
 	@Test
@@ -181,6 +184,11 @@ public class GeometryTest {
 
 		assertThat( Geometry.vectorToPlane( Vector.of( 2, 1, 5 ), Vector.of( 0, 0, 10 ), Vector.of( 3, -1, 8 ) ) ).isEqualTo( Vector.of( 0, 0, -3 ) );
 		assertThat( Geometry.vectorToPlane( Vector.of( 2, 1, 5 ), Vector.of( 0, 0, 10 ), Vector.of( 3, -1, 0 ) ) ).isEqualTo( Vector.of( 0, 0, 5 ) );
+	}
+
+	@Test
+	void testCurvePointByPolynomial() {
+		assertThat( Geometry.curvePointByPolynomial( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), 0.5 ) ).isEqualTo( Vector.of( 1, 1 ) );
 	}
 
 	@Test
@@ -306,6 +314,12 @@ public class GeometryTest {
 		assertThat( Geometry.nearestLinePoint( Vector.of( 0, -1, 0 ), Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ) ).isEqualTo( Vector.ZERO );
 		VectorAssert.assertThat( Geometry.nearestLinePoint( Vector.of( -1, -1, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 1, -1, 0 ) ) ).isCloseTo( Vector.ZERO, 1e-15 );
 		assertThat( Geometry.nearestLinePoint( Vector.of( -1, -1, 0 ), Vector.of( 1, 1, 0 ), Vector.ZERO ) ).isEqualTo( Vector.ZERO );
+	}
+
+	@Test
+	void testNear() {
+		assertThat( Geometry.near( 1e-5 ) ).isFalse();
+		assertThat( Geometry.near( 1e-6 ) ).isTrue();
 	}
 
 	@Test

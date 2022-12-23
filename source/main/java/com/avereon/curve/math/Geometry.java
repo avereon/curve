@@ -5,7 +5,7 @@ import org.tinyspline.BSpline;
 import java.util.*;
 
 /**
- * A bezier curve reference: https://pomax.github.io/bezierinfo
+ * A bezier curve reference: <a href="https://pomax.github.io/bezierinfo">https://pomax.github.io/bezierinfo</a>
  */
 public class Geometry {
 
@@ -321,7 +321,8 @@ public class Geometry {
 	 * @return The point at the angle on the ellipse
 	 */
 	public static double[] ellipsePoint( double[] origin, double xRadius, double yRadius, double rotate, double angle ) {
-		double[] p = polarToCartesian( Vector.of( 1, angle ) );
+		double[] p = polarToCartesian( Vector.of( 1, angle -rotate ) );
+		//p = Vector.rotate( p, -rotate );
 		p = Vector.scale( p, xRadius, yRadius );
 		p = Vector.rotate( p, rotate );
 		return Point.of( p[ 0 ] + origin[ 0 ], p[ 1 ] + origin[ 1 ], p[ 2 ] + origin[ 2 ] );
@@ -408,7 +409,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Compute the point on a cubic bezier curve for parametric value. This method
+	 * Compute the point on a cubic Bézier curve for parametric value. This method
 	 * uses the polynomial method to compute the curve point. It is generally
 	 * less efficient than the linear interpolation method for a single point.
 	 *
@@ -426,7 +427,7 @@ public class Geometry {
 		double[][] coefficients = Geometry.curveCoefficients( a, b, c, d );
 		double x = coefficients[ 0 ][ 0 ] * t * t * t + coefficients[ 1 ][ 0 ] * t * t + coefficients[ 2 ][ 0 ] * t + coefficients[ 3 ][ 0 ];
 		double y = coefficients[ 0 ][ 1 ] * t * t * t + coefficients[ 1 ][ 1 ] * t * t + coefficients[ 2 ][ 1 ] * t + coefficients[ 3 ][ 1 ];
-		return new double[]{ x, y };
+		return new double[]{ x, y, 0 };
 	}
 
 	/**
