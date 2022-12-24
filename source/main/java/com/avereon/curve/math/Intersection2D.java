@@ -185,8 +185,9 @@ public class Intersection2D extends Intersection {
 	 * @param a1 The first line point
 	 * @param a2 The other line point
 	 * @param o The center of the ellipse
-	 * @param rx
-	 * @param ry
+	 * @param rx The ellipse x radius
+	 * @param ry The ellipse y radius
+	 * @param rotate The ellipse rotation in radians
 	 * @return
 	 */
 	public static Intersection2D intersectLineEllipse( double[] a1, double[] a2, double[] o, double rx, double ry, double rotate ) {
@@ -201,7 +202,13 @@ public class Intersection2D extends Intersection {
 		Intersection2D x = intersectLineEllipse( p1, p2, rx, ry );
 
 		// Transform the intersection points relative to the ellipse origin and rotation
-		double[][] points = Arrays.stream( x.getPoints() ).map( p -> Vector.add( Vector.rotate(p,rotate), o ) ).toArray( double[][]::new );
+		double[][] points = Arrays.stream( x.getPoints() ).map( p -> {
+			if( rotate != 0.0 ) {
+				return Vector.add( Vector.rotate( p, rotate ), o );
+			} else {
+				return Vector.add( p, o );
+			}
+		} ).toArray( double[][]::new );
 
 		return new Intersection2D( x.getType(), points );
 	}
