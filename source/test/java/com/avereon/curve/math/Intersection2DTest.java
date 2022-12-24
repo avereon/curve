@@ -5,6 +5,7 @@ import com.avereon.curve.assertion.VectorAssert;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -165,20 +166,38 @@ public class Intersection2DTest {
 
 	@Test
 	void testIntersectLineEllipse() {
-		Intersection2D intersection = Intersection2D.intersectLineEllipse( Point.of( -1, 0 ), Point.of( 1, 0 ), Point.of( 0, 0 ), 4.0, 5.0 );
-		assertThat( intersection.getType() ).isEqualTo( Intersection.Type.INTERSECTION );
-		assertThat( intersection.getPoints().length ).isEqualTo( 2 );
-		assertThat( Arrays.asList( intersection.getPoints() ) ).contains( Point.of( -4, 0, 0 ), Point.of( 4, 0, 0 ) );
+		Intersection2D intersection = Intersection2D.intersectLineEllipse( Point.of( -1, 0 ), Point.of( 1, 0 ), Point.of( 0, 0 ), 4.0, 5.0, 0.0 );
+		List<double[]> points = Arrays.asList(intersection.getPoints() );
 
-		intersection = Intersection2D.intersectLineEllipse( Point.of( -1, 3 ), Point.of( 1, 3 ), Point.of( 0, 0 ), 4.0, 5.0 );
 		assertThat( intersection.getType() ).isEqualTo( Intersection.Type.INTERSECTION );
-		assertThat( intersection.getPoints().length ).isEqualTo( 2 );
-		VectorArrayAssert.assertThat( intersection.getPoints() ).areCloseTo( Point.of( -3.2, 3, 0 ), Point.of( 3.2, 3, 0 ) );
+		assertThat( points ).haveExactly( 1, VectorAssert.closeTo( Point.of( -4, 0, 0 ) ) );
+		assertThat( points ).haveExactly( 1, VectorAssert.closeTo( Point.of( 4, 0, 0 ) ) );
+		assertThat( points.size() ).isEqualTo( 2 );
 
-		intersection = Intersection2D.intersectLineEllipse( Point.of( 4, -1 ), Point.of( 4, 1 ), Point.of( 1, 1 ), 5.0, 4.0 );
+		intersection = Intersection2D.intersectLineEllipse( Point.of( -1, 3 ), Point.of( 1, 3 ), Point.of( 0, 0 ), 4.0, 5.0, 0.0 );
+		points = Arrays.asList(intersection.getPoints() );
 		assertThat( intersection.getType() ).isEqualTo( Intersection.Type.INTERSECTION );
-		assertThat( intersection.getPoints().length ).isEqualTo( 2 );
-		VectorArrayAssert.assertThat( intersection.getPoints() ).areCloseTo( Point.of( 4, -2.2, 0 ), Point.of( 4, 4.2, 0 ) );
+		assertThat( points ).haveExactly( 1, VectorAssert.closeTo( Point.of( -3.2, 3, 0 ) ) );
+		assertThat( points ).haveExactly( 1, VectorAssert.closeTo( Point.of( 3.2, 3, 0 ) ) );
+		assertThat( points.size() ).isEqualTo( 2 );
+
+		intersection = Intersection2D.intersectLineEllipse( Point.of( 4, -1 ), Point.of( 4, 1 ), Point.of( 1, 1 ), 5.0, 4.0, 0.0 );
+		points = Arrays.asList(intersection.getPoints() );
+		assertThat( intersection.getType() ).isEqualTo( Intersection.Type.INTERSECTION );
+		assertThat( points ).haveExactly( 1, VectorAssert.closeTo( Point.of( 4, -2.2, 0 ) ) );
+		assertThat( points ).haveExactly( 1, VectorAssert.closeTo( Point.of( 4, 4.2, 0 ) ) );
+		assertThat( points.size() ).isEqualTo( 2 );
+	}
+
+	@Test
+	void testIntersectLineEllipseWithRotation() {
+		Intersection2D intersection = Intersection2D.intersectLineEllipse( Point.of( -1, 0 ), Point.of( 1, 0 ), Point.of( 0, 0 ), 2.0, 1.0, Math.toRadians( 45 ) );
+		List<double[]> points = Arrays.asList( intersection.getPoints() );
+
+		assertThat( intersection.getType() ).isEqualTo( Intersection.Type.INTERSECTION );
+		assertThat( points ).haveExactly( 1, VectorAssert.closeTo( Point.of( -1.2649110640673515, 0, 0 ) ) );
+		assertThat( points ).haveExactly( 1, VectorAssert.closeTo( Point.of( 1.2649110640673515, 0, 0 ) ) );
+		assertThat( points.size() ).isEqualTo( 2 );
 	}
 
 	@Test
@@ -206,7 +225,8 @@ public class Intersection2DTest {
 		double[] o = Point.of( 4, 1 );
 		double rx = 2.0;
 		double ry = 5.0;
-		Intersection2D intersection = Intersection2D.intersectLineEllipse( p1, p2, o, rx, ry );
+		double rotate = 0.0;
+		Intersection2D intersection = Intersection2D.intersectLineEllipse( p1, p2, o, rx, ry, rotate );
 
 		assertThat( intersection.getType() ).isEqualTo( Intersection.Type.INTERSECTION );
 		assertThat( intersection.getPoints().length ).isEqualTo( 1 );
@@ -220,8 +240,9 @@ public class Intersection2DTest {
 		double[] o = Point.of( 1, 14 );
 		double rx = 5.0;
 		double ry = 2.0;
+		double rotate = 0.0;
 
-		Intersection2D intersection = Intersection2D.intersectLineEllipse( p1, p2, o, rx, ry );
+		Intersection2D intersection = Intersection2D.intersectLineEllipse( p1, p2, o, rx, ry, rotate );
 
 		assertThat( intersection.getType() ).isEqualTo( Intersection.Type.NONE );
 		assertThat( intersection.getPoints().length ).isEqualTo( 0 );

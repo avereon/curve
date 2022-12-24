@@ -189,15 +189,19 @@ public class Intersection2D extends Intersection {
 	 * @param ry
 	 * @return
 	 */
-	public static Intersection2D intersectLineEllipse( double[] a1, double[] a2, double[] o, double rx, double ry ) {
+	public static Intersection2D intersectLineEllipse( double[] a1, double[] a2, double[] o, double rx, double ry, double rotate ) {
 		// Transform the line points relative to the ellipse origin
 		double[] p1 = Vector.subtract( a1, o );
 		double[] p2 = Vector.subtract( a2, o );
 
+		// Take the ellipse rotation out of the line points
+		if( rotate != 0.0 ) p1 = Vector.rotate( p1, -rotate );
+		if( rotate != 0.0 ) p2 = Vector.rotate( p2, -rotate );
+
 		Intersection2D x = intersectLineEllipse( p1, p2, rx, ry );
 
-		// Transform the intersection points relative to the ellipse origin
-		double[][] points = Arrays.stream( x.getPoints() ).map( p -> Vector.add( p, o ) ).toArray( double[][]::new );
+		// Transform the intersection points relative to the ellipse origin and rotation
+		double[][] points = Arrays.stream( x.getPoints() ).map( p -> Vector.add( Vector.rotate(p,rotate), o ) ).toArray( double[][]::new );
 
 		return new Intersection2D( x.getType(), points );
 	}
@@ -211,7 +215,7 @@ public class Intersection2D extends Intersection {
 	 * @param ry The circle y radius
 	 * @return The intersection
 	 */
-	public static Intersection2D intersectLineEllipse( double[] p1, double[] p2, double rx, double ry ) {
+	static Intersection2D intersectLineEllipse( double[] p1, double[] p2, double rx, double ry ) {
 		Transform targetToLocal = Transform.scale( 1, rx / ry, 0 );
 		Transform localToTarget = Transform.scale( 1, ry / rx, 0 );
 
@@ -224,6 +228,7 @@ public class Intersection2D extends Intersection {
 		for( int index = 0; index < points.length; index++ ) {
 			points[ index ] = localToTarget.apply( points[ index ] );
 		}
+
 		return new Intersection2D( intersection.getType(), points );
 	}
 
