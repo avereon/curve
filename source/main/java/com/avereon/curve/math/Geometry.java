@@ -311,7 +311,10 @@ public class Geometry {
 	}
 
 	/**
-	 * Get the point on an ellipse for the specified angle.
+	 * Get the point on an ellipse for the specified angle. The point is initially
+	 * calculated with the ellipse at 0,0 and no rotation. The point is then
+	 * translated according to the ellipse origin and rotated according to the
+	 * ellipse rotation.
 	 *
 	 * @param origin The center of the ellipse
 	 * @param xRadius The x radius of the ellipse
@@ -322,10 +325,10 @@ public class Geometry {
 	 */
 	public static double[] ellipsePoint( double[] origin, double xRadius, double yRadius, double rotate, double angle ) {
 		double[] p = polarToCartesian( Vector.of( 1, angle ) );
-		p = Vector.rotate( p, -rotate );
+		//p = Vector.rotate( p, -rotate );
 		p = Vector.scale( p, xRadius, yRadius );
 		p = Vector.rotate( p, rotate );
-		return Point.of( p[ 0 ] + origin[ 0 ], p[ 1 ] + origin[ 1 ], p[ 2 ] + origin[ 2 ] );
+		return Point.of( origin[ 0 ] + p[ 0 ], origin[ 1 ] + p[ 1 ], origin[ 2 ] + p[ 2 ] );
 	}
 
 	/**
@@ -642,7 +645,7 @@ public class Geometry {
 	}
 
 	public static boolean near( double distance ) {
-		return near( distance, Constants.RESOLUTION_LENGTH);
+		return near( distance, Constants.RESOLUTION_LENGTH );
 	}
 
 	public static boolean near( double distance, double tolerance ) {

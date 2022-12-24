@@ -151,18 +151,18 @@ public class GeometryTest {
 
 	@Test
 	void testEllipsePointWithScaleAndRotate() {
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.QUARTER_CIRCLE, 0 ) ).isCloseTo( Vector.of( -4, 2 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, 0 ) ).isCloseTo( Vector.of( -3, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.QUARTER_CIRCLE, 0 ) ).isCloseTo( Vector.of( -5, 4 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, 0 ) ).isCloseTo( Vector.of( -7, 2 ) );
 
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -7, 2 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -7, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
 	}
 
 	@Test
 	void testEllipsePointWithScaleRotateAndStart() {
 		double n = Math.sqrt( 0.5 );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 + n, 3 + 2 * n ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, -Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 + n, 3 - 2 * n ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 - n, 3 + 2 * n ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, -Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 + n, 3 + 2 * n ) );
 	}
 
 	@Test
