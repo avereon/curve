@@ -13,7 +13,7 @@
 
 	<groupId>com.avereon</groupId>
 	<artifactId>curve</artifactId>
-	<version>0.3</version>
+	<version>0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Curve</name>
@@ -46,7 +46,7 @@
 		<!-- Keep consistent with the CI pipeline -->
 		<java.version>17</java.version>
 
-		<!-- Version numbers updated 22 Oct 2022 -->
+		<!-- Version numbers updated 07 Mar 2023 -->
 		<tinyspline.version>0.5.0-1</tinyspline.version>
 	</properties>
 
