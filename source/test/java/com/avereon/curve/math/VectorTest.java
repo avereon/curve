@@ -224,7 +224,6 @@ public class VectorTest {
 	void testRotateWithAxis() {
 		VectorAssert.assertThat( Vector.rotate( Vector.of( 0, 0, 0 ), Vector.of( 0, 0, 0 ), 0 ) ).isCloseTo( Vector.of( 0, 0, 0 ) );
 		VectorAssert.assertThat( Vector.rotate( Vector.of( 0, 0, 0 ), Vector.of( 1, 0, 0 ), 0 ) ).isCloseTo( Vector.of( 1, 0, 0 ) );
-
 		VectorAssert.assertThat( Vector.rotate( Vector.of( 1, 1, 0 ), Vector.of( 2, 1, 0 ), Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 1, 2, 0 ) );
 		VectorAssert.assertThat( Vector.rotate( Vector.of( 1, 1, 0 ), Vector.of( 2, 1, 0 ), -Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 1, 0, 0 ) );
 		VectorAssert.assertThat( Vector.rotate( Vector.of( 1, 1, 0 ), Vector.of( 2, 1, 0 ), Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( 0, 1, 0 ) );
