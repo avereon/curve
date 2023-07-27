@@ -187,6 +187,14 @@ public class Vector extends Point {
 		return Geometry.polarToCartesian( Point.of( Vector.magnitude( v ), Geometry.getAngle( v ) + a ) );
 	}
 
+	public static double[] rotate( double[] o, double[] v, double a ) {
+		double[] result;
+		result = Vector.subtract( v, o );
+		result = Geometry.polarToCartesian( Point.of( Vector.magnitude( result ), Geometry.getAngle( result ) + a ) );
+		result = Vector.add( result, o );
+		return result;
+	}
+
 	public static double magnitude( double x, double y ) {
 		return Math.sqrt( x * x + y * y );
 	}

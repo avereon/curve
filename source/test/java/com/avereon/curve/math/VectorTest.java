@@ -221,6 +221,17 @@ public class VectorTest {
 	}
 
 	@Test
+	void testRotateWithAxis() {
+		VectorAssert.assertThat( Vector.rotate( Vector.of( 0, 0, 0 ), Vector.of( 0, 0, 0 ), 0 ) ).isCloseTo( Vector.of( 0, 0, 0 ) );
+		VectorAssert.assertThat( Vector.rotate( Vector.of( 0, 0, 0 ), Vector.of( 1, 0, 0 ), 0 ) ).isCloseTo( Vector.of( 1, 0, 0 ) );
+
+		VectorAssert.assertThat( Vector.rotate( Vector.of( 1, 1, 0 ), Vector.of( 2, 1, 0 ), Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 1, 2, 0 ) );
+		VectorAssert.assertThat( Vector.rotate( Vector.of( 1, 1, 0 ), Vector.of( 2, 1, 0 ), -Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 1, 0, 0 ) );
+		VectorAssert.assertThat( Vector.rotate( Vector.of( 1, 1, 0 ), Vector.of( 2, 1, 0 ), Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( 0, 1, 0 ) );
+		VectorAssert.assertThat( Vector.rotate( Vector.of( 1, 1, 0 ), Vector.of( 2, 1, 0 ), -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( 0, 1, 0 ) );
+	}
+
+	@Test
 	void testHash() {
 		assertThat( Vector.hash( Vector.of( 0, 0, 0 ) ) ).isEqualTo( Vector.hash( new double[]{ 0, 0, 0 } ) );
 		assertThat( Vector.hash( Vector.of( 3, 2, 1 ) ) ).isEqualTo( Vector.hash( new double[]{ 3, 2, 1 } ) );
