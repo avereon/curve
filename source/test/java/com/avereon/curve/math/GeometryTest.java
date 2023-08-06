@@ -60,6 +60,27 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testLength() {
+		double[] a = Point.of( 0, 0 );
+		double[] b = Point.of( 1, 0 );
+		double[] c = Point.of( 1, 1 );
+		double[] d = Point.of( 2, 1 );
+		double[] e = Point.of( 2, 0 );
+		double[] f = Point.of( 3, 0 );
+		assertThat( Geometry.length( a, b, c, d, e, f ) ).isEqualTo( 5.0 );
+	}
+
+	@Test
+	void testLengthWithNoPoints() {
+		assertThat( Geometry.length() ).isNaN();
+	}
+
+	@Test
+	void testLengthWithOnePoint() {
+		assertThat( Geometry.length( Point.of(0,0) ) ).isEqualTo( 0.0 );
+	}
+
+	@Test
 	void testPointLineDistance() {
 		assertThat( Geometry.linePointDistance( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( -0.5, 1.0 ) ) ).isEqualTo( 1.0 );
 		assertThat( Geometry.linePointDistance( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 0.0, 1.0 ) ) ).isEqualTo( 1.0 );
@@ -240,6 +261,18 @@ public class GeometryTest {
 
 		assertThat( curveA ).isEqualTo( new double[][]{ Point.of( 0, 0 ), Point.of( 0, 0.5 ), Point.of( 0.25, 0.75 ), Point.of( 0.5, 0.75 ) } );
 		assertThat( curveB ).isEqualTo( new double[][]{ Point.of( 0.5, 0.75 ), Point.of( 0.75, 0.75 ), Point.of( 1, 0.5 ), Point.of( 1, 0 ) } );
+	}
+
+	@Test
+	void testCurveArcLength() {
+		double[] a = Point.of( 0, 0 );
+		double[] b = Point.of( 0, 1 );
+		double[] c = Point.of( 1, 1 );
+		double[] d = Point.of( 1, 0 );
+
+		double length = Geometry.curveArcLength( a, b, c, d );
+
+		assertThat( length ).isEqualTo( 2.0, Offset.offset( Constants.RESOLUTION_LENGTH ) );
 	}
 
 	@Test

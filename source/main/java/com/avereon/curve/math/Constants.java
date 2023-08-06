@@ -36,4 +36,5 @@ public interface Constants {
 
 	double RESOLUTION_SMOOTH = 1e-3;
 
+	int MINIMUM_SEGMENTS = 64;
 }

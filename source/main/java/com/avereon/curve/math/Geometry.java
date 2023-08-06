@@ -2,7 +2,10 @@ package com.avereon.curve.math;
 
 import org.tinyspline.BSpline;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A bezier curve reference: <a href="https://pomax.github.io/bezierinfo">https://pomax.github.io/bezierinfo</a>
@@ -76,6 +79,25 @@ public class Geometry {
 	 */
 	public static double distance( double[] a, double[] b ) {
 		return Vector.distance( a, b );
+	}
+
+	/**
+	 * Get the total distance between a lit of points.
+	 *
+	 * @param points The list of points
+	 * @return The total distance between all points
+	 */
+	public static double length( double[]... points ) {
+		if( points.length == 0 ) return Double.NaN;
+		if( points.length == 1 ) return 0.0;
+		double length = 0;
+		double[] last = points[ 0 ];
+		for( int index = 1; index < points.length; index++ ) {
+			double[] next = points[ index ];
+			length += distance( last, next );
+			last = next;
+		}
+		return length;
 	}
 
 	/**
@@ -512,6 +534,69 @@ public class Geometry {
 		double[] p9 = Vector.lerp( p6, p7, t );
 		double[] p10 = Vector.lerp( p8, p9, t );
 		return new double[][][]{ new double[][]{ p1, p5, p8, p10 }, new double[][]{ p10, p9, p7, p4 } };
+	}
+
+	/**
+	 * Get a cubic bezier curve as a set of interpolated points.
+	 *
+	 * @param p1 Control point a
+	 * @param p2 Control point b
+	 * @param p3 Control point c
+	 * @param p4 Control point d
+	 * @param count The number of points along the curve
+	 * @return The interpolated points
+	 */
+	public static double[][] curveAsPoints( double[] p1, double[] p2, double[] p3, double[] p4, int count ) {
+		// Note, the first point is p1 and the last point is p4
+		// Only need to calculate the points in between
+		int segments = count - 1;
+
+		double[][] points = new double[ count ][];
+		points[ 0 ] = p1;
+		points[ count - 1 ] = p4;
+		double offset = 1.0 / segments;
+
+		for( int index = 1; index < segments; index++ ) {
+			points[ index ] = curvePoint( p1, p2, p3, p4, index * offset );
+		}
+
+		return points;
+	}
+
+	public static double curveArcLength( double[] p1, double[] p2, double[] p3, double[] p4 ) {
+		return curveArcLength( p1, p2, p3, p4, Constants.RESOLUTION_LENGTH );
+	}
+
+	/**
+	 * Compute the arc length of a cubic bezier curve.
+	 *
+	 * @param p1 Control point a
+	 * @param p2 Control point b
+	 * @param p3 Control point c
+	 * @param p4 Control point d
+	 * @return The estimated arc length within the specific tolerance
+	 */
+	public static double curveArcLength( double[] p1, double[] p2, double[] p3, double[] p4, double tolerance ) {
+		// Start with just the distance between control points
+		double last = length( p1, p2, p3, p4 );
+
+		double next;
+		double error = Double.MAX_VALUE;
+		int segments = Constants.MINIMUM_SEGMENTS;
+		int iteration = 0;
+		int iterationLimit = 20;
+
+		while( error > tolerance && iteration < iterationLimit ) {
+			double[][] points = curveAsPoints(p1, p2, p3, p4, segments);
+			next = length( points );
+
+			error = Math.abs( next - last );
+			segments *= 2;
+			last = next;
+			iteration++;
+		}
+
+		return last;
 	}
 
 	/**
