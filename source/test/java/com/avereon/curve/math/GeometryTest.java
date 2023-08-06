@@ -77,7 +77,7 @@ public class GeometryTest {
 
 	@Test
 	void testLengthWithOnePoint() {
-		assertThat( Geometry.length( Point.of(0,0) ) ).isEqualTo( 0.0 );
+		assertThat( Geometry.length( Point.of( 0, 0 ) ) ).isEqualTo( 0.0 );
 	}
 
 	@Test
@@ -136,17 +136,17 @@ public class GeometryTest {
 
 	@Test
 	void testEllipsePoint() {
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, 0 ) ).isCloseTo( Vector.of( 2, 0 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Point.of( 0, 0 ), Point.of( 2, 1 ), 0, 0 ) ).isCloseTo( Vector.of( 2, 0 ) );
 
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, 1 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -2, 0 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.THREE_QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, -1 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, Constants.FULL_CIRCLE ) ).isCloseTo( Vector.of( 2, 0 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, 1 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -2, 0 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Constants.THREE_QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, -1 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Constants.FULL_CIRCLE ) ).isCloseTo( Vector.of( 2, 0 ) );
 
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, -1 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -2, 0 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.THREE_QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, 1 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), 2, 1, 0, -Constants.FULL_CIRCLE ) ).isCloseTo( Vector.of( 2, 0 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, -Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, -1 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -2, 0 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, -Constants.THREE_QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, 1 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, -Constants.FULL_CIRCLE ) ).isCloseTo( Vector.of( 2, 0 ) );
 	}
 
 	@Test
@@ -166,24 +166,39 @@ public class GeometryTest {
 
 	@Test
 	void testEllipsePointWithScale() {
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 2, 5 ), 2, 1, 0, 0 ) ).isCloseTo( Vector.of( 4, 5 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, 0, 0 ) ).isCloseTo( Vector.of( -3, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 2, 5 ), Point.of( 2, 1 ), 0, 0 ) ).isCloseTo( Vector.of( 4, 5 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), 0, 0 ) ).isCloseTo( Vector.of( -3, 2 ) );
 	}
 
 	@Test
 	void testEllipsePointWithScaleAndRotate() {
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.QUARTER_CIRCLE, 0 ) ).isCloseTo( Vector.of( -5, 4 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, 0 ) ).isCloseTo( Vector.of( -7, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), Constants.QUARTER_CIRCLE, 0 ) ).isCloseTo( Vector.of( -5, 4 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), Constants.HALF_CIRCLE, 0 ) ).isCloseTo( Vector.of( -7, 2 ) );
 
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), 2, 1, Constants.HALF_CIRCLE, Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), Constants.HALF_CIRCLE, -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), Constants.HALF_CIRCLE, Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
 	}
 
 	@Test
 	void testEllipsePointWithScaleRotateAndStart() {
 		double n = Math.sqrt( 0.5 );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 - n, 3 + 2 * n ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), 2, 1, Constants.QUARTER_CIRCLE, -Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 + n, 3 + 2 * n ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), Point.of( 2, 1 ), Constants.QUARTER_CIRCLE, Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 - n, 3 + 2 * n ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), Point.of( 2, 1 ), Constants.QUARTER_CIRCLE, -Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 + n, 3 + 2 * n ) );
+	}
+
+	@Test
+	void testArcLength() {
+		double f = Constants.FULL_CIRCLE;
+		double q = Constants.QUARTER_CIRCLE;
+		double g = 0.125 * Constants.FULL_CIRCLE;
+
+		// Circle arcs
+		assertThat( Geometry.arcLength( Point.of( 5, 0 ), Point.of( 1, 1 ), 0, 0, g ) ).isEqualTo( g );
+
+		// Elliptic arcs
+		assertThat( Geometry.arcLength( Point.of( 5, 0 ), Point.of( 1, 2 ), 0, 0, g ) ).isEqualTo( 1.456448, Offset.offset( Constants.RESOLUTION_LENGTH ) );
+		assertThat( Geometry.arcLength( Point.of( 5, 0 ), Point.of( 1, 2 ), 0, -g, q ) ).isEqualTo( 2.912897, Offset.offset( Constants.RESOLUTION_LENGTH ) );
+		assertThat( Geometry.arcLength( Point.of( 5, 0 ), Point.of( 1, 2 ), 0, g, q ) ).isEqualTo( 1.931327, Offset.offset( Constants.RESOLUTION_LENGTH ) );
 	}
 
 	@Test

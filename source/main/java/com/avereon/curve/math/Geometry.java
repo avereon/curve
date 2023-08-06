@@ -339,15 +339,14 @@ public class Geometry {
 	 * ellipse rotation.
 	 *
 	 * @param origin The center of the ellipse
-	 * @param xRadius The x radius of the ellipse
-	 * @param yRadius The y radius of the ellipse
+	 * @param radii The radii of the ellipse
 	 * @param rotate The rotation angle of the ellipse
 	 * @param angle The angle for which to compute the point
 	 * @return The point at the angle on the ellipse
 	 */
-	public static double[] ellipsePoint( double[] origin, double xRadius, double yRadius, double rotate, double angle ) {
+	public static double[] ellipsePoint( double[] origin, double[] radii, double rotate, double angle ) {
 		double[] p = polarToCartesian( Vector.of( 1, angle ) );
-		p = Vector.scale( p, xRadius, yRadius );
+		p = Vector.scale( p, radii[ 0 ], radii[ 1 ] );
 		p = Vector.rotate( p, rotate );
 		return Point.of( origin[ 0 ] + p[ 0 ], origin[ 1 ] + p[ 1 ], origin[ 2 ] + p[ 2 ] );
 	}
@@ -380,6 +379,62 @@ public class Geometry {
 	 */
 	public static double[] ellipseCoefficients( double[] c, double rx, double ry ) {
 		return new double[]{ ry * ry, 0, rx * rx, -2 * ry * ry * c[ 0 ], -2 * rx * rx * c[ 1 ], ry * ry * c[ 0 ] * c[ 0 ] + rx * rx * c[ 1 ] * c[ 1 ] - rx * rx * ry * ry };
+	}
+
+	public static boolean isCircular( double[] radii ) {
+		return Math.abs( radii[ 1 ] - radii[ 0 ] ) < Constants.RESOLUTION_LENGTH;
+	}
+
+	public static double arcLength( double[] c, double[] r, double rotate, double start, double extent ) {
+		return arcLength( c, r, rotate, start, extent, Constants.RESOLUTION_LENGTH );
+	}
+
+	public static double arcLength( double[] c, double[] r, double rotate, double start, double extent, double tolerance ) {
+		// If the arc is circular then use the circle formula
+		if( isCircular( r ) ) return r[ 0 ] * Math.abs( extent );
+
+		// FIXME Calc the parametric arc length
+
+		double[] startPoint = ellipsePoint( c, r, rotate, start );
+		double[] endPoint = ellipsePoint( c, r, rotate, start + extent );
+
+		// Start with just the distance between control points
+		double last = length( startPoint, endPoint );
+
+		double next;
+		double error = Double.MAX_VALUE;
+		int segments = Constants.MINIMUM_SEGMENTS;
+		int iteration = 0;
+		int iterationLimit = 20;
+
+		while( error > tolerance && iteration < iterationLimit ) {
+			double[][] points = arcAsPoints( c, r, rotate, start, extent, segments );
+			next = length( points );
+
+			error = Math.abs( next - last );
+			segments *= 2;
+			last = next;
+			iteration++;
+		}
+
+		return last;
+	}
+
+	public static double[][] arcAsPoints( double[] c, double[] r, double rotate, double start, double extent, int count ) {
+		// Note, the first point is p1 and the last point is p4
+		// Only need to calculate the points in between
+		int segments = count - 1;
+
+		double[][] points = new double[ count ][];
+		//		points[ 0 ] = ellipsePoint( c, r, rotate, start );
+		//		points[ count - 1 ] = ellipsePoint( c, r, rotate, start + extent );
+		double offset = extent / segments;
+
+		for( int index = 0; index <= segments; index++ ) {
+			points[ index ] = ellipsePoint( c, r, rotate, start + (index * offset) );
+		}
+
+		return points;
 	}
 
 	/**
@@ -587,7 +642,7 @@ public class Geometry {
 		int iterationLimit = 20;
 
 		while( error > tolerance && iteration < iterationLimit ) {
-			double[][] points = curveAsPoints(p1, p2, p3, p4, segments);
+			double[][] points = curveAsPoints( p1, p2, p3, p4, segments );
 			next = length( points );
 
 			error = Math.abs( next - last );
