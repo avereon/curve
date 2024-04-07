@@ -375,7 +375,7 @@ public class Intersection2D extends Intersection {
 	 * @return The intersection
 	 */
 	public static Intersection2D intersectEllipseBezier3( double[] ec, double rx, double ry, double[] a, double[] b, double[] c, double[] d ) {
-		double[][] coefficients = Geometry.curveCoefficients( a, b, c, d );
+		double[][] coefficients = Geometry.cubicCoefficients( a, b, c, d );
 		double[] c3 = coefficients[ 0 ];
 		double[] c2 = coefficients[ 1 ];
 		double[] c1 = coefficients[ 2 ];
@@ -405,13 +405,13 @@ public class Intersection2D extends Intersection {
 		boolean sameBackward = Arrays.equals( a1, b4 ) && Arrays.equals( a2, b3 ) && Arrays.equals( a3, b2 ) && Arrays.equals( a4, b1 );
 		if( sameForward || sameBackward ) return new Intersection2D( Type.SAME );
 
-		double[][] coefficientsA = Geometry.curveCoefficients( a1, a2, a3, a4 );
+		double[][] coefficientsA = Geometry.cubicCoefficients( a1, a2, a3, a4 );
 		double[] c13 = coefficientsA[ 0 ];
 		double[] c12 = coefficientsA[ 1 ];
 		double[] c11 = coefficientsA[ 2 ];
 		double[] c10 = coefficientsA[ 3 ];
 
-		double[][] coefficientsB = Geometry.curveCoefficients( b1, b2, b3, b4 );
+		double[][] coefficientsB = Geometry.cubicCoefficients( b1, b2, b3, b4 );
 		double[] c23 = coefficientsB[ 0 ];
 		double[] c22 = coefficientsB[ 1 ];
 		double[] c21 = coefficientsB[ 2 ];

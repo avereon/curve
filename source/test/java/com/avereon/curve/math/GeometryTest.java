@@ -279,20 +279,20 @@ public class GeometryTest {
 	}
 
 	@Test
-	void testCurveArcLength() {
+	void testCubicArcLength() {
 		double[] a = Point.of( 0, 0 );
 		double[] b = Point.of( 0, 1 );
 		double[] c = Point.of( 1, 1 );
 		double[] d = Point.of( 1, 0 );
 
-		double length = Geometry.curveArcLength( a, b, c, d );
+		double length = Geometry.cubicArcLength( a, b, c, d );
 
 		assertThat( length ).isEqualTo( 2.0, Offset.offset( Constants.RESOLUTION_LENGTH ) );
 	}
 
 	@Test
-	void testCurveCoefficients() {
-		double[][] c = Geometry.curveCoefficients( Point.of( 0, 0 ), Point.of( 1, 1 ), Point.of( 2, -1 ), Point.of( 3, 0 ) );
+	void testCubicCoefficients() {
+		double[][] c = Geometry.cubicCoefficients( Point.of( 0, 0 ), Point.of( 1, 1 ), Point.of( 2, -1 ), Point.of( 3, 0 ) );
 		assertThat( c[ 0 ] ).isEqualTo( Vector.of( 0, 6 ) );
 		assertThat( c[ 1 ] ).isEqualTo( Vector.of( 0, -9 ) );
 		assertThat( c[ 2 ] ).isEqualTo( Vector.of( 3, 3 ) );

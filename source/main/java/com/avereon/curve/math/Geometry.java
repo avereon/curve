@@ -457,7 +457,7 @@ public class Geometry {
 		//lc=x1*(y1-y2)+y1*(x2-x1)
 		double lc = l1[ 0 ] * (l1[ 1 ] - l2[ 1 ]) + l1[ 1 ] * (l2[ 0 ] - l1[ 0 ]);
 
-		double[][] coefficients = Geometry.curveCoefficients( a, b, c, d );
+		double[][] coefficients = Geometry.cubicCoefficients( a, b, c, d );
 		double c3 = la * coefficients[ 0 ][ 0 ] + lb * coefficients[ 0 ][ 1 ];
 		double c2 = la * coefficients[ 1 ][ 0 ] + lb * coefficients[ 1 ][ 1 ];
 		double c1 = la * coefficients[ 2 ][ 0 ] + lb * coefficients[ 2 ][ 1 ];
@@ -503,7 +503,7 @@ public class Geometry {
 		// This gives the same result as using Geometry.curvePoint() but it requires
 		// calculating the coefficients first and therefore takes more compute time
 		// for a single point.
-		double[][] coefficients = Geometry.curveCoefficients( a, b, c, d );
+		double[][] coefficients = Geometry.cubicCoefficients( a, b, c, d );
 		double x = coefficients[ 0 ][ 0 ] * t * t * t + coefficients[ 1 ][ 0 ] * t * t + coefficients[ 2 ][ 0 ] * t + coefficients[ 3 ][ 0 ];
 		double y = coefficients[ 0 ][ 1 ] * t * t * t + coefficients[ 1 ][ 1 ] * t * t + coefficients[ 2 ][ 1 ] * t + coefficients[ 3 ][ 1 ];
 		return new double[]{ x, y, 0 };
@@ -522,7 +522,7 @@ public class Geometry {
 	 */
 	public static double curveParametricValue( double[] a, double[] b, double[] c, double[] d, double[] r ) {
 		// Get the curve coefficients
-		double[][] coefficients = curveCoefficients( a, b, c, d );
+		double[][] coefficients = cubicCoefficients( a, b, c, d );
 
 		// Subtract the reference point x coordinate from the last coefficient
 		coefficients[ 3 ][ 0 ] -= r[ 0 ];
@@ -550,7 +550,7 @@ public class Geometry {
 	 */
 	public static double curveParametricValueNear( double[] a, double[] b, double[] c, double[] d, double[] r ) {
 		// Get the curve coefficients
-		double[][] coefficients = curveCoefficients( a, b, c, d );
+		double[][] coefficients = cubicCoefficients( a, b, c, d );
 
 		// Subtract the reference point x coordinate from the last coefficient
 		coefficients[ 3 ][ 0 ] -= r[ 0 ];
@@ -618,8 +618,32 @@ public class Geometry {
 		return points;
 	}
 
-	public static double curveArcLength( double[] p1, double[] p2, double[] p3, double[] p4 ) {
-		return curveArcLength( p1, p2, p3, p4, Constants.RESOLUTION_LENGTH );
+	/**
+	 * Get a quadratic bezier curve as a set of interpolated points.
+	 *
+	 * @param p1 Control point a
+	 * @param p2 Control point b
+	 * @param p3 Control point c
+	 * @return The interpolated points
+	 */
+	public static double quadArcLength( double[] p1, double[] p2, double[] p3 ) {
+		return cubicArcLength( p1, p2, p2, p3, Constants.RESOLUTION_LENGTH );
+	}
+
+	/**
+	 * Compute the arc length of a quadratic bezier curve.
+	 *
+	 * @param p1 Control point a
+	 * @param p2 Control point b
+	 * @param p3 Control point c
+	 * @return The estimated arc length within the specific tolerance
+	 */
+	public static double quadArcLength( double[] p1, double[] p2, double[] p3, double tolerance ) {
+		return cubicArcLength( p1, p2, p2, p3, tolerance );
+	}
+
+	public static double cubicArcLength( double[] p1, double[] p2, double[] p3, double[] p4 ) {
+		return cubicArcLength( p1, p2, p3, p4, Constants.RESOLUTION_LENGTH );
 	}
 
 	/**
@@ -631,7 +655,7 @@ public class Geometry {
 	 * @param p4 Control point d
 	 * @return The estimated arc length within the specific tolerance
 	 */
-	public static double curveArcLength( double[] p1, double[] p2, double[] p3, double[] p4, double tolerance ) {
+	public static double cubicArcLength( double[] p1, double[] p2, double[] p3, double[] p4, double tolerance ) {
 		// Start with just the distance between control points
 		double last = length( p1, p2, p3, p4 );
 
@@ -670,7 +694,7 @@ public class Geometry {
 	 * @return An array of coefficient pairs corresponding to the x and y axes
 	 */
 	// MVS This implementation is verified 11-Mar-2021
-	public static double[][] curveCoefficients( double[] a, double[] b, double[] c, double[] d ) {
+	public static double[][] cubicCoefficients( double[] a, double[] b, double[] c, double[] d ) {
 		double[] e, f, g, h; // temporary variables
 		double[] c3, c2, c1, c0; // coefficients
 
