@@ -293,23 +293,22 @@ public class Transform {
 		// Normalize the axis
 		axis = Vector.normalize( axis );
 
-		return new Transform( theta * axis[ 0 ] * axis[ 0 ] + cos,
-			theta * axis[ 0 ] * axis[ 1 ] - sin * axis[ 2 ],
-			theta * axis[ 0 ] * axis[ 2 ] + sin * axis[ 1 ],
-			0.0,
-			theta * axis[ 0 ] * axis[ 1 ] + sin * axis[ 2 ],
-			theta * axis[ 1 ] * axis[ 1 ] + cos,
-			theta * axis[ 1 ] * axis[ 2 ] - sin * axis[ 0 ],
-			0.0,
-			theta * axis[ 0 ] * axis[ 2 ] - sin * axis[ 1 ],
-			theta * axis[ 1 ] * axis[ 2 ] + sin * axis[ 0 ],
-			theta * axis[ 2 ] * axis[ 2 ] + cos,
-			0.0,
-			0.0,
-			0.0,
-			0.0,
-			1.0
-		);
+		double mxx = cos + axis[ 0 ] * axis[ 0 ] * theta;
+		double mxy = axis[ 0 ] * axis[ 1 ] * theta - axis[ 2 ] * sin;
+		double mxz = axis[ 0 ] * axis[ 2 ] * theta + axis[ 1 ] * sin;
+		double tx = axis[ 0 ] * (1 - mxx) - axis[ 1 ] * mxy - axis[ 2 ] * mxz;
+
+		double myx = axis[ 1 ] * axis[ 0 ] * theta + axis[ 2 ] * sin;
+		double myy = cos + axis[ 1 ] * axis[ 1 ] * theta;
+		double myz = axis[ 1 ] * axis[ 2 ] * theta - axis[ 0 ] * sin;
+		double ty = axis[ 1 ] * (1 - myy) - axis[ 0 ] * myx - axis[ 2 ] * myz;
+
+		double mzx = axis[ 2 ] * axis[ 0 ] * theta - axis[ 1 ] * sin;
+		double mzy = axis[ 2 ] * axis[ 1 ] * theta + axis[ 0 ] * sin;
+		double mzz = cos + axis[ 2 ] * axis[ 2 ] * theta;
+		double tz = axis[ 2 ] * (1 - mzz) - axis[ 0 ] * mzx - axis[ 1 ] * mzy;
+
+		return new Transform( mxx, mxy, mxz, tx, myx, myy, myz, ty, mzx, mzy, mzz, tz, 0.0, 0.0, 0.0, 1.0 );
 	}
 
 	/**
