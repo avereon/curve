@@ -130,6 +130,7 @@ public class OrientationTest {
 		Orientation orientation = new Orientation();
 		assertThat( orientation.getLocalToWorldTransform() ).isEqualTo( Transform.identity() );
 
+		// FIXME This test is failing because the rotation is not being applied correctly
 		orientation.set( Vector.of( 1, 1, 0 ), UNIT_Z, rotate( UNIT_Y, PI_OVER_4 ) );
 		assertThat( orientation.getLocalToWorldTransform() ).isEqualTo( Transform.rotation( Vector.of( 1, 1, 0 ), UNIT_Z, PI_OVER_4 ) );
 	}
