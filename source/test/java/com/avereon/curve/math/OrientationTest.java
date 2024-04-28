@@ -4,6 +4,8 @@ import com.avereon.curve.assertion.VectorAssert;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
+import static com.avereon.curve.math.Constants.PI_OVER_4;
+import static com.avereon.curve.math.Vector.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrientationTest {
@@ -18,11 +20,11 @@ public class OrientationTest {
 
 	@Test
 	void testConstructorWithOriginAndNormal() {
-		Orientation orientation = new Orientation( Vector.of(), Vector.UNIT_Y );
-		assertOrientationValues( orientation, Vector.of(), Vector.UNIT_Y, Vector.reverse( Vector.UNIT_Z ), 1e-15 );
+		Orientation orientation = new Orientation( Vector.of(), UNIT_Y );
+		assertOrientationValues( orientation, Vector.of(), UNIT_Y, Vector.reverse( UNIT_Z ), 1e-15 );
 
 		orientation = new Orientation( Vector.of(), Vector.UNIT_X );
-		assertOrientationValues( orientation, Vector.of(), Vector.UNIT_X, Vector.UNIT_Y );
+		assertOrientationValues( orientation, Vector.of(), Vector.UNIT_X, UNIT_Y );
 	}
 
 	@Test
@@ -110,26 +112,35 @@ public class OrientationTest {
 	@Test
 	void testTransformWithNegativeYAxis() {
 		Orientation orientation = new Orientation( Vector.of( 0, 0, 0 ), Vector.of( 0, -1, 0 ), Vector.of( 0, 0, 1 ) );
-		Transform transform = orientation.getLocalToTargetTransform();
+		Transform transform = orientation.getLocalToWorldTransform();
 		assertThat( transform.apply( Vector.of( 0, 1, 0 ) ) ).isEqualTo( Vector.of( 0, 0, 1 ) );
 	}
 
 	@Test
 	void testGetLocalToWorldTransform() {
 		Orientation orientation = new Orientation();
-		assertThat( orientation.getLocalToTargetTransform() ).isEqualTo( Transform.identity() );
+		assertThat( orientation.getLocalToWorldTransform() ).isEqualTo( Transform.identity() );
 
 		orientation.transform( Transform.translation( 1, 2, 3 ) );
-		assertThat( orientation.getLocalToTargetTransform() ).isEqualTo( Transform.translation( 1, 2, 3 ) );
+		assertThat( orientation.getLocalToWorldTransform() ).isEqualTo( Transform.translation( 1, 2, 3 ) );
+	}
+
+	@Test
+	void testGetLocalToWorldTransformWithRotation() {
+		Orientation orientation = new Orientation();
+		assertThat( orientation.getLocalToWorldTransform() ).isEqualTo( Transform.identity() );
+
+		orientation.set( Vector.of( 1, 1, 0 ), UNIT_Z, rotate( UNIT_Y, PI_OVER_4 ) );
+		assertThat( orientation.getLocalToWorldTransform() ).isEqualTo( Transform.rotation( Vector.of( 1, 1, 0 ), UNIT_Z, PI_OVER_4 ) );
 	}
 
 	@Test
 	void testGetWorldToLocalTransform() {
 		Orientation orientation = new Orientation();
-		assertThat( orientation.getTargetToLocalTransform() ).isEqualTo( Transform.identity() );
+		assertThat( orientation.getWorldToLocalTransform() ).isEqualTo( Transform.identity() );
 
 		orientation.transform( Transform.translation( 1, 2, 3 ) );
-		assertThat( orientation.getTargetToLocalTransform() ).isEqualTo( Transform.translation( -1, -2, -3 ) );
+		assertThat( orientation.getWorldToLocalTransform() ).isEqualTo( Transform.translation( -1, -2, -3 ) );
 	}
 
 	@Test

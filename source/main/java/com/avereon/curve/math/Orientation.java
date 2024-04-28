@@ -180,8 +180,8 @@ public class Orientation {
 	 *
 	 * @return A transform to convert to the target orientation
 	 */
-	public final Transform getLocalToTargetTransform() {
-		if( toTarget == null ) toTarget = Transform.targetTransform( getOrigin(), getNormal(), getRotate() );
+	public final Transform getLocalToWorldTransform() {
+		if( toTarget == null ) toTarget = Transform.worldTransform( getOrigin(), getNormal(), getRotate() );
 		return toTarget;
 	}
 
@@ -191,7 +191,7 @@ public class Orientation {
 	 *
 	 * @return A transform to convert to the local orientation
 	 */
-	public final Transform getTargetToLocalTransform() {
+	public final Transform getWorldToLocalTransform() {
 		if( toLocal == null ) toLocal = Transform.localTransform( getOrigin(), getNormal(), getRotate() );
 		return toLocal;
 	}

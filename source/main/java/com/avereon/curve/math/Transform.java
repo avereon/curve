@@ -375,20 +375,20 @@ public class Transform {
 		if( a == null || b == null || n == null ) return null;
 
 		Orientation orientation = new Orientation( a, n, Vector.subtract( a, b ) );
-		Transform local = orientation.getTargetToLocalTransform();
+		Transform local = orientation.getWorldToLocalTransform();
 
 		Transform transform = Transform.identity();
-		transform = transform.combine( orientation.getLocalToTargetTransform() );
+		transform = transform.combine( orientation.getLocalToWorldTransform() );
 		transform = transform.combine( Transform.translation( local.apply( a ) ) );
 		transform = transform.combine( Transform.scale( -1, 1, 1 ) );
 		transform = transform.combine( Transform.translation( Vector.reverse( local.apply( a ) ) ) );
-		transform = transform.combine( orientation.getTargetToLocalTransform() );
+		transform = transform.combine( orientation.getWorldToLocalTransform() );
 
 		return transform;
 	}
 
 	/**
-	 * Create a transform to convert from the target orientation to the local
+	 * Create a transform to convert from the world orientation to the local
 	 * orientation. The vectors specified define the local orientation. This
 	 * transform transforms coordinates such that the origin vector origin is
 	 * translated to the origin, the direction vector normal lies along the
@@ -399,14 +399,17 @@ public class Transform {
 		double[] zrotate = Vector.scale( normal, 1.0 / Vector.magnitude( normal ) );
 		double[] xrotate = Vector.normalize( Vector.cross( rotate, normal ) );
 		double[] yrotate = Vector.cross( zrotate, xrotate );
-		return new Transform( xrotate[ 0 ],
+		return new Transform(
+			xrotate[ 0 ],
 			xrotate[ 1 ],
 			xrotate[ 2 ],
 			-(xrotate[ 0 ] * origin[ 0 ] + xrotate[ 1 ] * origin[ 1 ] + xrotate[ 2 ] * origin[ 2 ]),
+
 			yrotate[ 0 ],
 			yrotate[ 1 ],
 			yrotate[ 2 ],
 			-(yrotate[ 0 ] * origin[ 0 ] + yrotate[ 1 ] * origin[ 1 ] + yrotate[ 2 ] * origin[ 2 ]),
+
 			zrotate[ 0 ],
 			zrotate[ 1 ],
 			zrotate[ 2 ],
@@ -419,13 +422,13 @@ public class Transform {
 	}
 
 	/**
-	 * Create a transform to convert from the local orientation to the target
+	 * Create a transform to convert from the local orientation to the world
 	 * orientation. The vectors specified define the local orientation. This
 	 * transform transforms coordinates such that the z axis lies along the
 	 * direction of normal, the y axis lies in the direction of rotate, and the
 	 * origin is translated to the point origin.
 	 */
-	public static Transform targetTransform( double[] origin, double[] normal, double[] rotate ) {
+	public static Transform worldTransform( double[] origin, double[] normal, double[] rotate ) {
 		double[] zrotate = Vector.scale( normal, 1.0 / Vector.magnitude( normal ) );
 		double[] xrotate = Vector.normalize( Vector.cross( rotate, normal ) );
 		double[] yrotate = Vector.cross( zrotate, xrotate );

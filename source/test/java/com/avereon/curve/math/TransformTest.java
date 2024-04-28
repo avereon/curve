@@ -211,7 +211,7 @@ public class TransformTest {
 
 	@Test
 	void testWorldTransform() {
-		Transform transform = Transform.targetTransform( Vector.of( 1, 0, 0 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 1, 0 ) );
+		Transform transform = Transform.worldTransform( Vector.of( 1, 0, 0 ), Vector.of( 0, 0, 1 ), Vector.of( 0, 1, 0 ) );
 		assertMatrixValues( transform, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
 		assertThat( transform.apply( Vector.of( 0, 0, 0 ) ) ).isEqualTo( Vector.of( 1, 0, 0 ) );
 	}

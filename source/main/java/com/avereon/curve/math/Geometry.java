@@ -149,7 +149,7 @@ public class Geometry {
 	public static double getAngle( final double[] o, final double[] n, final double[] a, final double[] b ) {
 		double[] r = Vector.normalize( Vector.cross( n, Vector.minus( a, o ) ) );
 
-		Transform transform = new Orientation( o, n, r ).getTargetToLocalTransform();
+		Transform transform = new Orientation( o, n, r ).getWorldToLocalTransform();
 
 		double[] lb = Vector.normalize( transform.applyXY( b ) );
 		double[] lo = Vector.of();
