@@ -425,11 +425,11 @@ public class Transform {
 	 * Create a transform to convert from the local orientation to the world
 	 * orientation. The vectors specified define the local orientation. This
 	 * transform transforms coordinates such that the z axis lies along the
-	 * direction of normal, the y axis lies in the direction of rotate, and the
-	 * origin is translated to the point origin.
+	 * direction of normal, the y-axis lies in the direction of rotate, and
+	 * the origin is translated to the point origin.
 	 */
 	public static Transform worldTransform( double[] origin, double[] normal, double[] rotate ) {
-		double[] zrotate = Vector.scale( normal, 1.0 / Vector.magnitude( normal ) );
+		double[] zrotate = Vector.normalize( normal );
 		double[] xrotate = Vector.normalize( Vector.cross( rotate, normal ) );
 		double[] yrotate = Vector.cross( zrotate, xrotate );
 		return new Transform( xrotate[ 0 ],

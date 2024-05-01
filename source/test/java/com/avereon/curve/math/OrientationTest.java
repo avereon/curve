@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
 import static com.avereon.curve.math.Constants.PI_OVER_4;
+import static com.avereon.curve.math.Constants.SQRT_TWO;
 import static com.avereon.curve.math.Vector.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -127,12 +128,21 @@ public class OrientationTest {
 
 	@Test
 	void testGetLocalToWorldTransformWithRotation() {
+		// given
 		Orientation orientation = new Orientation();
 		assertThat( orientation.getLocalToWorldTransform() ).isEqualTo( Transform.identity() );
 
-		// FIXME This test is failing because the rotation is not being applied correctly
+		// An orientation centered at 1,1 and rotated 45 degrees
 		orientation.set( Vector.of( 1, 1, 0 ), UNIT_Z, rotate( UNIT_Y, PI_OVER_4 ) );
-		assertThat( orientation.getLocalToWorldTransform() ).isEqualTo( Transform.rotation( Vector.of( 1, 1, 0 ), UNIT_Z, PI_OVER_4 ) );
+
+		// A vector in local coordinates
+		double[] upperRightCorner = Vector.of( 1, 1, 0 );
+
+		// when
+		double[] rotatedUpperRightCorner = orientation.getLocalToWorldTransform().apply( upperRightCorner );
+
+		// then
+		assertThat( rotatedUpperRightCorner ).isEqualTo( Vector.of( 1, 1 + SQRT_TWO, 0 ) );
 	}
 
 	@Test
