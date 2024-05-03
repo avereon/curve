@@ -2,6 +2,8 @@ package com.avereon.curve.math;
 
 import java.nio.DoubleBuffer;
 
+import static com.avereon.curve.math.Vector.UNIT_Z;
+
 public class Transform {
 
 	private final double[][] m = new double[ 4 ][ 4 ];
@@ -275,6 +277,10 @@ public class Transform {
 	 */
 	public static Transform translation( double deltaX, double deltaY, double deltaZ ) {
 		return new Transform( 1.0, 0.0, 0.0, deltaX, 0.0, 1.0, 0.0, deltaY, 0.0, 0.0, 1.0, deltaZ, 0.0, 0.0, 0.0, 1.0 );
+	}
+
+	public static Transform rotation( double angle ) {
+		return rotation( UNIT_Z, angle);
 	}
 
 	/**
