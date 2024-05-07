@@ -136,7 +136,7 @@ public class Transform {
 
 		Transform combined = new Transform( c );
 		combined.negate = this.negate | transform.negate;
-		return (new Transform( c ));
+		return new Transform( c );
 	}
 
 	/**
