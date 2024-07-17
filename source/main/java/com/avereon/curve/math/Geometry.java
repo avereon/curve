@@ -420,21 +420,46 @@ public class Geometry {
 		return last;
 	}
 
+	/**
+	 * Convert an arc to a list of points.
+	 *
+	 * @param c The center of the arc
+	 * @param r The radii of the arc
+	 * @param rotate The rotate angle of the arc
+	 * @param start The start angle of the arc
+	 * @param extent The extent angle of the arc
+	 * @param count The number of points to generate, must be at least 2
+	 * @return A list of points on the arc
+	 */
 	public static double[][] arcAsPoints( double[] c, double[] r, double rotate, double start, double extent, int count ) {
 		// Note, the first point is p1 and the last point is p4
 		// Only need to calculate the points in between
 		int segments = count - 1;
 
 		double[][] points = new double[ count ][];
-		//		points[ 0 ] = ellipsePoint( c, r, rotate, start );
-		//		points[ count - 1 ] = ellipsePoint( c, r, rotate, start + extent );
 		double offset = extent / segments;
 
-		for( int index = 0; index <= segments; index++ ) {
+		// Make the start point accurate
+		points[0] = ellipsePoint( c, r, rotate, start );
+
+		// Iterate through the internal points
+		for( int index = 1; index < segments; index++ ) {
 			points[ index ] = ellipsePoint( c, r, rotate, start + (index * offset) );
 		}
 
+		// Make the end point accurate
+		points[ count - 1 ] = ellipsePoint( c, r, rotate, start + extent );
+
 		return points;
+	}
+
+	/**
+	 * Get the start, mid and end points of an arc.
+	 *
+	 * @return The start, mid and endpoint of an arc as an array of points
+	 */
+	public static double[][] arcReferencePoints( double[] c, double[] r, double rotate, double start, double extent ) {
+		return arcAsPoints( c, r, rotate, start, extent, 3 );
 	}
 
 	/**
