@@ -114,6 +114,24 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testPointArcDistanceWithCircleArc() {
+		double distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 1 ), 0, -0.5 * Constants.QUARTER_CIRCLE, Constants.QUARTER_CIRCLE );
+		assertThat( distance ).isEqualTo( 1.8477590650225735, Offset.offset( 1E-15 ) );
+
+		distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 3, 0 ), Vector.of( 1, 1 ), 0, 0.75 * Constants.HALF_CIRCLE, Constants.QUARTER_CIRCLE );
+		assertThat( distance ).isEqualTo( 2.0, Offset.offset( 1E-15 ) );
+	}
+
+	@Test
+	void testPointArcDistanceWithEllipseArc() {
+		double distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 2 ), 0, -0.5 * Constants.QUARTER_CIRCLE, Constants.QUARTER_CIRCLE );
+		assertThat( distance ).isEqualTo( 2.216802553763662, Offset.offset( 1E-15 ) );
+
+		distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 3, 0 ), Vector.of( 1, 2 ), 0, 0.75 * Constants.HALF_CIRCLE, Constants.QUARTER_CIRCLE );
+		assertThat( distance ).isEqualTo( 2.0, Offset.offset( 1E-15 ) );
+	}
+
+	@Test
 	void testLineLineDistance() {
 		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, -1 ), Vector.of( 1, 0, -1 ) ) ).isEqualTo( 1.0 );
 		assertThat( Geometry.lineLineDistance( Vector.of( 0, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 0 ), Vector.of( 1, 0, 0 ) ) ).isEqualTo( 0.0 );
@@ -340,21 +358,21 @@ public class GeometryTest {
 	void testNearest() {
 		double[][] points = new double[][]{ Vector.of( 0, 0, 0 ), Vector.of( 1, 0, 0 ), Vector.of( 1, 1, 0 ), Vector.of( 0, 1, 0 ) };
 
-		assertThat( Geometry.nearest( points, Vector.of( 1, -1 ) ) ).isEqualTo( Vector.of( 1, 0, 0 ) );
-		assertThat( Geometry.nearest( points, Vector.of( 2, -1 ) ) ).isEqualTo( Vector.of( 1, 0, 0 ) );
-		assertThat( Geometry.nearest( points, Vector.of( 2, 0 ) ) ).isEqualTo( Vector.of( 1, 0, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( 1, -1 ), points ) ).isEqualTo( Vector.of( 1, 0, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( 2, -1 ), points ) ).isEqualTo( Vector.of( 1, 0, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( 2, 0 ), points ) ).isEqualTo( Vector.of( 1, 0, 0 ) );
 
-		assertThat( Geometry.nearest( points, Vector.of( 2, 1 ) ) ).isEqualTo( Vector.of( 1, 1, 0 ) );
-		assertThat( Geometry.nearest( points, Vector.of( 2, 2 ) ) ).isEqualTo( Vector.of( 1, 1, 0 ) );
-		assertThat( Geometry.nearest( points, Vector.of( 1, 2 ) ) ).isEqualTo( Vector.of( 1, 1, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( 2, 1 ), points ) ).isEqualTo( Vector.of( 1, 1, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( 2, 2 ), points ) ).isEqualTo( Vector.of( 1, 1, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( 1, 2 ), points ) ).isEqualTo( Vector.of( 1, 1, 0 ) );
 
-		assertThat( Geometry.nearest( points, Vector.of( 0, 2 ) ) ).isEqualTo( Vector.of( 0, 1, 0 ) );
-		assertThat( Geometry.nearest( points, Vector.of( -1, 2 ) ) ).isEqualTo( Vector.of( 0, 1, 0 ) );
-		assertThat( Geometry.nearest( points, Vector.of( -1, 1 ) ) ).isEqualTo( Vector.of( 0, 1, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( 0, 2 ), points ) ).isEqualTo( Vector.of( 0, 1, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( -1, 2 ), points ) ).isEqualTo( Vector.of( 0, 1, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( -1, 1 ), points ) ).isEqualTo( Vector.of( 0, 1, 0 ) );
 
-		assertThat( Geometry.nearest( points, Vector.of( -1, 0 ) ) ).isEqualTo( Vector.of( 0, 0, 0 ) );
-		assertThat( Geometry.nearest( points, Vector.of( -1, -1 ) ) ).isEqualTo( Vector.of( 0, 0, 0 ) );
-		assertThat( Geometry.nearest( points, Vector.of( 0, -1 ) ) ).isEqualTo( Vector.of( 0, 0, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( -1, 0 ), points ) ).isEqualTo( Vector.of( 0, 0, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( -1, -1 ), points ) ).isEqualTo( Vector.of( 0, 0, 0 ) );
+		assertThat( Geometry.nearest( Vector.of( 0, -1 ), points ) ).isEqualTo( Vector.of( 0, 0, 0 ) );
 	}
 
 	@Test

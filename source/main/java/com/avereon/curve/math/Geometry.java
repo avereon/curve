@@ -275,6 +275,32 @@ public class Geometry {
 	}
 
 	/**
+	 * Get the distance between a point and an arc, including elliptic arcs. If
+	 * the point angle is between start and extent then the distance is the
+	 * distance to the ellipse, otherwise, the distance is the distance to the
+	 * closest endpoint.
+	 *
+	 * @param p The point to which to get the distance
+	 * @param c The center of the arc
+	 * @param r The radii of the arc
+	 * @param rotate The rotate angle of the arc
+	 * @param start The start angle of the arc
+	 * @param extent The extent angle of the arc
+	 * @return The distance between the point and the arc
+	 */
+	public static double pointArcDistance( double[] p, double[] c, double[] r, double rotate, double start, double extent ) {
+		// If the point is between start and extent then the distance is the distance to the ellipse
+		double angle = ellipseAngle( c, r, rotate, p );
+		if( angle >= (start - rotate) && angle <= (start + extent - rotate) ) {
+			return distance( p, ellipsePoint( c, r, rotate, angle ) );
+		}
+
+		// Otherwise, the distance is the distance to the closest endpoint
+		double[][] endpoints = arcEndPoints( c, r, rotate, start, extent );
+		return distance( p, nearest( p, endpoints ) );
+	}
+
+	/**
 	 * Get the distance between two lines defined by the points a-b and c-d.
 	 *
 	 * @param a First point on first line
@@ -349,6 +375,10 @@ public class Geometry {
 		p = Vector.scale( p, radii[ 0 ], radii[ 1 ] );
 		p = Vector.rotate( p, rotate );
 		return Point.of( origin[ 0 ] + p[ 0 ], origin[ 1 ] + p[ 1 ], origin[ 2 ] + p[ 2 ] );
+	}
+
+	public static double ellipseAngle( double[] origin, double[] radii, double rotate, double[] point ) {
+		return ellipseAngle( origin, radii[ 0 ], radii[ 1 ], rotate, point );
 	}
 
 	/**
@@ -440,7 +470,7 @@ public class Geometry {
 		double offset = extent / segments;
 
 		// Make the start point accurate
-		points[0] = ellipsePoint( c, r, rotate, start );
+		points[ 0 ] = ellipsePoint( c, r, rotate, start );
 
 		// Iterate through the internal points
 		for( int index = 1; index < segments; index++ ) {
@@ -454,9 +484,18 @@ public class Geometry {
 	}
 
 	/**
+	 * Get the start and end points of an arc.
+	 *
+	 * @return The start and end points of an arc as an array of points
+	 */
+	public static double[][] arcEndPoints( double[] c, double[] r, double rotate, double start, double extent ) {
+		return arcAsPoints( c, r, rotate, start, extent, 2 );
+	}
+
+	/**
 	 * Get the start, mid and end points of an arc.
 	 *
-	 * @return The start, mid and endpoint of an arc as an array of points
+	 * @return The start, mid and end points of an arc as an array of points
 	 */
 	public static double[][] arcReferencePoints( double[] c, double[] r, double rotate, double start, double extent ) {
 		return arcAsPoints( c, r, rotate, start, extent, 3 );
@@ -591,7 +630,7 @@ public class Geometry {
 			}
 		}
 
-		double[] nearest = nearest( new ArrayList<>( rootMap.keySet() ).toArray( new double[ 0 ][ 0 ] ), r );
+		double[] nearest = nearest( r, new ArrayList<>( rootMap.keySet() ).toArray( new double[ 0 ][ 0 ] ) );
 		return nearest == null ? Double.NaN : rootMap.get( nearest );
 	}
 
@@ -790,11 +829,11 @@ public class Geometry {
 	/**
 	 * Get the nearest point in a set of points to the specified point.
 	 *
-	 * @param points The set of points to check
 	 * @param point The point from which to check
+	 * @param points The set of points to check
 	 * @return The point nearest to the specified point
 	 */
-	public static double[] nearest( double[][] points, double[] point ) {
+	public static double[] nearest( double[] point, double[]... points ) {
 		double distance = Double.MAX_VALUE;
 		double checkDistance;
 		double[] nearest = null;
