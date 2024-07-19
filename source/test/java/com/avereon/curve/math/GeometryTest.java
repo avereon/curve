@@ -208,7 +208,6 @@ public class GeometryTest {
 
 	@Test
 	void testArcLength() {
-		double f = Constants.FULL_CIRCLE;
 		double q = Constants.QUARTER_CIRCLE;
 		double g = 0.125 * Constants.FULL_CIRCLE;
 
