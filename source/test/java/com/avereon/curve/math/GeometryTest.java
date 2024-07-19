@@ -734,8 +734,8 @@ public class GeometryTest {
 
 		// Right side arc
 		p1 = Point.of( x, y + r );
-		endpointData = new double[]{ x, y - r, r, r, 0, 0, 1 };
-		centerData = new double[]{ x, y, 1, 1, QUARTER_CIRCLE, -HALF_CIRCLE };
+		endpointData = new double[]{ x, y - r, r, r, 0, 0, 0 };
+		centerData = new double[]{ x, y, r, r, QUARTER_CIRCLE, -HALF_CIRCLE };
 		assertThat( Geometry.arcEndpointToCenter( p1, endpointData ) ).isEqualTo( centerData );
 	}
 
