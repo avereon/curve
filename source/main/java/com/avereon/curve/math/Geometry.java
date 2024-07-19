@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.avereon.curve.math.Constants.FULL_CIRCLE;
+
 /**
  * A bezier curve reference: <a href="https://pomax.github.io/bezierinfo">https://pomax.github.io/bezierinfo</a>
  */
@@ -117,10 +119,19 @@ public class Geometry {
 	 *
 	 * @param v1 The start vector
 	 * @param v2 The final vector
-	 * @return The angle between the two vectors
+	 * @return The angle between the two vectors in radians
 	 */
 	public static double getAngle( final double[] v1, final double[] v2 ) {
-		return clampAngle( getAngle( Vector.normalize( v2 ) ) - getAngle( Vector.normalize( v1 ) ) );
+		//return clampAngle( Math.atan2( v2[0],v2[1] ) - Math.atan2( v1[0],v1[1] ) );
+		return getAngle( v1[ 0 ], v1[ 1 ], v2[ 0 ], v2[ 1 ] );
+	}
+
+	public static double getAngle( final double ux, final double uy, final double vx, final double vy ) {
+		var dot = ux * vx + uy * vy;
+		var modulus = Math.sqrt( (ux * ux + uy * uy) * (vx * vx + vy * vy) );
+		var radians = Math.acos( dot / modulus );
+		if( ux * vy - uy * vx < 0.0 ) radians = -radians;
+		return radians;
 	}
 
 	/**
@@ -131,9 +142,9 @@ public class Geometry {
 	 * @return The normalized angle
 	 */
 	public static double clampAngle( double a ) {
-		a %= Constants.FULL_CIRCLE;
-		if( a <= -Constants.HALF_CIRCLE ) a += Constants.FULL_CIRCLE;
-		if( a > Constants.HALF_CIRCLE ) a -= Constants.FULL_CIRCLE;
+		a %= FULL_CIRCLE;
+		if( a <= -Constants.HALF_CIRCLE ) a += FULL_CIRCLE;
+		if( a > Constants.HALF_CIRCLE ) a -= FULL_CIRCLE;
 		return a;
 	}
 
@@ -499,6 +510,89 @@ public class Geometry {
 	 */
 	public static double[][] arcReferencePoints( double[] c, double[] r, double rotate, double start, double extent ) {
 		return arcAsPoints( c, r, rotate, start, extent, 3 );
+	}
+
+	/**
+	 * Convert an arc definition from endpoint format to center format.
+	 * <p>
+	 * NOTE: Angles values are expected in radians and returned in radians
+	 * <p>
+	 * Derived from <a href="https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter">https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter</a>
+	 *
+	 * @param p1 The start point of the arc
+	 * @param data The remaining data for the arc in the format [x, y, rx, ry, rotate, largeArc, sweep]
+	 * @return The center format of the arc in the format [cx, cy, rx, ry, startAngle, deltaAngle]
+	 */
+	public static double[] arcEndpointToCenter( double[] p1, double[] data ) {
+		// Define the incoming values
+		double x1 = p1[ 0 ];
+		double y1 = p1[ 1 ];
+		double x2 = data[ 0 ];
+		double y2 = data[ 1 ];
+		double rx = data[ 2 ];
+		double ry = data[ 3 ];
+		double rotate = data[ 4 ];
+		double arcFlag = data[ 5 ];
+		double sweepFlag = data[ 6 ];
+
+		// F6.6 Step 1: Ensure radii are non-zero
+		if( rx == 0.0 || ry == 0.0 ) throw new IllegalArgumentException( "Radius x and radius y cannot be zero" );
+
+		// F6.6 Step 2: Ensure radii are positive
+		if( rx < 0 ) rx = -rx;
+		if( ry < 0 ) ry = -ry;
+
+		// F6.5 Step 1: Compute (x1_, y1_) from (x1, y1)
+		double c_phi = Math.cos( rotate );
+		double s_phi = Math.sin( rotate );
+
+		var hd_x = (x1 - x2) / 2.0; // half diff of x
+		var hd_y = (y1 - y2) / 2.0; // half diff of y
+		var hs_x = (x1 + x2) / 2.0; // half sum of x
+		var hs_y = (y1 + y2) / 2.0; // half sum of y
+
+		var x1_ = c_phi * hd_x + s_phi * hd_y;
+		var y1_ = c_phi * hd_y - s_phi * hd_x;
+
+		// F6.6 Step 3: Ensure radii are large enough
+		var lambda = (x1_ * x1_) / (rx * rx) + (y1_ * y1_) / (ry * ry);
+		if( lambda > 1 ) {
+			rx = rx * Math.sqrt( lambda );
+			ry = ry * Math.sqrt( lambda );
+		}
+
+		var rxry = rx * ry;
+		var rxy1_ = rx * y1_;
+		var ryx1_ = ry * x1_;
+		var squareSum = rxy1_ * rxy1_ + ryx1_ * ryx1_;
+		if( squareSum == 0 ) throw new IllegalArgumentException( "Start point can not be same as end point" );
+
+		var coeff = Math.sqrt( Math.abs( (rxry * rxry - squareSum) / squareSum ) );
+		if( arcFlag == sweepFlag ) coeff = -coeff;
+
+		// F6.5 Step 2: Compute (cx_, cy_) from (x1_, y1_)
+		var cx_ = coeff * rxy1_ / ry;
+		var cy_ = -coeff * ryx1_ / rx;
+
+		// F6.5 Step 3: Compute (cx, cy) from (cx_, cy_)
+		double cx = c_phi * cx_ - s_phi * cy_ + hs_x;
+		double cy = s_phi * cx_ + c_phi * cy_ + hs_y;
+
+		var xcr1 = (x1_ - cx_) / rx;
+		var xcr2 = (x1_ + cx_) / rx;
+		var ycr1 = (y1_ - cy_) / ry;
+		var ycr2 = (y1_ + cy_) / ry;
+
+		// F6.5 Step 4: Compute startAngle
+		double startAngle = getAngle( 1.0, 0.0, xcr1, ycr1 );
+
+		// F6.5 Step 4: Compute deltaAngle
+		double deltaAngle = getAngle( xcr1, ycr1, -xcr2, -ycr2 );
+		if( deltaAngle > FULL_CIRCLE ) {deltaAngle -= FULL_CIRCLE;}
+		if( deltaAngle < 0.0 ) {deltaAngle += FULL_CIRCLE;}
+		if( sweepFlag == 0 ) {deltaAngle -= FULL_CIRCLE;}
+
+		return new double[]{ cx, cy, rx, ry, startAngle, deltaAngle };
 	}
 
 	/**

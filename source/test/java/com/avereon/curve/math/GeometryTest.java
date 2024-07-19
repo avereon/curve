@@ -5,6 +5,8 @@ import com.avereon.curve.assertion.VectorAssert;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 
+import static com.avereon.curve.math.Constants.HALF_CIRCLE;
+import static com.avereon.curve.math.Constants.QUARTER_CIRCLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GeometryTest {
@@ -27,12 +29,12 @@ public class GeometryTest {
 
 	@Test
 	void testMidpointWithArc() {
-		VectorAssert.assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 1, 1, 0, 0, Constants.HALF_CIRCLE ) ).isCloseTo( Point.of( 0, 1, 0 ) );
+		VectorAssert.assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 1, 1, 0, 0, HALF_CIRCLE ) ).isCloseTo( Point.of( 0, 1, 0 ) );
 		VectorAssert.assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 1, 1, 0, 0, Constants.QUARTER_CIRCLE ) ).isCloseTo( Point.of( Math.sqrt( 0.5 ), Math.sqrt( 0.5 ), 0 ) );
-		VectorAssert.assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 5, 3, 0, 0, -Constants.HALF_CIRCLE ) ).isCloseTo( Point.of( 0, -3, 0 ) );
+		VectorAssert.assertThat( Geometry.midpoint( Point.of( 0, 0, 0 ), 5, 3, 0, 0, -HALF_CIRCLE ) ).isCloseTo( Point.of( 0, -3, 0 ) );
 
 		double d = 0.5 + 0.5 * Math.sqrt( 0.5 );
-		VectorAssert.assertThat( Geometry.midpoint( Point.of( -0.5, -0.5, 0 ), 1, 0.5, -0.5 * Constants.QUARTER_CIRCLE, 0, -Constants.HALF_CIRCLE ) ).isCloseTo( Point.of( -d, -d, 0 ) );
+		VectorAssert.assertThat( Geometry.midpoint( Point.of( -0.5, -0.5, 0 ), 1, 0.5, -0.5 * Constants.QUARTER_CIRCLE, 0, -HALF_CIRCLE ) ).isCloseTo( Point.of( -d, -d, 0 ) );
 	}
 
 	@Test
@@ -118,7 +120,7 @@ public class GeometryTest {
 		double distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 1 ), 0, -0.5 * Constants.QUARTER_CIRCLE, Constants.QUARTER_CIRCLE );
 		assertThat( distance ).isEqualTo( 1.8477590650225735, Offset.offset( 1E-15 ) );
 
-		distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 3, 0 ), Vector.of( 1, 1 ), 0, 0.75 * Constants.HALF_CIRCLE, Constants.QUARTER_CIRCLE );
+		distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 3, 0 ), Vector.of( 1, 1 ), 0, 0.75 * HALF_CIRCLE, Constants.QUARTER_CIRCLE );
 		assertThat( distance ).isEqualTo( 2.0, Offset.offset( 1E-15 ) );
 	}
 
@@ -127,7 +129,7 @@ public class GeometryTest {
 		double distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 2 ), 0, -0.5 * Constants.QUARTER_CIRCLE, Constants.QUARTER_CIRCLE );
 		assertThat( distance ).isEqualTo( 2.216802553763662, Offset.offset( 1E-15 ) );
 
-		distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 3, 0 ), Vector.of( 1, 2 ), 0, 0.75 * Constants.HALF_CIRCLE, Constants.QUARTER_CIRCLE );
+		distance = Geometry.pointArcDistance( Vector.of( 0, 0 ), Vector.of( 3, 0 ), Vector.of( 1, 2 ), 0, 0.75 * HALF_CIRCLE, Constants.QUARTER_CIRCLE );
 		assertThat( distance ).isEqualTo( 2.0, Offset.offset( 1E-15 ) );
 	}
 
@@ -146,7 +148,7 @@ public class GeometryTest {
 	@Test
 	void testLineLineAngle() {
 		assertThat( Geometry.lineLineAngle( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 0, 1 ), Vector.of( 1, 1 ) ) ).isEqualTo( 0.0 );
-		assertThat( Geometry.lineLineAngle( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 1 ), Vector.of( 0, 1 ) ) ).isEqualTo( Constants.HALF_CIRCLE );
+		assertThat( Geometry.lineLineAngle( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 1, 1 ), Vector.of( 0, 1 ) ) ).isEqualTo( HALF_CIRCLE );
 
 		assertThat( Geometry.lineLineAngle( Vector.of( 0, 0 ), Vector.of( 1, 1 ), Vector.of( 0, 1, -1 ), Vector.of( 1, 0, -1 ) ) ).isEqualTo( Constants.QUARTER_CIRCLE );
 		assertThat( Geometry.lineLineAngle( Vector.of( 0, 0 ), Vector.of( 1, 1 ), Vector.of( 1, 0, -1 ), Vector.of( 0, 1, -1 ) ) ).isEqualTo( Constants.QUARTER_CIRCLE );
@@ -157,12 +159,12 @@ public class GeometryTest {
 		VectorAssert.assertThat( Geometry.ellipsePoint( Point.of( 0, 0 ), Point.of( 2, 1 ), 0, 0 ) ).isCloseTo( Vector.of( 2, 0 ) );
 
 		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, 1 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -2, 0 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, HALF_CIRCLE ) ).isCloseTo( Vector.of( -2, 0 ) );
 		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Constants.THREE_QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, -1 ) );
 		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Constants.FULL_CIRCLE ) ).isCloseTo( Vector.of( 2, 0 ) );
 
 		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, -Constants.QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, -1 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -2, 0 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, -HALF_CIRCLE ) ).isCloseTo( Vector.of( -2, 0 ) );
 		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, -Constants.THREE_QUARTER_CIRCLE ) ).isCloseTo( Vector.of( 0, 1 ) );
 		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, -Constants.FULL_CIRCLE ) ).isCloseTo( Vector.of( 2, 0 ) );
 	}
@@ -171,7 +173,7 @@ public class GeometryTest {
 	void testEllipseAngle() {
 		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( 2, 0 ) ) ).isCloseTo( 0.0, Offset.offset( 1E-15 ) );
 		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( 0, 1 ) ) ).isCloseTo( Constants.QUARTER_CIRCLE, Offset.offset( 1E-15 ) );
-		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( -2, 0 ) ) ).isCloseTo( Constants.HALF_CIRCLE, Offset.offset( 1E-15 ) );
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( -2, 0 ) ) ).isCloseTo( HALF_CIRCLE, Offset.offset( 1E-15 ) );
 		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, 0, Vector.of( 0, -1 ) ) ).isCloseTo( -Constants.QUARTER_CIRCLE, Offset.offset( 1E-15 ) );
 
 		// Test with rotated ellipses
@@ -179,7 +181,7 @@ public class GeometryTest {
 		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, Math.toRadians( 45 ), Vector.of( 2, 0 ) ) ).isCloseTo( -1.1071487177940909, Offset.offset( 1E-15 ) );
 		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, Math.toRadians( 90 ), Vector.of( 2, 0 ) ) ).isCloseTo( -Constants.QUARTER_CIRCLE, Offset.offset( 1E-15 ) );
 		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, Math.toRadians( 135 ), Vector.of( 2, 0 ) ) ).isCloseTo( -2.0344439357957027, Offset.offset( 1E-15 ) );
-		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, Math.toRadians( 180 ), Vector.of( 2, 0 ) ) ).isCloseTo( Constants.HALF_CIRCLE, Offset.offset( 1E-15 ) );
+		assertThat( Geometry.ellipseAngle( Vector.of( 0, 0 ), 2, 1, Math.toRadians( 180 ), Vector.of( 2, 0 ) ) ).isCloseTo( HALF_CIRCLE, Offset.offset( 1E-15 ) );
 	}
 
 	@Test
@@ -191,10 +193,10 @@ public class GeometryTest {
 	@Test
 	void testEllipsePointWithScaleAndRotate() {
 		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), Constants.QUARTER_CIRCLE, 0 ) ).isCloseTo( Vector.of( -5, 4 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), Constants.HALF_CIRCLE, 0 ) ).isCloseTo( Vector.of( -7, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), HALF_CIRCLE, 0 ) ).isCloseTo( Vector.of( -7, 2 ) );
 
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), Constants.HALF_CIRCLE, -Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
-		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), Constants.HALF_CIRCLE, Constants.HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), HALF_CIRCLE, -HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
+		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -5, 2 ), Point.of( 2, 1 ), HALF_CIRCLE, HALF_CIRCLE ) ).isCloseTo( Vector.of( -3, 2 ) );
 	}
 
 	@Test
@@ -589,8 +591,29 @@ public class GeometryTest {
 		assertThat( Geometry.getAngle( Vector.of( 0, -1, 0 ), Vector.of( 1, 0, 0 ) ) ).isEqualTo( Constants.QUARTER_CIRCLE );
 		assertThat( Geometry.getAngle( Vector.of( 0, -1, 0 ), Vector.of( -1, 0, 0 ) ) ).isEqualTo( -Constants.QUARTER_CIRCLE );
 
-		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 1, 1, 0 ) ) ).isEqualTo( -0.5 * Constants.QUARTER_CIRCLE );
-		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( -1, 1, 0 ) ) ).isEqualTo( 0.5 * Constants.QUARTER_CIRCLE );
+		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( 1, 1, 0 ) ) ).isEqualTo( -0.5 * Constants.QUARTER_CIRCLE, Offset.offset( 1e-15 ) );
+		assertThat( Geometry.getAngle( Vector.of( 0, 1, 0 ), Vector.of( -1, 1, 0 ) ) ).isEqualTo( 0.5 * Constants.QUARTER_CIRCLE, Offset.offset( 1e-15 ) );
+	}
+
+	@Test
+	void testGetAngleWithTwoVectorsUsingDoubles() {
+		assertThat( Geometry.getAngle( 0, 0, 0, 0 ) ).isNaN();
+
+		assertThat( Geometry.getAngle( 1, 0, 1, 0 ) ).isEqualTo( 0.0 );
+		assertThat( Geometry.getAngle( 0, 1, 0, 1 ) ).isEqualTo( 0.0 );
+
+		assertThat( Geometry.getAngle( 1, 0, 0, 1 ) ).isEqualTo( Constants.QUARTER_CIRCLE );
+		assertThat( Geometry.getAngle( 1, 0, 0, -1 ) ).isEqualTo( -Constants.QUARTER_CIRCLE );
+		assertThat( Geometry.getAngle( -1, 0, 0, 1 ) ).isEqualTo( -Constants.QUARTER_CIRCLE );
+		assertThat( Geometry.getAngle( -1, 0, 0, -1 ) ).isEqualTo( Constants.QUARTER_CIRCLE );
+
+		assertThat( Geometry.getAngle( 0, 1, 1, 0 ) ).isEqualTo( -Constants.QUARTER_CIRCLE );
+		assertThat( Geometry.getAngle( 0, 1, -1, 0 ) ).isEqualTo( Constants.QUARTER_CIRCLE );
+		assertThat( Geometry.getAngle( 0, -1, 1, 0 ) ).isEqualTo( Constants.QUARTER_CIRCLE );
+		assertThat( Geometry.getAngle( 0, -1, -1, 0 ) ).isEqualTo( -Constants.QUARTER_CIRCLE );
+
+		assertThat( Geometry.getAngle( 0, 1, 1, 1 ) ).isEqualTo( -0.5 * Constants.QUARTER_CIRCLE, Offset.offset( 1e-15 ) );
+		assertThat( Geometry.getAngle( 0, 1, -1, 1 ) ).isEqualTo( 0.5 * Constants.QUARTER_CIRCLE, Offset.offset( 1e-15 ) );
 	}
 
 	@Test
@@ -657,6 +680,63 @@ public class GeometryTest {
 		assertThat( Geometry.pointAngle( Vector.of( 2, -1 ), Vector.of( 3, -2 ), Vector.of( 4, -1 ) ) ).isEqualTo( -Math.PI * 0.5 );
 		assertThat( Geometry.pointAngle( Vector.of( -4, -1 ), Vector.of( -3, 0 ), Vector.of( -2, -1 ) ) ).isEqualTo( Math.PI * 0.5 );
 		assertThat( Geometry.pointAngle( Vector.of( -2, -1 ), Vector.of( -3, 0 ), Vector.of( -4, -1 ) ) ).isEqualTo( -Math.PI * 0.5 );
+	}
+
+	@Test
+	void arcEndpointToCenter() {
+		// given
+		double[] p1, endpointData, centerData;
+
+		// Arc with radius 1, center at (1,0), start at (0,0), end at (2,0) going clockwise
+		p1 = Point.of( 0, 0 );
+		endpointData = new double[]{ 2, 0, 1, 1, 0, 0, 0 };
+		centerData = new double[]{ 1, 0, 1, 1, HALF_CIRCLE, -HALF_CIRCLE };
+		assertThat( Geometry.arcEndpointToCenter( p1, endpointData ) ).isEqualTo( centerData );
+
+		// Arc with radius 1, center at (1,0), start at (0,0), end at (2,0) going counter-clockwise
+		p1 = Point.of( 0, 0 );
+		endpointData = new double[]{ 2, 0, 1, 1, 0, 0, 1 };
+		centerData = new double[]{ 1, 0, 1, 1, HALF_CIRCLE, HALF_CIRCLE };
+		assertThat( Geometry.arcEndpointToCenter( p1, endpointData ) ).isEqualTo( centerData );
+
+		// Arc with radius 1, center at (0,-1), start at (0,-2), end at (0,0) going clockwise
+		p1 = Point.of( 0, -2 );
+		endpointData = new double[]{ 0, 0, 1, 1, 0, 0, 0 };
+		centerData = new double[]{ 0, -1, 1, 1, -QUARTER_CIRCLE, -HALF_CIRCLE };
+		assertThat( Geometry.arcEndpointToCenter( p1, endpointData ) ).isEqualTo( centerData );
+
+		// Arc with radius 1, center at (0,-1), start at (0,-2), end at (0,0) going counter-clockwise
+		p1 = Point.of( 0, -2 );
+		endpointData = new double[]{ 0, 0, 1, 1, 0, 0, 1 };
+		centerData = new double[]{ 0, -1, 1, 1, -QUARTER_CIRCLE, HALF_CIRCLE };
+		assertThat( Geometry.arcEndpointToCenter( p1, endpointData ) ).isEqualTo( centerData );
+	}
+
+	@Test
+	void arcEndpointToCenterWithCircle() {
+		// Sample code:
+		// move( x, y - r );
+		// arc( x, y + r, r, r, 0, 0, 0 );
+		// arc( x, y - r, r, r, 0, 0, 1 );
+		// close();
+
+		// given
+		double x = 0;
+		double y = 0;
+		double r = 0.5;
+		double[] p1, endpointData, centerData;
+
+		// Left side arc
+		p1 = Point.of( x, y - r );
+		endpointData = new double[]{ x, y + r, r, r, 0, 0, 0 };
+		centerData = new double[]{ x, y, r, r, -QUARTER_CIRCLE, -HALF_CIRCLE };
+		assertThat( Geometry.arcEndpointToCenter( p1, endpointData ) ).isEqualTo( centerData );
+
+		// Right side arc
+		p1 = Point.of( x, y + r );
+		endpointData = new double[]{ x, y - r, r, r, 0, 0, 1 };
+		centerData = new double[]{ x, y, 1, 1, QUARTER_CIRCLE, -HALF_CIRCLE };
+		assertThat( Geometry.arcEndpointToCenter( p1, endpointData ) ).isEqualTo( centerData );
 	}
 
 }
