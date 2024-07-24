@@ -503,6 +503,10 @@ public class Geometry {
 		return arcAsPoints( c, r, rotate, start, extent, 2 );
 	}
 
+	public static double[][] arcEndPoints( double cx, double cy, double rx, double ry, double rotate, double start, double extent ) {
+		return arcAsPoints( new double[]{ cx, cy }, new double[]{ rx, ry }, rotate, start, extent, 2 );
+	}
+
 	/**
 	 * Get the start, mid and end points of an arc.
 	 *
