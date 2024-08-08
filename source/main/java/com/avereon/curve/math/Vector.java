@@ -139,6 +139,19 @@ public class Vector extends Point {
 	}
 
 	/**
+	 * Multiply a vector with scalars for the X and Y coordinates.
+	 *
+	 * @param x The vector x coordinate
+	 * @param y The vector y coordinate
+	 * @param scaleX The X scalar value
+	 * @param scaleY The Y scalar value
+	 * @return A new vector that is multiplied by the scalars
+	 */
+	public static double[] scale( double x, double y, double scaleX, double scaleY ) {
+		return of( x * scaleX, y * scaleY, 0 );
+	}
+
+	/**
 	 * Multiply a vector with scalars for each coordinate.
 	 *
 	 * @param v The vector to scale
