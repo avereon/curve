@@ -170,6 +170,18 @@ public class VectorTest {
 	}
 
 	@Test
+	void testScaleByCoordinateSeparated() {
+		VectorAssert.assertThat( Vector.scale( 1, 2, 0, 0 ) ).isCloseTo( new double[]{ 0, 0, 0 } );
+		VectorAssert.assertThat( Vector.scale( 1, 2, -2, -2 ) ).isCloseTo( new double[]{ -2, -4, 0 } );
+		VectorAssert.assertThat( Vector.scale( Double.NaN, 0, 1, 1 ) ).isEqualTo( Vector.UNDEFINED );
+		VectorAssert.assertThat( Vector.scale( 0, 0, Double.NaN, Double.NaN ) ).isEqualTo( Vector.UNDEFINED );
+		VectorAssert.assertThat( Vector.scale( Double.POSITIVE_INFINITY, 1, 1, 1 ) ).isEqualTo( Vector.INFINITY );
+		VectorAssert.assertThat( Vector.scale( 1, 1, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY ) ).isEqualTo( Vector.INFINITY );
+		VectorAssert.assertThat( Vector.scale( Double.NEGATIVE_INFINITY, 1, 1, 1 ) ).isEqualTo( Vector.INFINITY );
+		VectorAssert.assertThat( Vector.scale( 1, 1, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY ) ).isEqualTo( Vector.INFINITY );
+	}
+
+	@Test
 	void testNormalize() {
 		double oneOverRoot2 = 1 / Math.sqrt( 2 );
 		VectorAssert.assertThat( Vector.normalize( Vector.of( 1, 1, 0 ) ) ).isCloseTo( new double[]{ oneOverRoot2, oneOverRoot2, 0 } );
