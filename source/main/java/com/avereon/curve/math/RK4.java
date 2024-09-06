@@ -15,10 +15,15 @@ public class RK4 {
 	 * @return The next value
 	 */
 	public static double next( double t, double y, double dt, BiFunction<Double, Double, Double> dydt ) {
+		// The slope at t
 		double k1 = dt * dydt.apply( t, y );
+		// The slope halfway through the step
 		double k2 = dt * dydt.apply( t + dt / 2, y + dt * k1 / 2 );
+		// The slope halfway through the step, again
 		double k3 = dt * dydt.apply( t + dt / 2, y + dt * k2 / 2 );
+		// The slope at the end of the step
 		double k4 = dt * dydt.apply( t + dt, y + dt * k3 );
+		// The next y is computed
 		return y + (k1 + 4 * k2 + k4) / 6;
 	}
 
@@ -42,10 +47,20 @@ public class RK4 {
 		// The slope at the end of the step
 		double k4 = dt * dydt.apply( t + dt );
 
-		// The next y is computed as:
+		// The next y is computed
 		return y + (k1 + 4 * k2 + k4) / 6;
 	}
 
+	/**
+	 * The Runge-Kutta 4th order method for vectors, optimized for non-partial
+	 * differential equations.
+	 *
+	 * @param t The current time
+	 * @param u The current vector
+	 * @param dt The time step size
+	 * @param didt The derivative functions
+	 * @return The next vector
+	 */
 	@SafeVarargs
 	public static double[] next( double t, double[] u, double dt, final Function<Double, Double>... didt  ) {
 		int size = u.length;
@@ -64,7 +79,7 @@ public class RK4 {
 			// The slope at the end of the step
 			double k4 = dt * didt[i].apply( t + dt );
 
-			// The next y is computed as:
+			// The next y is computed
 			v[i] = u[i] + (k1 + 4 * k2 + k4) / 6;
 		}
 
