@@ -434,25 +434,24 @@ public class Geometry {
 		// If the arc is circular then use the circle formula
 		if( isCircular( r ) ) return r[ 0 ] * Math.abs( extent );
 
-		// FIXME Calc the parametric arc length
-
+		// Calc the elliptic arc length parametrically
+		double next;
+		double error = Double.MAX_VALUE;
+		int segments = Constants.MINIMUM_SEGMENTS;
+		int iteration = 0;
+		int iterationLimit = 20;
 		double[] startPoint = ellipsePoint( c, r, rotate, start );
 		double[] endPoint = ellipsePoint( c, r, rotate, start + extent );
 
 		// Start with just the distance between control points
 		double last = length( startPoint, endPoint );
 
-		double next;
-		double error = Double.MAX_VALUE;
-		int segments = Constants.MINIMUM_SEGMENTS;
-		int iteration = 0;
-		int iterationLimit = 20;
-
+		// Refine the distance until the error is less than the tolerance
 		while( error > tolerance && iteration < iterationLimit ) {
 			double[][] points = arcAsPoints( c, r, rotate, start, extent, segments );
 			next = length( points );
-
 			error = Math.abs( next - last );
+
 			segments *= 2;
 			last = next;
 			iteration++;
