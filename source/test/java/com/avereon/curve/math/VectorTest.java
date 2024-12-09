@@ -146,6 +146,20 @@ public class VectorTest {
 	}
 
 	@Test
+	void testMultiply() {
+		VectorAssert.assertThat( Vector.multiply( Vector.of( 1, 2, 3 ), Vector.of( 1, 2, 3 ) ) ).isCloseTo( new double[]{ 1, 4, 9 } );
+		VectorAssert.assertThat( Vector.multiply( Vector.of( 1, 2, 3 ), Vector.of( 1, 1, 1 ) ) ).isCloseTo( new double[]{ 1, 2, 3 } );
+		VectorAssert.assertThat( Vector.multiply( Vector.of( 1, 2, 3 ), Vector.of( 0, 0, 0 ) ) ).isCloseTo( new double[]{ 0, 0, 0 } );
+	}
+
+	@Test
+	void testDivide() {
+		VectorAssert.assertThat( Vector.divide( Vector.of( 1, 2, 3 ), Vector.of( 1, 2, 3 ) ) ).isCloseTo( new double[]{ 1, 1, 1 } );
+		VectorAssert.assertThat( Vector.divide( Vector.of( 1, 2, 3 ), Vector.of( 1, 1, 1 ) ) ).isCloseTo( new double[]{ 1, 2, 3 } );
+		VectorAssert.assertThat( Vector.divide( Vector.of( 1, 2, 3 ), Vector.of( 0, 0, 0 ) ) ).isCloseTo( new double[]{ Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY } );
+	}
+
+	@Test
 	void testScale() {
 		VectorAssert.assertThat( Vector.scale( Vector.of( 1, 2, 3 ), 0 ) ).isCloseTo( new double[]{ 0, 0, 0 } );
 		VectorAssert.assertThat( Vector.scale( Vector.of( 1, 2, 3 ), -2 ) ).isCloseTo( new double[]{ -2, -4, -6 } );

@@ -116,6 +116,28 @@ public class Vector extends Point {
 	}
 
 	/**
+	 * Multiply two vectors.
+	 *
+	 * @param a The first vector
+	 * @param b The second vector
+	 * @return A new vector that is the product of the two vectors
+	 */
+	public static double[] multiply( double[] a, double[] b ) {
+		return of( a[ 0 ] * b[ 0 ], a[ 1 ] * b[ 1 ], a[ 2 ] * b[ 2 ] );
+	}
+
+	/**
+	 * Divide two vectors.
+	 *
+	 * @param a The first vector
+	 * @param b The second vector
+	 * @return A new vector that is the quotient of the two vectors
+	 */
+	public static double[] divide( double[] a, double[] b ) {
+		return of( a[ 0 ] / b[ 0 ], a[ 1 ] / b[ 1 ], a[ 2 ] / b[ 2 ] );
+	}
+
+	/**
 	 * Multiply a vector with a scalar.
 	 *
 	 * @param v The vector to scale
@@ -203,7 +225,7 @@ public class Vector extends Point {
 	public static double[] rotate( double[] o, double[] v, double a ) {
 		double[] result;
 		result = Vector.subtract( v, o );
-		result = Geometry.polarToCartesian( Point.of( Vector.magnitude( result ), Geometry.getAngle( result ) + a ) );
+		result = rotate( result, a );
 		result = Vector.add( result, o );
 		return result;
 	}

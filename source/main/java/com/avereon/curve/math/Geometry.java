@@ -410,6 +410,21 @@ public class Geometry {
 		return clampAngle( Math.atan2( p[ 1 ], p[ 0 ] ) );
 	}
 
+	public static double[][] ellipseBounds( double[] origin, double[] radius, double rotate ) {
+		double[][] uv = ellipseUV( radius, rotate );
+		double[] usqr = Vector.multiply( uv[ 0 ], uv[ 0 ] );
+		double[] vsqr = Vector.multiply( uv[ 1 ], uv[ 1 ] );
+		double[] esqr = Vector.add( usqr, vsqr );
+		double[] e = Point.of( Math.sqrt( esqr[ 0 ] ), Math.sqrt( esqr[ 1 ] ) );
+		return new double[][]{ Vector.subtract( origin, e ), Vector.add( origin, e ) };
+	}
+
+	private static double[][] ellipseUV( double[] radius, double rotate ) {
+		double[] u = Point.of( Vector.rotate( Point.of( 0, radius[ 1 ] ), rotate ) );
+		double[] v = Point.of( Vector.rotate( Point.of( radius[ 0 ], 0 ), rotate ) );
+		return new double[][]{ u, v };
+	}
+
 	/**
 	 * Compute the polynomial coefficients for an ellipse.
 	 *

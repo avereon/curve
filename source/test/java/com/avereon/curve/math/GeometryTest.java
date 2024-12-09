@@ -4,6 +4,11 @@ import com.avereon.curve.assertion.VectorArrayAssert;
 import com.avereon.curve.assertion.VectorAssert;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static com.avereon.curve.math.Constants.HALF_CIRCLE;
 import static com.avereon.curve.math.Constants.QUARTER_CIRCLE;
@@ -206,6 +211,20 @@ public class GeometryTest {
 		VectorAssert.assertThat( Geometry.ellipsePoint( Vector.of( -3, 3 ), Point.of( 2, 1 ), Constants.QUARTER_CIRCLE, -Math.toRadians( 45 ) ) ).isCloseTo( Vector.of( -3 + n, 3 + 2 * n ) );
 	}
 
+	@ParameterizedTest
+	@MethodSource( "ellipseBoundsArguments" )
+	void testEllipseBounds( double[] origin, double[] radius, double rotation, double[] min, double[] max ) {
+		VectorArrayAssert.assertThat( Geometry.ellipseBounds( origin, radius, rotation ) ).areCloseTo( min, max );
+	}
+
+	private static Stream<Arguments> ellipseBoundsArguments() {
+		return Stream.of(
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Vector.of( -2, -1 ), Vector.of( 2, 1 ) ),
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), QUARTER_CIRCLE, Vector.of( -1, -2 ), Vector.of( 1, 2 ) ),
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0.5* QUARTER_CIRCLE, Vector.of( -1.5811388300841898, -1.5811388300841898 ), Vector.of( 1.5811388300841898, 1.5811388300841898 ) )
+		);
+	}
+
 	@Test
 	void testArcLength() {
 		double q = Constants.QUARTER_CIRCLE;
@@ -272,11 +291,13 @@ public class GeometryTest {
 	@Test
 	void testCurveParametricValueNear() {
 		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 0, 1 ) ) ).isCloseTo( 0.0, Offset.offset( 1e-15 ) );
-		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 0.5, 2 ) ) ).isCloseTo( 0.2019641810083393,
+		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 0.5, 2 ) ) ).isCloseTo(
+			0.2019641810083393,
 			Offset.offset( 1e-15 )
 		);
 		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1, 1 ) ) ).isCloseTo( 0.5, Offset.offset( 1e-15 ) );
-		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1.5, 0 ) ) ).isCloseTo( 0.7980358189916608,
+		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 1.5, 0 ) ) ).isCloseTo(
+			0.7980358189916608,
 			Offset.offset( 1e-15 )
 		);
 		assertThat( Geometry.curveParametricValueNear( Vector.of( 0, 1 ), Vector.of( 1, 2 ), Vector.of( 1, 0 ), Vector.of( 2, 1 ), Vector.of( 2, 1 ) ) ).isCloseTo( 1.0, Offset.offset( 1e-15 ) );
