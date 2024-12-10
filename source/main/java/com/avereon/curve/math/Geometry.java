@@ -474,19 +474,19 @@ public class Geometry {
 		// 1. 1.0 - 0.05*2.0 = 0.9
 		// 2. The inverse of 5.0 is 0.2, maybe this can help?
 
-		// Since we know the bounds, we can calculate the points on the bounding box
-		//x = ±√(a^2 * (1 - y^2/b^2))
-		double y2 = b[ 0 ][ 1 ] * b[ 0 ][ 1 ];
-		double b2 = radii[ 1 ] * radii[ 1 ];
-		double n = radii[ 0 ] * radii[ 0 ] * (1 - ((b[ 0 ][ 1 ] * b[ 0 ][ 1 ]) / (radii[ 1 ] * radii[ 1 ])));
-		System.out.println( "y2=" + y2 + " b2=" + b2 + " n=" + n );
-		double minX = -Math.sqrt( n );
-		double maxX = Math.sqrt( radii[ 0 ] * radii[ 0 ] * (1 - b[ 1 ][ 1 ] * b[ 1 ][ 1 ] / (radii[ 1 ] * radii[ 1 ])) );
-
-		//y = ±√(b^2 * (1 - x^2/a^2))
-		double minY = -Math.sqrt( radii[ 1 ] * radii[ 1 ] * (1 - b[ 0 ][ 0 ] * b[ 0 ][ 0 ] / (radii[ 0 ] * radii[ 0 ])) );
-		double maxY = Math.sqrt( radii[ 1 ] * radii[ 1 ] * (1 - b[ 1 ][ 0 ] * b[ 1 ][ 0 ] / (radii[ 0 ] * radii[ 0 ])) );
-		System.out.println( "minX=" + minX + " minY=" + minY + " maxX=" + maxX + " maxY=" + maxY );
+//		// Since we know the bounds, we can calculate the points on the bounding box
+//		//x = ±√(a^2 * (1 - y^2/b^2))
+//		double y2 = b[ 0 ][ 1 ] * b[ 0 ][ 1 ];
+//		double b2 = radii[ 1 ] * radii[ 1 ];
+//		double n = radii[ 0 ] * radii[ 0 ] * (1 - ((b[ 0 ][ 1 ] * b[ 0 ][ 1 ]) / (radii[ 1 ] * radii[ 1 ])));
+//		System.out.println( "y2=" + y2 + " b2=" + b2 + " n=" + n );
+//		double minX = -Math.sqrt( n );
+//		double maxX = Math.sqrt( radii[ 0 ] * radii[ 0 ] * (1 - b[ 1 ][ 1 ] * b[ 1 ][ 1 ] / (radii[ 1 ] * radii[ 1 ])) );
+//
+//		//y = ±√(b^2 * (1 - x^2/a^2))
+//		double minY = -Math.sqrt( radii[ 1 ] * radii[ 1 ] * (1 - b[ 0 ][ 0 ] * b[ 0 ][ 0 ] / (radii[ 0 ] * radii[ 0 ])) );
+//		double maxY = Math.sqrt( radii[ 1 ] * radii[ 1 ] * (1 - b[ 1 ][ 0 ] * b[ 1 ][ 0 ] / (radii[ 0 ] * radii[ 0 ])) );
+//		System.out.println( "minX=" + minX + " minY=" + minY + " maxX=" + maxX + " maxY=" + maxY );
 
 		double[][] bounds = new double[][]{ points[ 0 ], points[ 1 ] };
 		//		for( double[] point : points ) {
