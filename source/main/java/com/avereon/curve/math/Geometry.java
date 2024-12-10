@@ -10,7 +10,7 @@ import java.util.Map;
 import static com.avereon.curve.math.Constants.FULL_CIRCLE;
 
 /**
- * A bezier curve reference: <a href="https://pomax.github.io/bezierinfo">https://pomax.github.io/bezierinfo</a>
+ * A Bézier curve reference: <a href="https://pomax.github.io/bezierinfo">https://pomax.github.io/bezierinfo</a>
  */
 public class Geometry {
 
@@ -252,8 +252,8 @@ public class Geometry {
 	}
 
 	/**
-	 * Get the distance between a line defined by parameter a and parameter b and the point p. If the point is outside of the line segment then Double.NaN is
-	 * returned.
+	 * Get the distance between a line defined by parameter a and parameter b and the point p.
+	 * If the point is beyond the line segment then Double.NaN is returned.
 	 *
 	 * @param p The point to which to get the distance
 	 * @param a The first point on the line
@@ -329,7 +329,8 @@ public class Geometry {
 	}
 
 	/**
-	 * Get the angle in radians between two lines defined by the points a-b and c-d. The result will be in the range 0-Math.PI (inclusive).
+	 * Get the angle in radians between two lines defined by the points a-b and c-d.
+	 * The result will be in the range 0-Math.PI (inclusive).
 	 *
 	 * @param a First point on first line
 	 * @param b Second point on first line
@@ -410,19 +411,89 @@ public class Geometry {
 		return clampAngle( Math.atan2( p[ 1 ], p[ 0 ] ) );
 	}
 
-	public static double[][] ellipseBounds( double[] origin, double[] radius, double rotate ) {
-		double[][] uv = ellipseUV( radius, rotate );
-		double[] usqr = Vector.multiply( uv[ 0 ], uv[ 0 ] );
-		double[] vsqr = Vector.multiply( uv[ 1 ], uv[ 1 ] );
-		double[] esqr = Vector.add( usqr, vsqr );
-		double[] e = Point.of( Math.sqrt( esqr[ 0 ] ), Math.sqrt( esqr[ 1 ] ) );
+	/**
+	 * Compute the bounds of an ellipse.
+	 *
+	 * @param origin The ellipse origin
+	 * @param radii The ellipse radii
+	 * @param rotate The ellipse rotation
+	 * @return The bounds of the ellipse as two points
+	 */
+	public static double[][] ellipseBounds( double[] origin, double[] radii, double rotate ) {
+		double[] e = ellipseE( ellipseUV( radii, rotate ) );
 		return new double[][]{ Vector.subtract( origin, e ), Vector.add( origin, e ) };
 	}
 
-	private static double[][] ellipseUV( double[] radius, double rotate ) {
-		double[] u = Point.of( Vector.rotate( Point.of( 0, radius[ 1 ] ), rotate ) );
-		double[] v = Point.of( Vector.rotate( Point.of( radius[ 0 ], 0 ), rotate ) );
+	private static double[][] ellipseUV( double[] radii, double angle ) {
+		double sin = Math.sin( angle );
+		double cos = Math.cos( angle );
+		double[] u = Point.of( cos * radii[ 0 ], sin * radii[ 0 ] );
+		double[] v = Point.of( sin * radii[ 1 ], cos * radii[ 1 ] );
 		return new double[][]{ u, v };
+	}
+
+	private static double[] ellipseE( double[][] uv ) {
+		double[] usqr = Vector.multiply( uv[ 0 ], uv[ 0 ] );
+		double[] vsqr = Vector.multiply( uv[ 1 ], uv[ 1 ] );
+		double[] esqr = Vector.add( usqr, vsqr );
+		System.out.println( "esqr=" + Point.toString( esqr ) );
+		return Point.of( Math.sqrt( esqr[ 0 ] ), Math.sqrt( esqr[ 1 ] ) );
+	}
+
+	//Largo: 2.0
+	//Origen: Point3D [x = 0.9486832980505135, y = 1.5811388300841893, z = 0.0]
+	//Punto: Point3D [x = 0.9486832980505135, y = -0.4188611699158107, z = 0.0]
+
+	//	private static double[] ellipseF( double[][] uv ) {
+	//		double[] usqr = Vector.multiply( uv[ 0 ], uv[ 0 ] ); // (4,0)
+	//		double[] vsqr = Vector.multiply( uv[ 1 ], uv[ 1 ] ); // (0,1)
+	//		double[] esqr = Vector.add( usqr, vsqr );
+	//		System.out.println( "esqr=" + Point.toString( esqr ) );
+	//		return Point.of( Math.sqrt( esqr[ 0 ] ), Math.sqrt( esqr[ 1 ] ) );
+	//	}
+
+	/**
+	 * Compute the bounds of an elliptic arc.
+	 *
+	 * @param origin The arc origin
+	 * @param radii The arc radii
+	 * @param rotate The arc rotation
+	 * @param start The arc start angle
+	 * @param extent The arc extent angle
+	 * @return The bounds of the arc as two points
+	 */
+	public static double[][] arcBounds( double[] origin, double[] radii, double rotate, double start, double extent ) {
+		double[][] points = arcEndPoints( origin, radii, rotate, start, extent );
+		double[][] b = ellipseBounds( origin, radii, rotate );
+
+		// I'm looking for the sqrt of 0.9
+		// So, how do I get 0.9 from 2.0 and 1.0 in the first place?
+		// The bounds are the sqrt of 5.0 which is the sum of 2^2 and 1^2
+
+		// Options
+		// 1. 1.0 - 0.05*2.0 = 0.9
+		// 2. The inverse of 5.0 is 0.2, maybe this can help?
+
+		// Since we know the bounds, we can calculate the points on the bounding box
+		//x = ±√(a^2 * (1 - y^2/b^2))
+		double y2 = b[ 0 ][ 1 ] * b[ 0 ][ 1 ];
+		double b2 = radii[ 1 ] * radii[ 1 ];
+		double n = radii[ 0 ] * radii[ 0 ] * (1 - ((b[ 0 ][ 1 ] * b[ 0 ][ 1 ]) / (radii[ 1 ] * radii[ 1 ])));
+		System.out.println( "y2=" + y2 + " b2=" + b2 + " n=" + n );
+		double minX = -Math.sqrt( n );
+		double maxX = Math.sqrt( radii[ 0 ] * radii[ 0 ] * (1 - b[ 1 ][ 1 ] * b[ 1 ][ 1 ] / (radii[ 1 ] * radii[ 1 ])) );
+
+		//y = ±√(b^2 * (1 - x^2/a^2))
+		double minY = -Math.sqrt( radii[ 1 ] * radii[ 1 ] * (1 - b[ 0 ][ 0 ] * b[ 0 ][ 0 ] / (radii[ 0 ] * radii[ 0 ])) );
+		double maxY = Math.sqrt( radii[ 1 ] * radii[ 1 ] * (1 - b[ 1 ][ 0 ] * b[ 1 ][ 0 ] / (radii[ 0 ] * radii[ 0 ])) );
+		System.out.println( "minX=" + minX + " minY=" + minY + " maxX=" + maxX + " maxY=" + maxY );
+
+		double[][] bounds = new double[][]{ points[ 0 ], points[ 1 ] };
+		//		for( double[] point : points ) {
+		//			bounds[ 0 ] = Vector.min( bounds[ 0 ], point );
+		//			bounds[ 1 ] = Vector.max( bounds[ 1 ], point );
+		//		}
+		return bounds;
 	}
 
 	/**
@@ -437,8 +508,16 @@ public class Geometry {
 		return new double[]{ ry * ry, 0, rx * rx, -2 * ry * ry * c[ 0 ], -2 * rx * rx * c[ 1 ], ry * ry * c[ 0 ] * c[ 0 ] + rx * rx * c[ 1 ] * c[ 1 ] - rx * rx * ry * ry };
 	}
 
+	/**
+	 * Determine if an ellipse is circular by comparing the two radii. If the
+	 * radii are the same size according to {@link #areSameSize(double, double)}
+	 * then the ellipse is circular.
+	 *
+	 * @param radii The ellipse radii
+	 * @return True if the ellipse is circular, false otherwise
+	 */
 	public static boolean isCircular( double[] radii ) {
-		return Math.abs( radii[ 1 ] - radii[ 0 ] ) < Constants.RESOLUTION_LENGTH;
+		return areSameSize( radii[ 0 ], radii[ 1 ] );
 	}
 
 	public static double arcLength( double[] c, double[] r, double rotate, double start, double extent ) {
@@ -643,7 +722,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Compute the point on a cubic bezier curve for parametric value. This method
+	 * Compute the point on a cubic Bézier curve for parametric value. This method
 	 * uses the linear interpolation method to compute the curve point. It is
 	 * generally more efficient than the polynomial method for a single point.
 	 *
@@ -747,7 +826,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Subdivide a cubic bezier curve. The parameters t is expected to be in the
+	 * Subdivide a cubic Bézier curve. The parameters t is expected to be in the
 	 * range 0.0 to 1.0 but is not range checked for performance reasons.
 	 *
 	 * @param p1 Control point a
@@ -755,7 +834,7 @@ public class Geometry {
 	 * @param p3 Control point c
 	 * @param p4 Control point d
 	 * @param t The parametric location to divide the curve
-	 * @return Two cubic bezier curves (an array of two arrays of four points each)
+	 * @return Two cubic Bézier curves (an array of two arrays of four points each)
 	 */
 	public static double[][][] curveSubdivide( double[] p1, double[] p2, double[] p3, double[] p4, double t ) {
 		double[] p5 = Vector.lerp( p1, p2, t );
@@ -768,7 +847,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Get a cubic bezier curve as a set of interpolated points.
+	 * Get a cubic Bézier curve as a set of interpolated points.
 	 *
 	 * @param p1 Control point a
 	 * @param p2 Control point b
@@ -795,7 +874,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Get a quadratic bezier curve as a set of interpolated points.
+	 * Get a quadratic Bézier curve as a set of interpolated points.
 	 *
 	 * @param p1 Control point a
 	 * @param p2 Control point b
@@ -807,7 +886,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Compute the arc length of a quadratic bezier curve.
+	 * Compute the arc length of a quadratic Bézier curve.
 	 *
 	 * @param p1 Control point a
 	 * @param p2 Control point b
@@ -818,12 +897,17 @@ public class Geometry {
 		return cubicArcLength( p1, p2, p2, p3, tolerance );
 	}
 
+	public static double[][] quadBounds(double[] a, double[] b, double[] c) {
+		// Some help: https://iquilezles.org/articles/
+		return null;
+	}
+
 	public static double cubicArcLength( double[] p1, double[] p2, double[] p3, double[] p4 ) {
 		return cubicArcLength( p1, p2, p3, p4, Constants.RESOLUTION_LENGTH );
 	}
 
 	/**
-	 * Compute the arc length of a cubic bezier curve.
+	 * Compute the arc length of a cubic Bézier curve.
 	 *
 	 * @param p1 Control point a
 	 * @param p2 Control point b
@@ -855,7 +939,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Compute the x/y coefficients of a cubic bezier curve.
+	 * Compute the x/y coefficients of a cubic Bézier curve.
 	 * <pre>
 	 * c[0] = coefficients for t^3
 	 * c[1] = coefficients for t^2
@@ -898,7 +982,7 @@ public class Geometry {
 
 	/**
 	 * Convert a list of points into a natural cubic spline curve as a list of
-	 * cubic bezier curve segments.
+	 * cubic Bézier curve segments.
 	 *
 	 * @param points The list of 2D points to interpolate
 	 * @return The list of cubic curve segments
@@ -936,6 +1020,11 @@ public class Geometry {
 		}
 
 		return curves;
+	}
+
+	public static double[][] cubicBounds( double[] a, double[] b, double[] c, double[] d ) {
+		// Some help: https://iquilezles.org/articles/
+		return null;
 	}
 
 	/**
@@ -1097,7 +1186,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Determine if two vectors can be considered anti-parallel by checking if the angle between the two vectors, with one reversed, is smaller than
+	 * Determine if two vectors can be considered antiparallel by checking if the angle between the two vectors, with one reversed, is smaller than
 	 * ANGLE_TOLERANCE.
 	 *
 	 * @param vector1 The first vector

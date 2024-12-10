@@ -220,8 +220,22 @@ public class GeometryTest {
 	private static Stream<Arguments> ellipseBoundsArguments() {
 		return Stream.of(
 			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Vector.of( -2, -1 ), Vector.of( 2, 1 ) ),
-			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), QUARTER_CIRCLE, Vector.of( -1, -2 ), Vector.of( 1, 2 ) ),
-			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0.5* QUARTER_CIRCLE, Vector.of( -1.5811388300841898, -1.5811388300841898 ), Vector.of( 1.5811388300841898, 1.5811388300841898 ) )
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0.5 * QUARTER_CIRCLE, Vector.of( -1.5811388300841898, -1.5811388300841898 ), Vector.of( 1.5811388300841898, 1.5811388300841898 ) ),
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), QUARTER_CIRCLE, Vector.of( -1, -2 ), Vector.of( 1, 2 ) )
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource( "arcBoundsArguments" )
+	void testArcBounds( double[] origin, double[] radius, double rotation, double[] min, double[] max ) {
+		VectorArrayAssert.assertThat( Geometry.arcBounds( origin, radius, rotation, 0, 180 ) ).areCloseTo( min, max );
+	}
+
+	private static Stream<Arguments> arcBoundsArguments() {
+		return Stream.of(
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, Vector.of( -2, -1 ), Vector.of( 2, 1 ) ),
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0.5 * QUARTER_CIRCLE, Vector.of( -1.5811388300841898, -1.5811388300841898 ), Vector.of( 1.5811388300841898, 1.5811388300841898 ) ),
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), QUARTER_CIRCLE, Vector.of( -1, -2 ), Vector.of( 1, 2 ) )
 		);
 	}
 
