@@ -103,6 +103,27 @@ public class Geometry {
 	}
 
 	/**
+	 * Determine the bounds of a set of points.
+	 *
+	 * @param points The set of points
+	 * @return The bounds of the points
+	 */
+	public static double[][] bounds( double[]... points ) {
+		if( points.length == 0 ) return new double[][]{ Point.ZERO, Point.ZERO };
+		if( points.length == 1 ) return new double[][]{ points[ 0 ], points[ 0 ] };
+		double[] min = new double[] { points[0][0], points[0][1], points[0][2] };
+		double[] max = new double[] { points[0][0], points[0][1], points[0][2] };
+		for( int index = 1; index < points.length; index++ ) {
+			double[] point = points[ index ];
+			min[ 0 ] = Math.min( min[ 0 ], point[ 0 ] );
+			min[ 1 ] = Math.min( min[ 1 ], point[ 1 ] );
+			max[ 0 ] = Math.max( max[ 0 ], point[ 0 ] );
+			max[ 1 ] = Math.max( max[ 1 ], point[ 1 ] );
+		}
+		return new double[][]{ min, max };
+	}
+
+	/**
 	 * Get the angle between the x-axis and the point with the vertex at the origin.
 	 *
 	 * @param point The point used to measure the angle
@@ -444,13 +465,24 @@ public class Geometry {
 	//Origen: Point3D [x = 0.9486832980505135, y = 1.5811388300841893, z = 0.0]
 	//Punto: Point3D [x = 0.9486832980505135, y = -0.4188611699158107, z = 0.0]
 
-	//	private static double[] ellipseF( double[][] uv ) {
-	//		double[] usqr = Vector.multiply( uv[ 0 ], uv[ 0 ] ); // (4,0)
-	//		double[] vsqr = Vector.multiply( uv[ 1 ], uv[ 1 ] ); // (0,1)
-	//		double[] esqr = Vector.add( usqr, vsqr );
-	//		System.out.println( "esqr=" + Point.toString( esqr ) );
-	//		return Point.of( Math.sqrt( esqr[ 0 ] ), Math.sqrt( esqr[ 1 ] ) );
-	//	}
+	private static double[] ellipseF( double[] radii, double angle ) {
+		double n = (radii[ 0 ] * radii[ 0 ] + radii[ 1 ] * radii[ 1 ]);
+		double d = (radii[ 1 ] * radii[ 1 ] - radii[ 0 ] * radii[ 0 ]);
+		double m = (d * d) / n;
+		System.out.println( "n=" + n + " d=" + d + " m=" + m );
+
+		// NOTE Eh, this sort of works, but doesn't always
+
+		// Now split m according to the rotation
+		double e = angle / Constants.QUARTER_CIRCLE;
+		double ei = 1 - e;
+		System.out.println( "e=" + e + " ei=" + ei );
+
+		double a = m * e;
+		double b = m * ei;
+
+		return Point.of( Math.sqrt( a ), Math.sqrt( b ) );
+	}
 
 	/**
 	 * Compute the bounds of an elliptic arc.
@@ -466,34 +498,9 @@ public class Geometry {
 		double[][] points = arcEndPoints( origin, radii, rotate, start, extent );
 		double[][] b = ellipseBounds( origin, radii, rotate );
 
-		// I'm looking for the sqrt of 0.9
-		// So, how do I get 0.9 from 2.0 and 1.0 in the first place?
-		// The bounds are the sqrt of 5.0 which is the sum of 2^2 and 1^2
 
-		// Options
-		// 1. 1.0 - 0.05*2.0 = 0.9
-		// 2. The inverse of 5.0 is 0.2, maybe this can help?
 
-//		// Since we know the bounds, we can calculate the points on the bounding box
-//		//x = ±√(a^2 * (1 - y^2/b^2))
-//		double y2 = b[ 0 ][ 1 ] * b[ 0 ][ 1 ];
-//		double b2 = radii[ 1 ] * radii[ 1 ];
-//		double n = radii[ 0 ] * radii[ 0 ] * (1 - ((b[ 0 ][ 1 ] * b[ 0 ][ 1 ]) / (radii[ 1 ] * radii[ 1 ])));
-//		System.out.println( "y2=" + y2 + " b2=" + b2 + " n=" + n );
-//		double minX = -Math.sqrt( n );
-//		double maxX = Math.sqrt( radii[ 0 ] * radii[ 0 ] * (1 - b[ 1 ][ 1 ] * b[ 1 ][ 1 ] / (radii[ 1 ] * radii[ 1 ])) );
-//
-//		//y = ±√(b^2 * (1 - x^2/a^2))
-//		double minY = -Math.sqrt( radii[ 1 ] * radii[ 1 ] * (1 - b[ 0 ][ 0 ] * b[ 0 ][ 0 ] / (radii[ 0 ] * radii[ 0 ])) );
-//		double maxY = Math.sqrt( radii[ 1 ] * radii[ 1 ] * (1 - b[ 1 ][ 0 ] * b[ 1 ][ 0 ] / (radii[ 0 ] * radii[ 0 ])) );
-//		System.out.println( "minX=" + minX + " minY=" + minY + " maxX=" + maxX + " maxY=" + maxY );
-
-		double[][] bounds = new double[][]{ points[ 0 ], points[ 1 ] };
-		//		for( double[] point : points ) {
-		//			bounds[ 0 ] = Vector.min( bounds[ 0 ], point );
-		//			bounds[ 1 ] = Vector.max( bounds[ 1 ], point );
-		//		}
-		return bounds;
+		return b;
 	}
 
 	/**
@@ -897,7 +904,7 @@ public class Geometry {
 		return cubicArcLength( p1, p2, p2, p3, tolerance );
 	}
 
-	public static double[][] quadBounds(double[] a, double[] b, double[] c) {
+	public static double[][] quadBounds( double[] a, double[] b, double[] c ) {
 		// Some help: https://iquilezles.org/articles/
 		return null;
 	}

@@ -88,6 +88,16 @@ public class GeometryTest {
 	}
 
 	@Test
+	void testBounds() {
+		VectorArrayAssert.assertThat( Geometry.bounds( Point.of( 0, 0 ) ) ).areCloseTo( Vector.of( 0, 0 ), Vector.of( 0, 0 ) );
+
+		VectorArrayAssert.assertThat( Geometry.bounds( Point.of( 0, 0 ), Point.of( 1, 1 ) ) ).areCloseTo( Vector.of( 0, 0 ), Vector.of( 1, 1 ) );
+		VectorArrayAssert.assertThat( Geometry.bounds( Point.of( 1, 1 ), Point.of( 0, 0 ) ) ).areCloseTo( Vector.of( 0, 0 ), Vector.of( 1, 1 ) );
+		VectorArrayAssert.assertThat( Geometry.bounds( Point.of( 0, 1 ), Point.of( 1, 0 ) ) ).areCloseTo( Vector.of( 0, 0 ), Vector.of( 1, 1 ) );
+		VectorArrayAssert.assertThat( Geometry.bounds( Point.of( 1, 0 ), Point.of( 0, 1 ) ) ).areCloseTo( Vector.of( 0, 0 ), Vector.of( 1, 1 ) );
+	}
+
+	@Test
 	void testPointLineDistance() {
 		assertThat( Geometry.linePointDistance( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( -0.5, 1.0 ) ) ).isEqualTo( 1.0 );
 		assertThat( Geometry.linePointDistance( Vector.of( 0, 0 ), Vector.of( 1, 0 ), Vector.of( 0.0, 1.0 ) ) ).isEqualTo( 1.0 );
