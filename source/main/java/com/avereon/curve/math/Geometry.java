@@ -498,7 +498,7 @@ public class Geometry {
 		double[][] points = arcEndPoints( origin, radii, rotate, start, extent );
 		double[][] b = ellipseBounds( origin, radii, rotate );
 
-
+		// NEXT Implement Geometry.arcBounds()
 
 		return b;
 	}
