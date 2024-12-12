@@ -111,8 +111,8 @@ public class Geometry {
 	public static double[][] bounds( double[]... points ) {
 		if( points.length == 0 ) return new double[][]{ Point.ZERO, Point.ZERO };
 		if( points.length == 1 ) return new double[][]{ points[ 0 ], points[ 0 ] };
-		double[] min = new double[] { points[0][0], points[0][1], points[0][2] };
-		double[] max = new double[] { points[0][0], points[0][1], points[0][2] };
+		double[] min = new double[]{ points[ 0 ][ 0 ], points[ 0 ][ 1 ], points[ 0 ][ 2 ] };
+		double[] max = new double[]{ points[ 0 ][ 0 ], points[ 0 ][ 1 ], points[ 0 ][ 2 ] };
 		for( int index = 1; index < points.length; index++ ) {
 			double[] point = points[ index ];
 			min[ 0 ] = Math.min( min[ 0 ], point[ 0 ] );
@@ -445,6 +445,14 @@ public class Geometry {
 		return new double[][]{ Vector.subtract( origin, e ), Vector.add( origin, e ) };
 	}
 
+	private static double[] ellipseE( double[][] uv ) {
+		double[] usqr = Vector.multiply( uv[ 0 ], uv[ 0 ] );
+		double[] vsqr = Vector.multiply( uv[ 1 ], uv[ 1 ] );
+		double[] esqr = Vector.add( usqr, vsqr );
+		//System.out.println( "esqr=" + Point.toString( esqr ) );
+		return Point.of( Math.sqrt( esqr[ 0 ] ), Math.sqrt( esqr[ 1 ] ) );
+	}
+
 	private static double[][] ellipseUV( double[] radii, double angle ) {
 		double sin = Math.sin( angle );
 		double cos = Math.cos( angle );
@@ -453,17 +461,40 @@ public class Geometry {
 		return new double[][]{ u, v };
 	}
 
-	private static double[] ellipseE( double[][] uv ) {
-		double[] usqr = Vector.multiply( uv[ 0 ], uv[ 0 ] );
-		double[] vsqr = Vector.multiply( uv[ 1 ], uv[ 1 ] );
-		double[] esqr = Vector.add( usqr, vsqr );
-		System.out.println( "esqr=" + Point.toString( esqr ) );
-		return Point.of( Math.sqrt( esqr[ 0 ] ), Math.sqrt( esqr[ 1 ] ) );
+	private static void b( double[] radii, double rotate ) {
+		double a = radii[ 0 ];
+		double b = radii[ 1 ];
+		double sin = Math.sin( rotate );
+		double cos = Math.cos( rotate );
+
+		double A = 1 / a;
+		double B = 1 / b;
+		double C = 1 / a;
+		double D = -1 / b;
+
+		double k = k( A, B, C, D, 2 );
+		double l = l( A, B, C, D, 2 );
+
+		System.out.println( "A=" + A + " B=" + B + " C=" + C + " D=" + D + " k=" + k + " l=" + l );
+
+		//System.out.println( "k=" + k + " l=" + l );
 	}
 
-	//Largo: 2.0
-	//Origen: Point3D [x = 0.9486832980505135, y = 1.5811388300841893, z = 0.0]
-	//Punto: Point3D [x = 0.9486832980505135, y = -0.4188611699158107, z = 0.0]
+	/*
+	 * The x-offset of the ellipse bounds
+	 */
+	private static double k( double a, double b, double c, double d, double r ) {
+		double v = (r * Math.sqrt( b * b + d * d )) / Math.abs( a * d - b * c );
+		return Math.sqrt( 0.5 * v * v );
+	}
+
+	/*
+	 * The y-offset of the ellipse bounds
+	 */
+	private static double l( double a, double b, double c, double d, double r ) {
+		double v = (r * Math.sqrt( a * a + c * c )) / Math.abs( a * d - b * c );
+		return Math.sqrt( 0.5 * v * v );
+	}
 
 	private static double[] ellipseF( double[] radii, double angle ) {
 		double n = (radii[ 0 ] * radii[ 0 ] + radii[ 1 ] * radii[ 1 ]);
@@ -499,6 +530,7 @@ public class Geometry {
 		double[][] b = ellipseBounds( origin, radii, rotate );
 
 		// NEXT Implement Geometry.arcBounds()
+		b( radii, rotate );
 
 		return b;
 	}

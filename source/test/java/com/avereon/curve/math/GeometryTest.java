@@ -243,9 +243,9 @@ public class GeometryTest {
 
 	private static Stream<Arguments> arcBoundsArguments() {
 		return Stream.of(
-			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, 0, 180, Vector.of( -2, -1 ), Vector.of( 2, 1 ) ),
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 1, 1 ), 0, 0, 180, Vector.of( -2, -1 ), Vector.of( 2, 1 ) ),
 			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0.5 * QUARTER_CIRCLE, 0, 180, Vector.of( -1.5811388300841898, -1.5811388300841898 ), Vector.of( 1.5811388300841898, 1.5811388300841898 ) ),
-			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), QUARTER_CIRCLE, 0, 180, Vector.of( -1, -2 ), Vector.of( 1, 2 ) )
+			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 3, 1 ), QUARTER_CIRCLE, 0, 180, Vector.of( -1, -2 ), Vector.of( 1, 2 ) )
 		);
 		//		return Stream.of(
 		//			// Correct for half arc rotated 0 degrees
