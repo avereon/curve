@@ -44,7 +44,7 @@
 
 		<!-- Needs to stay at a version compatible with all projects and the website -->
 		<!-- Keep consistent with the CI pipeline -->
-		<java.version>21</java.version>
+		<java.version>22</java.version>
 
 		<!-- Version numbers updated 07 Mar 2023 -->
 		<tinyspline.version>0.6.0-1</tinyspline.version>
