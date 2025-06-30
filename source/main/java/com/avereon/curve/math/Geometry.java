@@ -457,13 +457,8 @@ public class Geometry {
 		double[] usqr = Vector.multiply( uv[ 0 ], uv[ 0 ] );
 		double[] vsqr = Vector.multiply( uv[ 1 ], uv[ 1 ] );
 		double[] esqr = Vector.add( usqr, vsqr );
-		System.out.println( "esqr=" + Point.toString( esqr ) );
 		return Point.of( Math.sqrt( esqr[ 0 ] ), Math.sqrt( esqr[ 1 ] ) );
 	}
-
-	//Largo: 2.0
-	//Origen: Point3D [x = 0.9486832980505135, y = 1.5811388300841893, z = 0.0]
-	//Punto: Point3D [x = 0.9486832980505135, y = -0.4188611699158107, z = 0.0]
 
 	private static double[] ellipseF( double[] radii, double angle ) {
 		double n = (radii[ 0 ] * radii[ 0 ] + radii[ 1 ] * radii[ 1 ]);
