@@ -192,6 +192,35 @@ public class Geometry {
 	}
 
 	/**
+	 * Computes the phase theta by computing an arc tangent of y/x in the range of
+	 * 0 to 2pi.
+	 *
+	 * @param x
+	 * @param y
+	 * @return the theta component of the point (r, theta) in polar coordinates
+	 *         that corresponds to the point (x, y) in Cartesian coordinates.
+	 */
+	public static double theta( double x, double y ) {
+		double theta = Math.atan2( y, x );
+		if( theta < 0 ) theta += Constants.TWO_PI;
+		return theta;
+	}
+
+	/**
+	 * Computes the phase theta by computing an arc tangent of y/x in the range of
+	 * 0 to 2pi using point a as the origin.
+	 *
+	 * @param a The origin.
+	 * @param b The point to calculate the angle for.
+	 * @return the theta component of the point (r, theta) in polar coordinates
+	 *         that corresponds to the point (b.x-a.x, b.y-a.y) in Cartesian
+	 *         coordinates.
+	 */
+	public static double theta( double[] a, double[] b ) {
+		return theta( b[0] - a[0], b[1] - a[1] );
+	}
+
+	/**
 	 * Get the angle defined by points a, b and c with b at the vertex.
 	 *
 	 * @param a Point a
