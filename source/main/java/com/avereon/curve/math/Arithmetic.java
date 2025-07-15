@@ -2,15 +2,17 @@ package com.avereon.curve.math;
 
 public class Arithmetic {
 
+	public static final int EXTRA_HIGH_PRECISION_DIGITS = 18;
 	public static final int HIGH_PRECISION_DIGITS = 15;
 	public static final int DEFAULT_PRECISION_DIGITS = 12;
 	public static final int LOW_PRECISION_DIGITS = 9;
-	public static final int ULTRA_LOW_PRECISION_DIGITS = 6;
+	public static final int EXTRA_LOW_PRECISION_DIGITS = 6;
 
+	public static final double EXTRA_HIGH_PRECISION = 1.0 / Math.pow( 10, EXTRA_HIGH_PRECISION_DIGITS );
 	public static final double HIGH_PRECISION = 1.0 / Math.pow( 10, HIGH_PRECISION_DIGITS );
 	public static final double DEFAULT_PRECISION = 1.0 / Math.pow( 10, DEFAULT_PRECISION_DIGITS );
 	public static final double LOW_PRECISION = 1.0 / Math.pow( 10, LOW_PRECISION_DIGITS );
-	public static final double ULTRA_LOW_PRECISION = 1.0 / Math.pow( 10, ULTRA_LOW_PRECISION_DIGITS );
+	public static final double EXTRA_LOW_PRECISION = 1.0 / Math.pow( 10, EXTRA_LOW_PRECISION_DIGITS );
 
 	private static final double[] factors = new double[ DEFAULT_PRECISION_DIGITS << 1 ];
 
