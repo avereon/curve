@@ -8,7 +8,7 @@ public class ArithmeticTest {
 
 	@Test
 	void testDefaultDigits() {
-		assertThat( Arithmetic.DEFAULT_DIGITS ).isEqualTo( 12 );
+		assertThat( Arithmetic.DEFAULT_PRECISION_DIGITS ).isEqualTo( 12 );
 	}
 
 	@Test
