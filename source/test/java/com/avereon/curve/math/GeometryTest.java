@@ -3,6 +3,7 @@ package com.avereon.curve.math;
 import com.avereon.curve.assertion.VectorArrayAssert;
 import com.avereon.curve.assertion.VectorAssert;
 import org.assertj.core.data.Offset;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 
 import static com.avereon.curve.math.Constants.HALF_CIRCLE;
 import static com.avereon.curve.math.Constants.QUARTER_CIRCLE;
+import static com.avereon.test.TestTag.AI_GENERATED;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GeometryTest {
@@ -244,7 +246,15 @@ public class GeometryTest {
 	private static Stream<Arguments> arcBoundsArguments() {
 		return Stream.of(
 			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0, 0, 180, Vector.of( -2, -1 ), Vector.of( 2, 1 ) ),
-			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), 0.5 * QUARTER_CIRCLE, 0, 180, Vector.of( -1.5811388300841898, -1.5811388300841898 ), Vector.of( 1.5811388300841898, 1.5811388300841898 ) ),
+			Arguments.arguments(
+				Vector.of( 0, 0 ),
+				Point.of( 2, 1 ),
+				0.5 * QUARTER_CIRCLE,
+				0,
+				180,
+				Vector.of( -1.5811388300841898, -1.5811388300841898 ),
+				Vector.of( 1.5811388300841898, 1.5811388300841898 )
+			),
 			Arguments.arguments( Vector.of( 0, 0 ), Point.of( 2, 1 ), QUARTER_CIRCLE, 0, 180, Vector.of( -1, -2 ), Vector.of( 1, 2 ) )
 		);
 		//		return Stream.of(
@@ -713,6 +723,55 @@ public class GeometryTest {
 		assertThat( Geometry.getAngle( Vector.ZERO, normal, Vector.of( 1, 0, 0 ), Vector.of( 1, -1, 0 ) ) ).isCloseTo( -Math.PI * 0.25, Offset.offset( 1e-15 ) );
 
 		assertThat( Geometry.getAngle( Vector.of( -2, 3, 0 ), normal, Vector.of( -0.75, 3, 0 ), Vector.of( -1.625, 3 - 0.5, 0 ) ) ).isCloseTo( -0.9272952180016123, Offset.offset( 1e-15 ) );
+	}
+
+	@Test
+	@Tag( AI_GENERATED )
+	void testTheta() {
+		// Test theta(double x, double y) - points in different quadrants
+		// First quadrant (0 to π/2)
+		assertThat( Geometry.theta( 1, 0 ) ).isEqualTo( 0.0 ); // On positive x-axis
+		assertThat( Geometry.theta( 1, 1 ) ).isCloseTo( Math.PI / 4, Offset.offset( 1e-15 ) ); // 45 degrees
+		assertThat( Geometry.theta( 0, 1 ) ).isCloseTo( Math.PI / 2, Offset.offset( 1e-15 ) ); // On positive y-axis
+
+		// Second quadrant (π/2 to π)
+		assertThat( Geometry.theta( -1, 1 ) ).isCloseTo( 3 * Math.PI / 4, Offset.offset( 1e-15 ) ); // 135 degrees
+		assertThat( Geometry.theta( -1, 0 ) ).isCloseTo( Math.PI, Offset.offset( 1e-15 ) ); // On negative x-axis
+
+		// Third quadrant (π to 3π/2)
+		assertThat( Geometry.theta( -1, -1 ) ).isCloseTo( 5 * Math.PI / 4, Offset.offset( 1e-15 ) ); // 225 degrees
+		assertThat( Geometry.theta( 0, -1 ) ).isCloseTo( 3 * Math.PI / 2, Offset.offset( 1e-15 ) ); // On negative y-axis
+
+		// Fourth quadrant (3π/2 to 2π)
+		assertThat( Geometry.theta( 1, -1 ) ).isCloseTo( 7 * Math.PI / 4, Offset.offset( 1e-15 ) ); // 315 degrees
+
+		// Test theta(double[] a, double[] b) - relative positions
+		// Origin at (0,0)
+		assertThat( Geometry.theta( Vector.ZERO, Vector.of( 1, 0 ) ) ).isEqualTo( 0.0 ); // Point on positive x-axis
+		assertThat( Geometry.theta( Vector.ZERO, Vector.of( 1, 1 ) ) ).isCloseTo( Math.PI / 4, Offset.offset( 1e-15 ) ); // 45 degrees
+		assertThat( Geometry.theta( Vector.ZERO, Vector.of( 0, 1 ) ) ).isCloseTo( Math.PI / 2, Offset.offset( 1e-15 ) ); // Point on positive y-axis
+		assertThat( Geometry.theta( Vector.ZERO, Vector.of( -1, 1 ) ) ).isCloseTo( 3 * Math.PI / 4, Offset.offset( 1e-15 ) ); // 135 degrees
+		assertThat( Geometry.theta( Vector.ZERO, Vector.of( -1, 0 ) ) ).isCloseTo( Math.PI, Offset.offset( 1e-15 ) ); // Point on negative x-axis
+		assertThat( Geometry.theta( Vector.ZERO, Vector.of( -1, -1 ) ) ).isCloseTo( 5 * Math.PI / 4, Offset.offset( 1e-15 ) ); // 225 degrees
+		assertThat( Geometry.theta( Vector.ZERO, Vector.of( 0, -1 ) ) ).isCloseTo( 3 * Math.PI / 2, Offset.offset( 1e-15 ) ); // Point on negative y-axis
+		assertThat( Geometry.theta( Vector.ZERO, Vector.of( 1, -1 ) ) ).isCloseTo( 7 * Math.PI / 4, Offset.offset( 1e-15 ) ); // 315 degrees
+
+		// Origin at non-zero point (3,4)
+		double[] origin = Vector.of( 3, 4 );
+		assertThat( Geometry.theta( origin, Vector.of( 4, 4 ) ) ).isEqualTo( 0.0 ); // Point to the right of origin
+		assertThat( Geometry.theta( origin, Vector.of( 4, 5 ) ) ).isCloseTo( Math.PI / 4, Offset.offset( 1e-15 ) ); // 45 degrees from origin
+		assertThat( Geometry.theta( origin, Vector.of( 3, 5 ) ) ).isCloseTo( Math.PI / 2, Offset.offset( 1e-15 ) ); // Point above origin
+		assertThat( Geometry.theta( origin, Vector.of( 2, 5 ) ) ).isCloseTo( 3 * Math.PI / 4, Offset.offset( 1e-15 ) ); // 135 degrees from origin
+		assertThat( Geometry.theta( origin, Vector.of( 2, 4 ) ) ).isCloseTo( Math.PI, Offset.offset( 1e-15 ) ); // Point to the left of origin
+		assertThat( Geometry.theta( origin, Vector.of( 2, 3 ) ) ).isCloseTo( 5 * Math.PI / 4, Offset.offset( 1e-15 ) ); // 225 degrees from origin
+		assertThat( Geometry.theta( origin, Vector.of( 3, 3 ) ) ).isCloseTo( 3 * Math.PI / 2, Offset.offset( 1e-15 ) ); // Point below origin
+		assertThat( Geometry.theta( origin, Vector.of( 4, 3 ) ) ).isCloseTo( 7 * Math.PI / 4, Offset.offset( 1e-15 ) ); // 315 degrees from origin
+
+		// Edge case: coincident points
+		// When points are coincident, the behavior is undefined mathematically, but we can test what the implementation does
+		// The implementation calculates b[0]-a[0] and b[1]-a[1], which would be (0,0) for coincident points
+		// Math.atan2(0, 0) is undefined, but Java returns 0.0 for this case
+		assertThat( Geometry.theta( Vector.of( 5, 5 ), Vector.of( 5, 5 ) ) ).isEqualTo( 0.0 );
 	}
 
 	@Test

@@ -56,6 +56,13 @@
 			<artifactId>tinyspline</artifactId>
 			<version>${tinyspline.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.avereon</groupId>
+			<artifactId>zevra</artifactId>
+			<version>0.11-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
